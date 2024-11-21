@@ -35,7 +35,7 @@ const Sidebar = () => {
       <div
         className={`bg-[#222222] min-h-screen ${
           open ? "w-[204px]" : "w-16"
-        } duration-500 text-[#FFFFFF] px-4`}
+        } duration-500 text-[#FFFFFF] px-4 flex flex-col justify-between `}
         style={{
           fontFamily: "Roboto",
           fontSize: "14px",
@@ -53,8 +53,8 @@ const Sidebar = () => {
             </div>
           )}
         </div>
-
-        <div className="mt-4 flex flex-col gap-4 relative">
+        {/* relative */}
+        <div className="mt-4 flex flex-col gap-4 flex-grow">
           {menus?.map((menu, i) => (
             <Link
               to={menu?.link}
@@ -72,9 +72,6 @@ const Sidebar = () => {
               >
                 {menu?.name}
               </h2>
-
-
-
               <h2
                 className={`${
                   open && "hidden"
@@ -86,17 +83,15 @@ const Sidebar = () => {
           ))}
         </div>
         {/* <div className="flex items-center" style={{marginTop:"26vh"}} ><ProfileIcon />Gust</div> */}
-        <div
-          className={`flex items-center ${!open ? "justify-center" : ""}`}
-          style={{ marginTop: "30vh" }}
-        >
+        <div className="pb-5">
+        <div className={`flex items-center ${!open ? "justify-center" : ""}`}>
           <ProfileIcon />
-          {open && <span className="ml-2"> User</span>}
+          {open && <span className="ml-6"> User</span>}
         </div>
-        <div className=" flex justify-end py-5 mb-3 ml-2">
+        <div className="py-5 flex justify-end mb-3 ml-2">
           {open ? (
             <CloseIcon
-              className="cursor-pointer "
+              className="cursor-pointer"
               onClick={() => setOpen(!open)}
             />
           ) : (
@@ -106,6 +101,8 @@ const Sidebar = () => {
             />
           )}
         </div>
+        </div>
+
       </div>
     </section>
   );
