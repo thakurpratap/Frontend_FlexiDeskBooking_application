@@ -16,7 +16,6 @@ import {
   UserMangementIcon,
   WybridIcon,
 } from "../assets/icons/Desk";
-import { IconButton } from "@mui/material";
 
 const Sidebar = () => {
   const menus = [
@@ -44,7 +43,7 @@ const Sidebar = () => {
           lineHeight: "17.5px",
         }}
       >
-        <div style={{ margin: "24px 76px 40px 10px" }}>
+        <div style={{ margin: "28px 76px 40px 10px" }}>
           {open ? (
             <WybridIcon />
           ) : (
@@ -62,7 +61,7 @@ const Sidebar = () => {
               key={i}
               className="group flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-gray-800 rounded-md"
             >
-              <div>{React.createElement(menu?.icon)}</div>
+              <div className="mr-5">{React.createElement(menu?.icon)}</div>
               <h2
                 // style={{
                 //   transitionDelay: `${i + 3}00ms`,
@@ -73,6 +72,9 @@ const Sidebar = () => {
               >
                 {menu?.name}
               </h2>
+
+
+
               <h2
                 className={`${
                   open && "hidden"
