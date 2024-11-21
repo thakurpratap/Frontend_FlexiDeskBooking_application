@@ -16,6 +16,7 @@ import {
   UserMangementIcon,
   WybridIcon,
 } from "../assets/icons/Desk";
+import { IconButton } from "@mui/material";
 
 const Sidebar = () => {
   const menus = [
@@ -43,17 +44,17 @@ const Sidebar = () => {
           lineHeight: "17.5px",
         }}
       >
-        <div  style={{margin: "24px 76px 60px 10px"}}>
-          <WybridIcon />
+        <div style={{ margin: "24px 76px 40px 10px" }}>
+          {open ? (
+            <WybridIcon />
+          ) : (
+            // <MoreVertIcon fontSize="large" className="cursor-pointer" />
+            <div className="flex justify-center  ml-2">
+              <MoreVertIcon fontSize="large" className="cursor-pointer" />
+            </div>
+          )}
         </div>
 
-        {/* <div className="py-3 flex justify-end">
-          <MoreVertIcon
-            fontSize="large"
-            className="cursor-pointer"
-            onClick={() => setOpen(!open)}
-          />
-        </div> */}
         <div className="mt-4 flex flex-col gap-4 relative">
           {menus?.map((menu, i) => (
             <Link
@@ -85,15 +86,15 @@ const Sidebar = () => {
         {/* <div className="flex items-center" style={{marginTop:"26vh"}} ><ProfileIcon />Gust</div> */}
         <div
           className={`flex items-center ${!open ? "justify-center" : ""}`}
-          style={{ marginTop: "26vh" }}
+          style={{ marginTop: "30vh" }}
         >
           <ProfileIcon />
           {open && <span className="ml-2"> User</span>}
         </div>
-        <div className="py-3 flex justify-end">
+        <div className=" flex justify-end py-5 mb-3 ml-2">
           {open ? (
             <CloseIcon
-              className="cursor-pointer"
+              className="cursor-pointer "
               onClick={() => setOpen(!open)}
             />
           ) : (

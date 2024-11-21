@@ -13,10 +13,10 @@ function Inventory() {
           variant="h5"
           className="text-[#222222] flex "
           sx={{
-            width: "109px",
+            // width: "109px",
             height: "23px",
             gap: "0px",
-            fontFamily: "Roboto",
+            // fontFamily: "Roboto",
             fontSize: "18px",
             fontWeight: 600,
             lineHeight: "22.5px",
