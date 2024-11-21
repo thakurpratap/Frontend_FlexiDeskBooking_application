@@ -21,7 +21,7 @@ import { IconButton } from "@mui/material";
 const Sidebar = () => {
   const menus = [
     { name: "Home", link: "/", icon: HomeIcon },
-    { name: "Inventory", link: "/inventory", icon: InventoryIcon },
+    { name: "Inventory", link: "/", icon: InventoryIcon },
     { name: "Customers", link: "/", icon: CustomersIcon },
     { name: "Tickets", link: "/", icon: TicketsIcon },
     { name: "Sales Leads", link: "/", icon: SalesLeadsIcon },
@@ -60,7 +60,7 @@ const Sidebar = () => {
             <Link
               to={menu?.link}
               key={i}
-              className="group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-800 rounded-md"
+              className="group flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-gray-800 rounded-md"
             >
               <div>{React.createElement(menu?.icon)}</div>
               <h2
@@ -76,7 +76,7 @@ const Sidebar = () => {
               <h2
                 className={`${
                   open && "hidden"
-                } absolute left-48 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-14 group-hover:duration-300 group-hover:w-fit  `}
+                } absolute left-48 bg-white font-normal whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-14 group-hover:duration-300 group-hover:w-fit  `}
               >
                 {menu?.name}
               </h2>
