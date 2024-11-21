@@ -166,25 +166,29 @@ export const ProfileIcon = () =>{
 )
 }
 
-export const ResentIcon = () =>{
+interface IconProp {
+    sx?: React.CSSProperties; 
+  }
+export const ResentIcon:React.FC<IconProp> = ({ sx }) =>{
     return(
-<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={sx}>
 <path d="M18.3337 10.0001C18.3337 14.6001 14.6003 18.3334 10.0003 18.3334C5.40033 18.3334 2.59199 13.7001 2.59199 13.7001M2.59199 13.7001H6.35866M2.59199 13.7001V17.8667M1.66699 10.0001C1.66699 5.40008 5.36699 1.66675 10.0003 1.66675C15.5587 1.66675 18.3337 6.30008 18.3337 6.30008M18.3337 6.30008V2.13341M18.3337 6.30008H14.6337" stroke="#484848" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
+
 )
 }
 
-export const EditeIcon = () =>{
+export const EditeIcon:React.FC<IconProp> = ({ sx }) =>{
     return(
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={sx}>
 <path d="M13.5 6.5L17.5 10.5M4 20.0001H8L18.5 9.50006C19.0304 8.96963 19.3284 8.2502 19.3284 7.50006C19.3284 6.74991 19.0304 6.03049 18.5 5.50006C17.9696 4.96963 17.2501 4.67163 16.5 4.67163C15.7499 4.67163 15.0304 4.96963 14.5 5.50006L4 16.0001V20.0001Z" stroke="#484848" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 )
 }
 
-export const DeleteIcon = () =>{
+export const DeleteIcon: React.FC<IconProp> = ({ sx }) =>{
     return(
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={sx}>
 <path d="M20.25 5.25H3.75" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M9.75 9.75V15.75" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M14.25 9.75V15.75" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -193,6 +197,28 @@ export const DeleteIcon = () =>{
 </svg>
 )
 }
+
+
+export const SearchIcon = () =>{
+    return(
+<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.25 14.25C11.5637 14.25 14.25 11.5637 14.25 8.25C14.25 4.93629 11.5637 2.25 8.25 2.25C4.93629 2.25 2.25 4.93629 2.25 8.25C2.25 11.5637 4.93629 14.25 8.25 14.25Z" stroke="#717171" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.7498 15.7498L12.4873 12.4873" stroke="#717171" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+)
+}
+
+export const FilterIcon = () =>{
+    return(
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.33348 6.6665H24.6668C24.8588 6.73385 25.0329 6.84425 25.1757 6.98926C25.3184 7.13426 25.4261 7.31002 25.4905 7.50307C25.5548 7.69611 25.5741 7.90133 25.5469 8.10299C25.5197 8.30465 25.4467 8.49741 25.3335 8.6665L18.6668 15.9998V25.3332L13.3335 21.3332V15.9998L6.66681 8.6665C6.5536 8.49741 6.48059 8.30465 6.45338 8.10299C6.42617 7.90133 6.44548 7.69611 6.50983 7.50307C6.57418 7.31002 6.68186 7.13426 6.82463 6.98926C6.96739 6.84425 7.14145 6.73385 7.33348 6.6665Z" stroke="#484848" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+)
+}
+
+
+
+
 
 
 
