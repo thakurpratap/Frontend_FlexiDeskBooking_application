@@ -17,8 +17,8 @@ function App() {
           
         <div className="flex-1 overflow-auto ">
         <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/inventory" element={<Inventory />} />
+        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/" element={<Inventory />} />
 
         </Routes>
         </div>
