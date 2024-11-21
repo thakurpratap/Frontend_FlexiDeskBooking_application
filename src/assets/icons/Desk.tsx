@@ -163,6 +163,40 @@ export const ProfileIcon = () =>{
 <rect x="0.5" y="0.5" width="36" height="36" rx="18" stroke="#717171"/>
 <path d="M17.138 14.42V23H15.851L12.263 17.254L11.353 15.642H11.34L11.392 16.942V23H10.404V14.42H11.691L15.266 20.14L16.189 21.791H16.202L16.15 20.478V14.42H17.138ZM26.7889 23H25.6839L24.7739 20.621H20.8869L19.9769 23H18.8849L22.2259 14.42H23.4609L26.7889 23ZM21.2639 19.646H24.3969L22.8239 15.421L21.2639 19.646Z" fill="white"/>
 </svg>
-
 )
 }
+
+export const ResentIcon = () =>{
+    return(
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18.3337 10.0001C18.3337 14.6001 14.6003 18.3334 10.0003 18.3334C5.40033 18.3334 2.59199 13.7001 2.59199 13.7001M2.59199 13.7001H6.35866M2.59199 13.7001V17.8667M1.66699 10.0001C1.66699 5.40008 5.36699 1.66675 10.0003 1.66675C15.5587 1.66675 18.3337 6.30008 18.3337 6.30008M18.3337 6.30008V2.13341M18.3337 6.30008H14.6337" stroke="#484848" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+)
+}
+
+export const EditeIcon = () =>{
+    return(
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.5 6.5L17.5 10.5M4 20.0001H8L18.5 9.50006C19.0304 8.96963 19.3284 8.2502 19.3284 7.50006C19.3284 6.74991 19.0304 6.03049 18.5 5.50006C17.9696 4.96963 17.2501 4.67163 16.5 4.67163C15.7499 4.67163 15.0304 4.96963 14.5 5.50006L4 16.0001V20.0001Z" stroke="#484848" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+)
+}
+
+export const DeleteIcon = () =>{
+    return(
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.25 5.25H3.75" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9.75 9.75V15.75" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14.25 9.75V15.75" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M18.75 5.25V19.5C18.75 19.6989 18.671 19.8897 18.5303 20.0303C18.3897 20.171 18.1989 20.25 18 20.25H6C5.80109 20.25 5.61032 20.171 5.46967 20.0303C5.32902 19.8897 5.25 19.6989 5.25 19.5V5.25" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.75 5.25V3.75C15.75 3.35218 15.592 2.97064 15.3107 2.68934C15.0294 2.40804 14.6478 2.25 14.25 2.25H9.75C9.35218 2.25 8.97064 2.40804 8.68934 2.68934C8.40804 2.97064 8.25 3.35218 8.25 3.75V5.25" stroke="#EB4C60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+)
+}
+
+
+
+
+
+
+
