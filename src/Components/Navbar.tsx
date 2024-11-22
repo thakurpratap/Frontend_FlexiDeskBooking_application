@@ -1,4 +1,3 @@
-import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -7,9 +6,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 const Navbar = () => {
   return (
-    // style={{ position: "absolute", width: "1524px", left: "204px" }}
-    // <section className="flex gap-0">
-    <div style={{left: "204px" }}>
+    <div style={{left: "204px" , position :"sticky"}}>
       <AppBar
         position="static"
         className="bg-white"
@@ -25,17 +22,15 @@ const Navbar = () => {
             height: "100%",
           }}
         >
-          <Typography variant="h6" className="text-black font-semibold">
+          <Typography variant="h6" className="text-black font-semibold" style={{marginLeft:"7px"}}>
             67 Kumar Enclave, Thane
           </Typography>
-          {/* style={{height:"40px", width:"530px", top:"15px" }} */}
           <div className="flex items-center gap-6" style={{height:"40px", width:"530px", top:"15px" }}>
             <div
               className="px-4 py-2 bg-[#FAFBFC] rounded-full text-[#222222]"
               style={{
                 border: "1px solid #BDBDBD",
               }}
-              // style={{width:"240px", height:"32px", borderRadius:"30px", border:"1px Dark Grey 04"}}
             >
               <Typography
                 component="span"
@@ -77,7 +72,6 @@ const Navbar = () => {
               >
                 Today's bill amount:{" "}
               </Typography>
-              {/* Today's bill amount:{" "} */}
               <span
                 className="text-[#000000]"
                 style={{
@@ -111,7 +105,7 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Horizontal Line */}
+{/* hr line */}
       <div
         style={{
           width: "100%",
