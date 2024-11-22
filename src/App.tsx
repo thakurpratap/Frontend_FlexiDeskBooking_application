@@ -1,9 +1,9 @@
 import React from "react";
 import "./App.css";
-import Sidebar from "./Components/Sidebar";
+import Sidebar from "./components/Sidebar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Navbar from "./Components/Navbar";
-import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
+//import Home from "./pages/Home";
 import Inventory from "./Inventort";
 
 function App() {
