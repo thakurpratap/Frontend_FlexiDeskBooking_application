@@ -26,6 +26,14 @@ function App() {
               </Routes>
             </div>
           </div>
+            <Navbar /> 
+        <div className="flex-1 overflow-auto ">
+        <Routes>
+        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/inventory" element={<Inventory />} />
+        </Routes>
+        </div>
+        </div>
         </div>
       </BrowserRouter>
     </div>

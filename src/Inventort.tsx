@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import {Box,Button,ButtonBase,IconButton,InputBase,Menu,MenuItem,Paper,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Typography,} from "@mui/material";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { DeleteIcon, EditeIcon, FilterIcon, ResentIcon, SearchIcon } from "./assets/icons/Desk";
+import { Margin } from "@mui/icons-material";
 
 const Inventory = () => {
   const rows = [
@@ -12,7 +14,22 @@ const Inventory = () => {
     { id: 10005, name: "Cody Fisher", email: "codyfisher@mail.com", type: "Meeting Room", invitees: "Jim Halpert +3", date: "08-07-2023", status: "PAID" }, 
     { id: 10006, name: "Eleanor Pena", email: "e.pena@mail.com", type: "Meeting Room", invitees: "Dwight Shrute +2", date: "18-06-2023", status: "PAID" }
   ];
- 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    rowId: number
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRow(rowId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRow(null);
+  };
+
   return (
     <>
       <div
@@ -27,13 +44,13 @@ const Inventory = () => {
       <div
         style={{width: "100%",height: "1px",backgroundColor: "#DDDDDD", }}>
             </div> 
-      <Box sx={{ padding: 2 }}>
+      <Box sx={{ padding: 2 , marginLeft:"2px"}}>
         <Box
           sx={{display: "flex",justifyContent: "",alignItems: "center",marginBottom: 2, }}>
           <Paper     
             component="form"
             sx={{display: "flex",alignItems: "center",width: "640px",height: "40px",padding: "0 8px",border: "1px solid #BDBDBD",boxShadow: "none",borderRadius: "4px",
-              marginBottom: "16px",background:"#F7F7F7", }}>
+              marginBottom: "16px",background:"#F7F7F7", marginLeft:"13px" }}>
             <SearchIcon/>
             <InputBase
               style={{ flex: 1, marginLeft:"6px" }} placeholder="Search" inputProps={{ "aria-label": "search" }}/>
@@ -106,10 +123,29 @@ const Inventory = () => {
                   <TableCell>
                     <IconButton
                       aria-label="more"
-                      // onClick={(e) => handleMenuOpen(e, row.id)}
+                      onClick={(e) => handleMenuOpen(e, row.id)}
                     >
                       <MoreVertIcon />
                     </IconButton>
+
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl) && selectedRow === row.id}
+                      onClose={handleMenuClose}  
+                      sx={{transform: 'translateX(-5%)',}}>
+                     <MenuItem onClick={handleMenuClose} sx={{width:"224px", height:"32px"}}>
+                      <span style={{ marginRight: "14px" }}><ResentIcon /></span>
+                      <span style={{fontSize: '14px',  padding: '2px 4px', color: '#172B4D'}}> Resend Payment Email</span>         
+                      </MenuItem>
+                      <MenuItem onClick={handleMenuClose} sx={{width:"224px", height:"32px"}}>
+                        <span><EditeIcon sx={{ marginRight: "14px" }}/></span>
+                        <span style={{fontSize: '14px',  padding: '2px 4px', color: '#172B4D'}}>Edit Booking</span>
+                      </MenuItem>
+                      <MenuItem onClick={handleMenuClose} sx={{width:"224px", height:"32px"}}>
+                      <span><DeleteIcon sx={{ marginRight: "14px" }}/></span>                  
+                        <span style={{fontSize: '14px',  padding: '2px 4px', color: '#172B4D'}}> Cancel Booking</span>                   
+                      </MenuItem>
+                    </Menu>
 
                   </TableCell>
                </TableRow>
