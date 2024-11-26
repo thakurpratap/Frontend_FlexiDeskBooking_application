@@ -339,12 +339,3 @@ export const TicketIcon = () =>{
 }
 
 
-
-
-
-
-
-
-
-
-

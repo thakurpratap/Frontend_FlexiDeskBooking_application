@@ -5,8 +5,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Inventory from "./Inventort";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HomeIcon } from "./assets/icons/Desk";
-// import Home from "./pages/Home";
 import { DataProvider } from "./pages/DataContext";
 
 const queryClient = new QueryClient();
@@ -23,7 +21,6 @@ function App() {
             <Navbar /> 
         <div className="flex-1 overflow-auto ">
         <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/inventory" element={<Inventory />} />
         </Routes>
         </div>
