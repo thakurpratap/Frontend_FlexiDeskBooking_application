@@ -28,7 +28,7 @@ const Sidebar = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const menus = [
-    { name: "Home", link: "/inventory", icon: HomeIcon },
+    { name: "Home", link: "/", icon: HomeIcon },
     { name: "Inventory", link: "#", icon: InventoryIcon }, 
     { name: "Customers", link: "/customers", icon: CustomersIcon },
     { name: "Tickets", link: "/tickets", icon: TicketsIcon },
