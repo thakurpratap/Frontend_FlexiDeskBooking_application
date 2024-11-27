@@ -19,6 +19,7 @@ import {
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import RightSidebar from "./Rightsidebar";
+import { Menu, MenuItem } from "@mui/material";
 
 
 const Sidebar = () => {
@@ -104,7 +105,10 @@ const Sidebar = () => {
                   </div>
 
                   {inventoryOpen && (
+                   < >
+                   {/* <Menu> */}
                     <div className="pl-14 mt-2 flex flex-col gap-2">
+                    <MenuItem>
                       <Link
                         to="/inventory"
                         className="group flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-gray-800 rounded-md"
@@ -113,6 +117,8 @@ const Sidebar = () => {
                       >
                         <h2 className="whitespace-pre">Flexi</h2>
                       </Link>
+                      </MenuItem>
+                      <MenuItem>
                       <Link
                         to="/inventory/dedicated"
                         className="group flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-gray-800 rounded-md"
@@ -120,6 +126,8 @@ const Sidebar = () => {
                       >
                         <h2 className="whitespace-pre">Dedicated</h2>
                       </Link>
+                      </MenuItem>
+                      <MenuItem>
                       <Link
                         to="/inventory/meeting-room"
                         className="group flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-gray-800 rounded-md"
@@ -127,7 +135,10 @@ const Sidebar = () => {
                       >
                         <h2 className="whitespace-pre">Meeting Room</h2>
                       </Link>
+                      </MenuItem>
                     </div>
+                    {/* </Menu> */}
+                    </>
                   )}
                 </div>
               );
