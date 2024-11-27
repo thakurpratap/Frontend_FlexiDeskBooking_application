@@ -1,17 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
   ButtonBase,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   FormControl,
-  FormControlLabel,
   IconButton,
-  InputAdornment,
   InputBase,
   Menu,
   MenuItem,
@@ -21,12 +19,10 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
-import Modal from "@mui/material/Modal";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   DeleteIcon,
@@ -34,14 +30,22 @@ import {
   FilterIcon,
   ResentIcon,
   SearchIcon,
-} from "./assets/icons/Desk";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import { useDataContext } from "./pages/DataContext";
-import NewBooking from "./Components/NewBooking";
+} from "../../assets/icons/Desk";
+import { useDataContext } from "../DataContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Modal from "@mui/material/Modal";
+import NewBooking from "../../Components/NewBooking";
 const Inventory = () => {
-  const { bookings, isLoading, searchBookings, searchResults, isSearching } =
-    useDataContext();
-
+  const {
+    bookings,
+    isLoading,
+    searchBookings,
+    searchResults,
+    isSearching,
+    searchError,
+    handleUpdateBooking,
+  } = useDataContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRow, setSelectedRow] = useState<number | string | null>(null);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -51,15 +55,22 @@ const Inventory = () => {
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = async () => {
+    debugger;
     if (searchQuery.trim()) {
       await searchBookings(searchQuery);
     }
   };
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery]);
 
-  const displayedBookings =
-    searchResults && searchResults.length > 0 ? searchResults : bookings;
+  const displayedData =
+    searchQuery.trim() && searchResults && searchResults.length > 0
+      ? searchResults
+      : !searchQuery.trim()
+      ? bookings
+      : [];
 
   const toggleFilterModal = () => {
     setFilterModalOpen(!filterModalOpen);
@@ -86,9 +97,6 @@ const Inventory = () => {
     setSelectedRow(null);
   };
 
-  if (isLoading || isSearching) {
-    return <Typography>Loading...</Typography>;
-  }
   return (
     <>
       <div
@@ -96,6 +104,7 @@ const Inventory = () => {
           height: "78px",
         }}
       >
+        <ToastContainer position="top-right" autoClose={2000} />
         <Typography
           variant="h5"
           className="text-[#222222] flex "
@@ -128,7 +137,6 @@ const Inventory = () => {
           }}
         >
           <Paper
-            onSubmit={handleSearch}
             component="form"
             sx={{
               display: "flex",
@@ -153,6 +161,7 @@ const Inventory = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </Paper>
+
           <ButtonBase
             sx={{ marginLeft: "9px", marginBottom: "12px" }}
             onClick={toggleFilterModal}
@@ -266,9 +275,18 @@ const Inventory = () => {
                 BOOKING DATE
               </Typography>
             </TableCell>
-            {/* <TableCell>
-                  <Typography sx={{ fontSize: "12px",fontWeight: 400,lineHeight: "16px",color: "#717171",}}>BOOKING STATUS</Typography>
-                </TableCell> */}
+            <TableCell>
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 400,
+                  lineHeight: "16px",
+                  color: "#717171",
+                }}
+              >
+                BOOKING STATUS
+              </Typography>
+            </TableCell>
             <TableCell>
               <Typography
                 sx={{
@@ -284,8 +302,8 @@ const Inventory = () => {
             {/* </TableRow> */}
             {/* </TableHead> */}
             <TableBody>
-              {bookings.length > 0 ? (
-                bookings.map((row) => (
+              {displayedData.length > 0 ? (
+                displayedData.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell
                       style={{
@@ -295,7 +313,7 @@ const Inventory = () => {
                         color: "#222222",
                       }}
                     >
-                      {row._id.slice(0, 5)}
+                      {row.bookingId}
                     </TableCell>
                     <TableCell
                       style={{
@@ -353,7 +371,29 @@ const Inventory = () => {
                     >
                       {row.createdAt.substring(0, 10)}
                     </TableCell>
-                    {/* <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>{row.company_name}</TableCell> */}
+                    <TableCell
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 400,
+                        lineHeight: "20.3px",
+                        color: "#222222",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          display: "inline-block",
+                          backgroundColor: row.isActive ? "#79F2C0" : "#FFBDAD",
+                          color: "#42526E",
+                          fontWeight: "bold",
+                          padding: "4px 8px",
+                          borderRadius: "4px",
+                          textAlign: "center",
+                          width: "auto",
+                        }}
+                      >
+                        {row.isActive ? "true" : "false"}
+                      </Typography>
+                    </TableCell>
 
                     <TableCell
                       style={{
@@ -442,8 +482,11 @@ const Inventory = () => {
                             Edit Booking
                           </span>
                         </MenuItem>
+
                         <MenuItem
-                          onClick={handleMenuClose}
+                          onClick={() => {
+                            handleMenuClose();
+                          }}
                           sx={{ width: "224px", height: "32px" }}
                         >
                           <span>
@@ -464,6 +507,12 @@ const Inventory = () => {
                     </TableCell>
                   </TableRow>
                 ))
+              ) : searchQuery.trim() ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">
+                    No bookings found for .
+                  </TableCell>
+                </TableRow>
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
@@ -476,84 +525,108 @@ const Inventory = () => {
         </TableContainer>
       </Box>
 
-      {/* Filter Modal */}
       <Dialog
         open={filterModalOpen}
         onClose={toggleFilterModal}
         sx={{
           "& .MuiDialog-paper": {
             width: "426px",
-            height: "404px",
+            height: "420px",
           },
         }}
       >
-        <DialogTitle sx={{ fontWeight: "bold", fontSize: "18px" }}>
-          Filter Options
+        <DialogTitle sx={{ fontSize: "16px", fontWeight: 500 }}>
+          Filters
         </DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-            <Typography variant="subtitle1">Booking Type</Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "400", color: "#717171" }}
+            >
+              Booking Type
+            </Typography>
             <Select
               // value={bookingType}
               // onChange={(e) => setBookingType(e.target.value)}
               displayEmpty
               sx={{ marginTop: "8px" }}
             >
-              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="All" disabled>
+                All
+              </MenuItem>
               <MenuItem value="Hot Desk">Hot Desk</MenuItem>
-              <MenuItem value="Meeting Room">Meeting Room</MenuItem>
+              <MenuItem value="Meeting Room" disabled>
+                Meeting Room
+              </MenuItem>
             </Select>
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-            <Typography className="text-sm font-medium">Visit Date</Typography>
+            <Typography
+              className="text-sm font-medium"
+              sx={{ fontWeight: "400", color: "#717171" }}
+            >
+              Visit Date
+            </Typography>
             <TextField
-              // value={visitDate}
-              // onChange={(e) => setVisitDate(e.target.value)}
               className="mt-1 border border-gray-300 rounded-lg"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton>
-                      <CalendarTodayIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              type="date"
             />
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: "16px" }}>
-            <Typography className="text-sm font-medium">
+            <Typography
+              sx={{ fontWeight: "400", color: "#717171" }}
+              className="text-sm font-medium "
+            >
               Booking Date
             </Typography>
             <TextField
-              // value={bookingDate}
-              // onChange={(e) => setBookingDate(e.target.value)}
-              className="mt-1 border border-gray-300 rounded-lg"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton>
-                      <CalendarTodayIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              type="date"
+              sx={{ marginTop: "5px" }}
+              className=" border border-gray-300 rounded-lg"
             />
           </FormControl>
         </DialogContent>
 
-        <DialogActions className="space-x-4">
+        <DialogActions
+          className="space-x-4"
+          sx={{
+            justifyContent: "flex-start",
+            paddingLeft: "26px",
+            width: "199px",
+            height: "40px",
+            gap: "10px",
+            marginBottom: "16px",
+          }}
+        >
+          <Button
+            onClick={handleApplyFilters}
+            sx={{
+              width: "90px",
+              height: "40px",
+              padding: "8px 25px",
+              gap: "8px",
+              borderRadius: "5px 0px 0px 0px",
+              background: "#343434",
+              color: "#ffffff",
+            }}
+          >
+            Apply
+          </Button>
           <Button
             onClick={handleClearFilters}
             className="bg-[#F7F7F7] rounded-md px-4 py-2"
+            sx={{
+              background: "#F7F7F7",
+              color: "#565E6F",
+              width: "90px",
+              height: "40px",
+              padding: "8px 25px",
+              gap: "8px",
+              borderRadius: "5px 0px 0px 0px",
+            }}
           >
             Cancel
-          </Button>
-          <Button
-            onClick={handleApplyFilters}
-            className="bg-[#343434] rounded-md px-4 py-2"
-          >
-            Apply
           </Button>
         </DialogActions>
       </Dialog>

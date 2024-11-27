@@ -3,13 +3,15 @@ import "./App.css";
 import Sidebar from "./Components/Sidebar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./Components/Navbar";
-import Inventory from "./Inventort";
+import Inventory from "./pages/flexiBooking/Inventort";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DataProvider } from "./pages/DataContext";
 import NewBooking from "./Components/NewBooking";
 import PaymentDetails from "./Components/PaymentDetails";
 import BookingDetails from "./Components/BookingDetails";
 import { NewBookingContextProvider } from "./context_API/NewBookingContext";
+// import Home from "./pages/Home";
+
 const queryClient = new QueryClient();
 
 function App() {

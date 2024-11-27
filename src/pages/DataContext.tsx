@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 interface Invitee {
@@ -7,8 +7,9 @@ interface Invitee {
   }
 
 interface Booking {
-    id: string;
-  _id: string;
+  bookingId : string;
+id: string;
+_id: string;
 guest_name: string;
 guest_email: string;
 booking_type: string;
@@ -17,9 +18,11 @@ guest_checkin_status: boolean;
 createdAt : string
 payment_status : payment[];
 invitee: Invitee[];
+isActive : boolean;
+// clearSearch: () => void;
 }
 interface payment {
-    payment_status : boolean;
+  payment_status : boolean;
 }
 
 interface DataContextType {
@@ -30,14 +33,15 @@ interface DataContextType {
   searchBookings: (guestName: string) => Promise<void>;
   isSearching: boolean;
   searchError: string | null;
+  handleUpdateBooking: (bookingId: string) => Promise<void>; 
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const fetchBookings = async () => {
-  const response = await axios.get("https://flexi-desk-booking.onrender.com/api/flexibooking/");
+  const response = await axios.get("https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=&visit_dates=");
   console.log(response.data)
-  return response.data;
+  return response.data.data;
 };
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
@@ -51,16 +55,18 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
+  // const clearSearch = () => setSearchResults(null);
+
   // Search function for guest name
   const searchBookings = async (guestName: string) => {
     setIsSearching(true);
     setSearchError(null);
+    let date = "";
     try {
       const response = await axios.get(
-        `https://flexi-desk-booking.onrender.com/api/flexibooking/search-by-guest-name`,
-        { params: { guestName } }
+        `https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=${guestName}&visit_dates=${date}`
       );
-      setSearchResults(response.data);
+      setSearchResults(response.data.data);
       console.log(response.data)
     } catch (err: any) {
       setSearchError(err.message || "Failed to search bookings");
@@ -70,8 +76,36 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const queryClient = useQueryClient();
+
+  const handleUpdateBooking = async (booking: any) => {
+    // booking.isActive = false;
+    try {
+      const response = await axios.put(
+        `https://flexi-desk-booking.onrender.com/api/flexibooking/update-booking/${booking._id}`,
+        {isActive:false}
+      );
+  
+      console.log("Booking updated successfully:", response.data);
+  
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+         // If search results are active, update them as well
+    // setSearchResults((prev) =>
+    //   prev
+    //     ? prev.map((booking) =>
+    //         booking._id === bookingId ? { ...booking, isActive: false } : booking
+    //       )
+    //     : null
+    // );
+    } catch (err: any) {
+      console.error("Error updating booking:", err);
+    }
+  };
+
+
   const bookings = data || [];
 
+ console.log(bookings, ">>>>>>>>>>>>>>bookings")
   return (
     <DataContext.Provider
       value={{
@@ -82,6 +116,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         searchBookings,
         isSearching,
         searchError,
+        handleUpdateBooking,
+        // clearSearch
       }}
     >
       {children}
@@ -96,72 +132,3 @@ export const useDataContext = () => {
   }
   return context;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { createContext, useContext, ReactNode } from "react";
-// import { useQuery } from "@tanstack/react-query";
-// import axios from "axios";
-
-// interface Booking {
-//   id: string;
-//   name: string;
-//   email: string;
-//   type: string;
-//   invitees: string;
-//   date: string;
-//   status: string;
-// }
-
-// interface DataContextType {
-//   bookings: Booking[];
-//   isLoading: boolean;
-//   error: string | null;
-// }
-
-// const DataContext = createContext<DataContextType | undefined>(undefined);
-
-// const fetchBookings = async () => {
-//   const response = await axios.get("https://flexi-desk-booking.onrender.com/api/flexibooking/");
-//   return response.data;
-// };
-
-// export const DataProvider = ({ children }: { children: ReactNode }) => {
-//   const { data, isLoading, error } = useQuery<Booking[], Error>({
-//     queryKey: ["bookings"],
-//     queryFn: fetchBookings,
-//     initialData: [], // Provide an empty array as a fallback
-//   });
-
-//   const bookings = data || [];
-
-//   return (
-//     <DataContext.Provider value={{ bookings, isLoading, error: error ? error.message : null }}>
-//       {children}
-//     </DataContext.Provider>
-//   );
-// };
-
-// export const useDataContext = () => {
-//   const context = useContext(DataContext);
-//   if (!context) {
-//     throw new Error("useDataContext must be used within a DataProvider");
-//   }
-//   return context;
-// };
-
