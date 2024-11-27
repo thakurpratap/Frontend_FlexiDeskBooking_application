@@ -3,9 +3,10 @@ import "./App.css";
 import Sidebar from "./Components/Sidebar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./Components/Navbar";
-import Inventory from "./Inventort";
+import Inventory from "./pages/flexiBooking/Inventort";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DataProvider } from "./pages/DataContext";
+// import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ function App() {
             <Navbar /> 
         <div className="flex-1 overflow-auto ">
         <Routes>
+        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/inventory" element={<Inventory />} />
         </Routes>
         </div>
