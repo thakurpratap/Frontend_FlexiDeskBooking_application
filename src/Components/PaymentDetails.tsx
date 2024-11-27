@@ -12,9 +12,11 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
 import { ShareIcon, SuccessSign } from "../assets/AllNewBookingIcon";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import { useNavigate } from "react-router-dom";
 
 const PaymentDetails = () => {
   const [isClicked, setIsClicked] = useState<boolean>(true);
+  const navigate=useNavigate()
   const theme = createTheme({
     typography: {
       fontFamily: "Roboto",
@@ -250,6 +252,9 @@ const PaymentDetails = () => {
                       height: "48px",
                       padding: "12px 25px",
                     }}
+                    onClick={()=>{
+                      navigate("/new-booking")
+                    }}
                   >
                     Back
                   </Button>
@@ -259,8 +264,7 @@ const PaymentDetails = () => {
           </>
         ) : (
           <>
-            <Box
-              className="Payment success"
+            <Box  className="Payment success"
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -308,8 +312,7 @@ const PaymentDetails = () => {
               <Typography variant="h6">Payment Method</Typography>
               <Typography variant="body2"> Cash</Typography>
             </Box>
-            <Box
-              className="Btn"
+            <Box className="Btn"
               sx={{
                 position: "absolute",
                 bottom: "10px",
