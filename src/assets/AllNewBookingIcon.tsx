@@ -36,3 +36,23 @@ export const SuccessSign = () => {
     </svg>
   );
 };
+
+export const DateIcon = () => {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M13.25 1H2.75C1.92157 1 1.25 1.67157 1.25 2.5V13C1.25 13.8284 1.92157 14.5 2.75 14.5H13.25C14.0784 14.5 14.75 13.8284 14.75 13V2.5C14.75 1.67157 14.0784 1 13.25 1Z"
+        stroke="#717171"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
