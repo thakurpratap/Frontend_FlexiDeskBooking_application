@@ -5,6 +5,8 @@ import { DeleteIcon, EditeIcon, FilterIcon, ResentIcon, SearchIcon } from "../..
 import { useDataContext } from "../DataContext";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Modal from "@mui/material/Modal";
+import NewBooking from "../../Components/NewBooking";
 
 const Inventory = () => {
 
@@ -14,6 +16,10 @@ const Inventory = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
+  const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
+
+  const handleOpenNewBooking = () => setIsOpenNewBooking(true);
+  const handleCloseNewBooking = () => setIsOpenNewBooking(false);
 
   const handleSearch = async  () => {
     debugger
@@ -127,9 +133,21 @@ const Inventory = () => {
               borderRadius: "5px",
               marginLeft:"35%"
             }}
+            onClick={handleOpenNewBooking}
           >
             + New Booking
           </Button>
+          <Modal open={isOpenNewBooking} onClose={handleCloseNewBooking}>
+            <Box
+              sx={{
+                position: "absolute",
+                right: "60px",
+                top: "9%",
+              }}
+            >
+              <NewBooking setIsOpenNewBooking={setIsOpenNewBooking} />
+            </Box>
+          </Modal>
         </Box>
 
         <TableContainer>
