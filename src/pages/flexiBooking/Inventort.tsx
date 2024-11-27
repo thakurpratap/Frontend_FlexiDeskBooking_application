@@ -5,15 +5,15 @@ import { DeleteIcon, EditeIcon, FilterIcon, ResentIcon, SearchIcon } from "../..
 import { useDataContext } from "../DataContext";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import CancelBookingDialog from "./CancelBookingDialog";
 
 const Inventory = () => {
 
-  const { bookings, isLoading ,searchBookings, searchResults, isSearching, searchError,handleUpdateBooking} = useDataContext();
+  const { bookings, isLoading ,searchBookings, searchResults, isSearching, searchError,handleUpdateBooking, handleResendPaymentEmail} = useDataContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedRow, setSelectedRow] = useState<number | string  | null>(null);
+  const [selectedRow, setSelectedRow] = useState<Object | string  | null>(null);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [booking_type, setBookingType] = useState("");
 
   const handleSearch = async  () => {
     debugger
@@ -24,11 +24,6 @@ const Inventory = () => {
     useEffect(() => {
       handleSearch();
     }, [searchQuery]);
-
-  // const displayedData = searchResults ?? bookings;
-  // const displayedData = searchResults && searchResults.length > 0 ? searchResults : bookings;
-
-  // const displayedData = searchResults || bookings; 
 
   const displayedData =
   searchQuery.trim() && searchResults && searchResults.length > 0
@@ -51,8 +46,9 @@ const Inventory = () => {
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
-    rowId: string
+    rowId: any
   ) => {
+    debugger
     setAnchorEl(event.currentTarget);
     setSelectedRow(rowId);
   };
@@ -62,43 +58,29 @@ const Inventory = () => {
     setSelectedRow(null);
   };
 
-  // const handleCancelBooking = async (booking: any) => {
-  //   if (window.confirm("Are you sure you want to cancel this booking?")) {
-  //     await handleUpdateBooking(booking);
-  //     alert("Booking canceled successfully");
-  //   }
-  // };
+  const [open, setOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
 
-  // const [open, setOpen] = useState(false);
-  // const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const handleOpenDialog = ( booking: any, bookingdata: any) => {
+    console.log(booking, ">>>>>>>>>>>>>>>>>>>booking 75")
+    setBookingType(bookingdata.booking_type)
+    setSelectedBooking(booking);
+    setOpen(true);
+  };
 
-  // const handleOpenDialog = (booking: any) => {
-  //   setSelectedBooking(booking);
-  //   setOpen(true);
-  // };
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setSelectedBooking(null);
+  };
 
-  // const handleCloseDialog = () => {
-  //   setOpen(false);
-  //   setSelectedBooking(null);
-  // };
-
-  // const handleConfirmCancel = async () => {
-  //   if (selectedBooking) {
-  //     await handleUpdateBooking(selectedBooking); // Call your update function
-  //     setOpen(false);
-  //     setSelectedBooking(null);
-  //     toast.success("Booking canceled successfully!");
-  //     console.log("Booking canceled successfully");
-  //   }
-  // };
-  // const handleConfirmCancel = async () => {
-  //   if (!selectedBooking) return;
-  
-  //   await handleUpdateBooking(selectedBooking);
-  
-  //   // Close dialog after updating
-  //   handleCloseDialog();
-  // };
+  const handleConfirmCancel = async () => {
+    if (selectedBooking) {
+      await handleUpdateBooking(selectedBooking); 
+      setOpen(false);
+      setSelectedBooking(null);
+      toast.success("Booking canceled successfully!");
+    }
+  };
 
   return (
     <>
@@ -176,14 +158,15 @@ const Inventory = () => {
                   <Typography sx={{ fontSize: "12px",fontWeight: 400,lineHeight: "16px",color: "#717171",}}>BOOKING STATUS</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography sx={{ fontSize: "12px",fontWeight: 400,lineHeight: "16px",color: "#717171",}}>STATUS</Typography>
+                  <Typography sx={{ fontSize: "12px",fontWeight: 400,lineHeight: "16px",color: "#717171",}}>PAYMENT STATUS</Typography>
                 </TableCell>
               {/* </TableRow> */}
             {/* </TableHead> */}
             <TableBody>
               {displayedData.length > 0 ? (
               displayedData.map((row) => (
-                <TableRow key={row.id} >
+                <TableRow key={row._id}
+                style={{ backgroundColor: !row.isActive ? "#f5f5f5" : "transparent", pointerEvents: !row.isActive ? "none" : "auto",opacity: !row.isActive ? 0.6 : 1,}} >
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}} >{row.bookingId}</TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>{row.guest_name}</TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>{row.guest_email}</TableCell>
@@ -196,22 +179,23 @@ const Inventory = () => {
                   <Typography
                       sx={{display: "inline-block" ,backgroundColor:row.isActive ?"#79F2C0" : "#FFBDAD", color: "#42526E",fontWeight: "bold",padding: "4px 8px",
                         borderRadius: "4px",textAlign: "center", width: "auto" }} >
-                    {row.isActive ? "true" : "false"}
+                    {row.isActive ? "Confirmed" : "Cancelled"}
                     </Typography></TableCell>
 
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
                     <Typography
-                      sx={{display: "inline-block" ,backgroundColor:row.guest_checkin_status ? "#FFBDAD" : "#79F2C0", color: "#42526E",fontWeight: "bold",padding: "4px 8px",
+                      sx={{display: "inline-block" ,backgroundColor:row.payment_status ?  "#79F2C0" : "#FFBDAD" , color: "#42526E",fontWeight: "bold",padding: "4px 8px",
                         borderRadius: "4px",textAlign: "center", width: "auto" }} >
                       {/* {row.guest_checkin_status} */}
-                      {row.payment_status ? "PAID" : "Pending"}
+                      {row.payment_status ? "Paid" : "Pending"}
                     </Typography>
                   </TableCell>
 
                   <TableCell>
                     <IconButton
+                   disabled={!row.isActive}
                       aria-label="more"
-                      onClick={(e) => handleMenuOpen(e, row.id)}
+                      onClick={(e) => handleMenuOpen(e, row._id)}
                       sx={{
                         transform: 'translateX(-5%)',
                         backgroundColor: 'transparent',
@@ -224,7 +208,7 @@ const Inventory = () => {
                     </IconButton>
                     <Menu  
                       anchorEl={anchorEl}
-                      open={Boolean(anchorEl) && selectedRow === row.id}
+                      open={selectedRow === row._id}
                       onClose={handleMenuClose}  
                       sx={{transform: 'translateX(-5%)',
                         '& .MuiPaper-root': {
@@ -232,7 +216,7 @@ const Inventory = () => {
                           border: '1px solid rgba(0, 0, 0, 0.12)', 
                         },
                       }}>
-                     <MenuItem onClick={handleMenuClose} sx={{width:"224px", height:"32px"}}>
+                     <MenuItem onClick={() => {handleResendPaymentEmail(row._id);  handleMenuClose();}} sx={{width:"224px", height:"32px"}}>
                       <span style={{ marginRight: "14px" }}><ResentIcon /></span>
                       <span style={{fontSize: '14px',  padding: '2px 4px', color: '#172B4D'}}> Resend Payment Email</span>         
                       </MenuItem>
@@ -240,15 +224,13 @@ const Inventory = () => {
                         <span><EditeIcon sx={{ marginRight: "14px" }}/></span>
                         <span style={{fontSize: '14px',  padding: '2px 4px', color: '#172B4D'}}>Edit Booking</span>
                       </MenuItem>
-
-                      <MenuItem  onClick={() => {handleMenuClose();}} sx={{width:"224px", height:"32px"}}>
+                      {/* selectedRow */}
+                      <MenuItem  onClick={() => { handleOpenDialog(selectedRow, row);handleMenuClose();}} sx={{width:"224px", height:"32px"}}>
                       <span><DeleteIcon sx={{ marginRight: "14px" }}/></span>                  
                         <span style={{fontSize: '14px',  padding: '2px 4px', color: '#172B4D'}}> Cancel Booking</span>                   
                       </MenuItem>
-
                     </Menu>
-                  </TableCell>
-                  
+                  </TableCell>        
                </TableRow>
                   ))
                 ): searchQuery.trim() ? (
@@ -272,32 +254,37 @@ const Inventory = () => {
       </Box>
 
        {/* Dialog Box */}
-       {/* <Dialog
+       <Dialog
         open={open}
         onClose={handleCloseDialog}
         aria-labelledby="confirm-cancel-dialog"
         aria-describedby="confirm-cancel-description"
       >
         <DialogTitle id="confirm-cancel-dialog">
-          {"Cancel Booking Confirmation"}
+          <span>{"Cancel Booking"}</span>
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="confirm-cancel-description">
-            Are you sure you want to cancel this booking
+            Are you sure you want to cancel <span className="font-bold">{booking_type} ?</span> 
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmCancel} color="primary" autoFocus>
+        <DialogActions sx={{ justifyContent: 'flex-start', paddingLeft: '26px', width:"199px", height:"40px", gap:"10px", marginBottom:"16px"}}>
+        <Button onClick={handleConfirmCancel} sx={{width: '90px',height: '40px',padding: '8px 25px',gap: '8px',background: '#343434',color:"#ffffff", textTransform: "none",}}  autoFocus>
             Confirm
           </Button>
+          <Button
+          onClick={handleCloseDialog} className="bg-[#F7F7F7] rounded-md px-4 py-2" sx={{background:"#F7F7F7", color:"#565E6F", width: '90px',textTransform: "none",
+            height: '40px',
+            padding: '8px 25px',
+            border: "1px solid #BDBDBD",
+            gap: '8px',
+            borderRadius: '5px 0px 0px 0px',}}>  
+          Cancel
+        </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
 
-
-      {/* Filter Modal */}
+ {/* filter Box */}
       <Dialog open={filterModalOpen} onClose={toggleFilterModal} sx={{
     '& .MuiDialog-paper': {
       width: '426px',
@@ -311,8 +298,6 @@ const Inventory = () => {
           <FormControl fullWidth sx={{ marginBottom: "16px"  }}>
             <Typography variant="subtitle1" sx={{fontWeight:"400", color:"#717171"}}>Booking Type</Typography>
             <Select
-              // value={bookingType}
-              // onChange={(e) => setBookingType(e.target.value)}
               displayEmpty
               sx={{ marginTop: "8px" }}
             >
@@ -337,24 +322,14 @@ const Inventory = () => {
         </FormControl>
         </DialogContent>
 
-       <DialogActions className="space-x-4" sx={{ justifyContent: 'flex-start', paddingLeft: '26px', width:"199px", height:"40px", gap:"10px", marginBottom:"16px"}}>
+       <DialogActions className="space-x-4" sx={{ justifyContent: 'flex-start', paddingLeft: '26px', width:"199px", height:"40px", gap:"6px", marginBottom:"16px" ,}}>
+        <Button onClick={handleApplyFilters} 
+          sx={{width: '90px',height: '40px',padding: '8px 25px',gap: '8px',background: '#343434',color:"#ffffff", textTransform: "none",}}>Apply </Button>
         <Button
-          onClick={handleApplyFilters} 
-          sx={{
-            width: '90px',
+          onClick={handleClearFilters} className="bg-[#F7F7F7] rounded-md px-4 py-2" sx={{background:"#F7F7F7", color:"#565E6F", width: '90px',textTransform: "none",
             height: '40px',
             padding: '8px 25px',
-            gap: '8px',
-            borderRadius: '5px 0px 0px 0px',
-            background: '#343434',
-            color:"#ffffff"
-          }}>
-          Apply
-        </Button>
-        <Button
-          onClick={handleClearFilters} className="bg-[#F7F7F7] rounded-md px-4 py-2" sx={{background:"#F7F7F7", color:"#565E6F", width: '90px',
-            height: '40px',
-            padding: '8px 25px',
+            border: "1px solid #BDBDBD",
             gap: '8px',
             borderRadius: '5px 0px 0px 0px',}}>  
           Cancel
@@ -366,83 +341,3 @@ const Inventory = () => {
 };
 
 export default Inventory;
-
-
-
-// <TextField
-//             value={bookingDate}
-//             onChange={(e) => setBookingDate(e.target.value)}
-//             type="date"
-//             className="mt-1 border border-gray-300 rounded-lg"
-//             InputProps={{
-//               endAdornment: (
-//                 <InputAdornment position="end">
-//                   <IconButton>
-//                     <CalendarTodayIcon />
-//                   </IconButton>
-//                 </InputAdornment>
-//               ),
-//             }}
-//           />
-
-
-// import React, { useState } from "react";
-// import { Box, Typography } from "@mui/material";
-// import { useDataContext } from "../DataContext";
-// import SearchBar from "./SearchBar";
-// import InventoryTable from "./InventoryTable";
-// import FilterModal from "./FilterModal";
-
-// const Inventory = () => {
-//   const { bookings, searchBookings, searchResults } = useDataContext();
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [filterModalOpen, setFilterModalOpen] = useState(false);
-//   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-//   const [selectedRow, setSelectedRow] = useState<number | string | null>(null);
-
-//   const handleSearch = async () => {
-//     if (searchQuery.trim()) await searchBookings(searchQuery);
-//   };
-
-//   const toggleFilterModal = () => setFilterModalOpen(!filterModalOpen);
-//   const handleApplyFilters = () => toggleFilterModal();
-//   const handleClearFilters = () => toggleFilterModal();
-//   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, rowId: string) => {
-//     setAnchorEl(event.currentTarget);
-//     setSelectedRow(rowId);
-//   };
-//   const handleMenuClose = () => {
-//     setAnchorEl(null);
-//     setSelectedRow(null);
-//   };
-
-//   // const displayedData = searchQuery.trim() ? searchResults : bookings;
-//   const displayedData = searchQuery.trim() ? searchResults || [] : bookings || [];
-
-//   return (
-//     <Box>
-//       <Typography variant="h5">Flexi Booking</Typography>
-//       <SearchBar
-//         searchQuery={searchQuery}
-//         setSearchQuery={setSearchQuery}
-//         onSearch={handleSearch}
-//         onToggleFilterModal={toggleFilterModal}
-//       />
-//       <InventoryTable
-//         data={displayedData}
-//         anchorEl={anchorEl}
-//         selectedRow={selectedRow}
-//         handleMenuOpen={handleMenuOpen}
-//         handleMenuClose={handleMenuClose}
-//       />
-//       <FilterModal
-//         open={filterModalOpen}
-//         onClose={toggleFilterModal}
-//         onApply={handleApplyFilters}
-//         onClear={handleClearFilters}
-//       />
-//     </Box>
-//   );
-// };
-
-// export default Inventory;

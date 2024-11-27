@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode, useState } from "react";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { toast, ToastContainer } from 'react-toastify';
 
 interface Invitee {
     invitee_name: string;
@@ -34,13 +35,14 @@ interface DataContextType {
   isSearching: boolean;
   searchError: string | null;
   handleUpdateBooking: (bookingId: string) => Promise<void>; 
+  handleResendPaymentEmail: (bookingId: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const fetchBookings = async () => {
   const response = await axios.get("https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=&visit_dates=");
-  console.log(response.data)
+  console.log(response.data,">>>>>>>>>>>>>>>>>")
   return response.data.data;
 };
 
@@ -79,29 +81,38 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
   const handleUpdateBooking = async (booking: any) => {
+    console.log(booking, "booking")
     // booking.isActive = false;
     try {
-      const response = await axios.put(
-        `https://flexi-desk-booking.onrender.com/api/flexibooking/update-booking/${booking._id}`,
+      const response =
+      await axios.put(
+        `https://flexi-desk-booking.onrender.com/api/flexibooking/update-booking/${booking}`,
         {isActive:false}
       );
   
       console.log("Booking updated successfully:", response.data);
-  
-      queryClient.invalidateQueries({ queryKey: ["bookings"] });
-         // If search results are active, update them as well
-    // setSearchResults((prev) =>
-    //   prev
-    //     ? prev.map((booking) =>
-    //         booking._id === bookingId ? { ...booking, isActive: false } : booking
-    //       )
-    //     : null
-    // );
+      // queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      fetchBookings();
     } catch (err: any) {
       console.error("Error updating booking:", err);
     }
   };
 
+
+  const handleResendPaymentEmail = async (bookingId: string) => {
+    try {
+      const response = await axios.post(
+        `https://flexi-desk-booking.onrender.com/api/flexibooking/send-invoice-pdf/${bookingId}`
+      );
+      console.log("Resend Payment Email Successful:", response.data);
+      // alert("Payment email resent successfully!");
+      toast.success("Payment email resent successfully!");
+    } catch (err: any) {
+      console.error("Error resending payment email:", err);
+      // alert("Failed to resend payment email. Please try again.");
+      toast.success("Failed to resend payment email. Please try again.");
+    }
+  };
 
   const bookings = data || [];
 
@@ -117,7 +128,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         isSearching,
         searchError,
         handleUpdateBooking,
-        // clearSearch
+        handleResendPaymentEmail,
       }}
     >
       {children}
