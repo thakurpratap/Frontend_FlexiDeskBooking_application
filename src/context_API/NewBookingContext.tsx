@@ -17,6 +17,7 @@ type Invitee = {
 };
 
 type NewBookingContextData = {
+  booking_type:string;
   visit_dates: Date[];
   guest_name: string;
   guest_email: string;
@@ -47,7 +48,7 @@ export const NewBookingContextProvider = ({
       console.log("Booking created successfully!");
     },
     onError: () => {
-      console.log("Error creating booking");
+      console.log("Error creating ");
     },
   });
 
