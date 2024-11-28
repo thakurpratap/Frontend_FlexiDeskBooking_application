@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode, useState } from "react";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import {  useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 interface Invitee {
     invitee_name: string;
@@ -20,6 +20,8 @@ createdAt : string
 payment_status : payment[];
 invitee: Invitee[];
 isActive : boolean;
+visit_dates: string
+payment_id : any;
 // clearSearch: () => void;
 }
 interface payment {
@@ -31,7 +33,7 @@ interface DataContextType {
   isLoading: boolean;
   error: string | null;
   searchResults: Booking[] | null;
-  searchBookings: (guestName: string) => Promise<void>;
+  searchBookings: (guestName: string, dates:any) => Promise<void>;
   isSearching: boolean;
   searchError: string | null;
   handleUpdateBooking: (bookingId: string) => Promise<void>; 
@@ -57,16 +59,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  // const clearSearch = () => setSearchResults(null);
-
-  // Search function for guest name
-  const searchBookings = async (guestName: string) => {
+  const searchBookings = async (guestName: string, dates:any) => {
     setIsSearching(true);
     setSearchError(null);
     let date = "";
     try {
       const response = await axios.get(
-        `https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=${guestName}&visit_dates=${date}`
+        `https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=${guestName}&visit_dates=${dates}`
       );
       setSearchResults(response.data.data);
       console.log(response.data)
