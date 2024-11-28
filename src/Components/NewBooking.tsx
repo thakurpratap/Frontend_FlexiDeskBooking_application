@@ -16,8 +16,7 @@ import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlin
 import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 import DatePicker from "react-multi-date-picker";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-// import { useNewBookingContext } from "../context_API/NewBookingContext";
-import { useNavigate } from "react-router-dom";
+import { useNewBookingContext } from "../context_API/NewBookingContext";
 import { useForm } from "react-hook-form";
 const NewBooking = ({
   setIsOpenNewBooking,
@@ -31,43 +30,53 @@ const NewBooking = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onChange",
   });
-  // type Invitee = {
-  //   invitee_name?: string;
-  //   invitee_email?: string;
-  // };
+  type Invitee = {
+    invitee_name?: string;
+    invitee_email?: string;
+  };
 
-  // type NewBookingContextData = {
-  //   visit_dates: Date[];
-  //   guest_name: string;
-  //   guest_email: string;
-  //   guest_phone: number;
-  //   identification_info: string;
-  //   identification_id: string;
-  //   company_name: string;
-  //   invitee: Invitee[];
-  // };
-  // const { useNewBookingContext } = useNewBookingContext();
-  const navigate = useNavigate();
+  type NewBookingContextData = {
+    booking_type: string;
+    visit_dates: Date[];
+    guest_name: string;
+    guest_email: string;
+    guest_phone: number;
+    identification_info: string;
+    identification_id: string;
+    company_name: string;
+    invitee: Invitee[];
+  };
+  const { createNewBooking } = useNewBookingContext();
   const handleDateChange = (selectedDates: any) => {
     const convertedDates = selectedDates.map((date: any) => date.toDate());
     setDates(convertedDates);
+    setValue("visit_dates", convertedDates);
   };
   const onSubmit = async (data: any) => {
     try {
-      // Process data
-      console.log("Form Data:", data);
-      // await useNewBookingContext(data);
+      const { invitee_name, invitee_email, ...rest } = data;
+      const inviteeArray: Invitee[] =
+        invitee_name && invitee_email ? [{ invitee_name, invitee_email }] : [];
+      const finalData: NewBookingContextData = {
+        ...rest,
+        visit_dates: dates, 
+        invitee: inviteeArray,
+      };
+
+      console.log("Final Form Data:", finalData);
+      await createNewBooking(finalData);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
 
   const handleClose = () => {
-    if (setIsOpenNewBooking) setIsOpenNewBooking(false); // Check if prop is provided
+    if (setIsOpenNewBooking) setIsOpenNewBooking(false);
   };
   const theme = createTheme({
     typography: {
@@ -146,7 +155,7 @@ const NewBooking = ({
           <Typography variant="h5">New Booking</Typography>
           <ClearIcon sx={{ cursor: "pointer" }} onClick={handleClose} />
         </Box>
-        <Box sx={{ maxHeight: "600px",overflowY: "auto" }}>
+        <Box sx={{ maxHeight: "600px", overflowY: "auto" }}>
           <Box sx={{ px: "20px" }}>
             <Typography variant="h6">Booking Details</Typography>
 
@@ -158,6 +167,7 @@ const NewBooking = ({
                 value={hotDesk}
                 onChange={(e: SelectChangeEvent) => {
                   setHotDesk(e.target.value);
+                  setValue("booking_type", e.target.value);
                 }}
                 displayEmpty
                 sx={{
@@ -207,7 +217,7 @@ const NewBooking = ({
 
             {hotDesk === "Hot Desk" ? (
               <>
-                <FormControl fullWidth onSubmit={handleSubmit(onSubmit)}>
+                <FormControl fullWidth>
                   {/* Date */}
                   <Typography>Select Date*</Typography>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -266,8 +276,10 @@ const NewBooking = ({
                         message: "Name cannot exceed 20 characters",
                       },
                     })}
-                    error={!!errors.name}
-                    helperText={errors.name?.message as string | undefined}
+                    error={!!errors.guest_name}
+                    helperText={
+                      errors.guest_name?.message as string | undefined
+                    }
                   />
 
                   {/* Email */}
@@ -284,8 +296,10 @@ const NewBooking = ({
                         message: "Invalid email format",
                       },
                     })}
-                    error={!!errors.email}
-                    helperText={errors.email?.message as string | undefined}
+                    error={!!errors.guest_email}
+                    helperText={
+                      errors.guest_email?.message as string | undefined
+                    }
                   />
 
                   {/* phone */}
@@ -301,8 +315,10 @@ const NewBooking = ({
                         message: "Phone number must be 10 digits",
                       },
                     })}
-                    error={!!errors.phone}
-                    helperText={errors.phone?.message as number | undefined}
+                    error={!!errors.guest_phone}
+                    helperText={
+                      errors.guest_phone?.message as number | undefined
+                    }
                   />
                   <Typography>Identification Information</Typography>
                   <Select
@@ -451,7 +467,7 @@ const NewBooking = ({
                       type="emai"
                       fullWidth
                       placeholder="Enter Email ID"
-                      {...register("guest_email", {
+                      {...register("invitee_email", {
                         required: "Email is required",
                         pattern: {
                           value:
@@ -546,7 +562,7 @@ const NewBooking = ({
                   <Button
                     variant="contained"
                     sx={{ backgroundColor: "black", color: "white" }}
-                    onClick={() => navigate("/payment-details")}
+                    onClick={handleSubmit(onSubmit)}
                   >
                     Next
                   </Button>
@@ -582,4 +598,3 @@ const NewBooking = ({
 };
 
 export default NewBooking;
-
