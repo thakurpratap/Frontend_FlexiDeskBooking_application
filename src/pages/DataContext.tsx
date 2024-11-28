@@ -42,7 +42,6 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const fetchBookings = async () => {
   const response = await axios.get("https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=&visit_dates=");
-  console.log(response.data,">>>>>>>>>>>>>>>>>")
   return response.data.data;
 };
 
@@ -69,7 +68,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         `https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=${guestName}&visit_dates=${date}`
       );
       setSearchResults(response.data.data);
-      console.log(response.data)
+      // console.log(response.data)
     } catch (err: any) {
       setSearchError(err.message || "Failed to search bookings");
       setSearchResults(null);
@@ -81,7 +80,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
   const handleUpdateBooking = async (booking: any) => {
-    console.log(booking, "booking")
+    // console.log(booking, "booking")
     // booking.isActive = false;
     try {
       const response =
@@ -90,7 +89,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         {isActive:false}
       );
   
-      console.log("Booking updated successfully:", response.data);
+      // console.log("Booking updated successfully:", response.data);
       // queryClient.invalidateQueries({ queryKey: ["bookings"] });
       fetchBookings();
     } catch (err: any) {
@@ -104,7 +103,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       const response = await axios.post(
         `https://flexi-desk-booking.onrender.com/api/flexibooking/send-invoice-pdf/${bookingId}`
       );
-      console.log("Resend Payment Email Successful:", response.data);
+      // console.log("Resend Payment Email Successful:", response.data);
       // alert("Payment email resent successfully!");
       toast.success("Payment email resent successfully!");
     } catch (err: any) {
@@ -116,7 +115,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
   const bookings = data || [];
 
- console.log(bookings, ">>>>>>>>>>>>>>bookings")
+//  console.log(bookings, ">>>>>>>>>>>>>>bookings")
   return (
     <DataContext.Provider
       value={{

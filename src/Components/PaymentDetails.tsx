@@ -14,7 +14,7 @@ import { ShareIcon, SuccessSign } from "../assets/AllNewBookingIcon";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import { useNavigate } from "react-router-dom";
 
-const PaymentDetails = () => {
+const PaymentDetails = ({handleControlStep}:{handleControlStep: () => void}) => {
   const [isClicked, setIsClicked] = useState<boolean>(true);
   const navigate=useNavigate()
   const theme = createTheme({
@@ -212,7 +212,7 @@ const PaymentDetails = () => {
                 className="Btn"
                 sx={{
                   position: "absolute",
-                  bottom: "10px",
+                  bottom: "100px",
                   width: "100%",
                 }}
               >
@@ -253,7 +253,7 @@ const PaymentDetails = () => {
                       padding: "12px 25px",
                     }}
                     onClick={()=>{
-                      navigate("/new-booking")
+                      handleControlStep()
                     }}
                   >
                     Back

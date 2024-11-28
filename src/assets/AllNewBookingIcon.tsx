@@ -40,19 +40,75 @@ export const SuccessSign = () => {
 export const DateIcon = () => {
   return (
     <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M13.25 1H2.75C1.92157 1 1.25 1.67157 1.25 2.5V13C1.25 13.8284 1.92157 14.5 2.75 14.5H13.25C14.0784 14.5 14.75 13.8284 14.75 13V2.5C14.75 1.67157 14.0784 1 13.25 1Z"
+        d="M14.25 3H3.75C2.92157 3 2.25 3.67157 2.25 4.5V15C2.25 15.8284 2.92157 16.5 3.75 16.5H14.25C15.0784 16.5 15.75 15.8284 15.75 15V4.5C15.75 3.67157 15.0784 3 14.25 3Z"
+        stroke="#717171"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M2.25 7.5H15.75"
+        stroke="#717171"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M12 1.5V4.5"
+        stroke="#717171"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6 1.5V4.5"
         stroke="#717171"
         stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
     </svg>
+  );
+};
+
+export const editIcon = () => {
+  return (
+    <>
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8.33333 1.33325L11 3.99992L3.66667 11.3333H1V8.66659L8.33333 1.33325Z"
+          stroke="#BDBDBD"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <svg
+        width="14"
+        height="2"
+        viewBox="0 0 14 2"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1 0.666748H13"
+          stroke="#BDBDBD"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </>
   );
 };

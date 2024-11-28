@@ -14,19 +14,34 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlined";
 import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
-import DatePicker from "react-multi-date-picker";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { DateIcon } from "../assets/AllNewBookingIcon";
+import { EditeIcon } from "../assets/icons/Desk";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 const NewBooking = ({
+  handleControlStep,
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
+  handleControlStep: () => void;
 }) => {
-  const [hotDesk, setHotDesk] = useState<string>("");
+  const [hotDesk, setHotDesk] = useState<string>();
+ 
   const [document, setDocument] = useState<string>("");
-  const [invite, setInvite] = useState<boolean>(false);
   const [dates, setDates] = useState<Array<Date>>([]);
+  const [inviteeData, setInviteeData] = useState<Array<Invitee>>([]);
+  const [allDates, setAllDates] = useState<Date[]>([]);
+
+  const [selectedInvitees, setSelectedInvitees] = useState<
+    Set<string | undefined>
+  >(new Set());
+  const [invite, setInvite] = useState<boolean>(false);
+  const [invitees, setInvitees] = useState<Invitee[]>([]);
+  console.log(invitees);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const {
     register,
     handleSubmit,
@@ -35,6 +50,46 @@ const NewBooking = ({
   } = useForm({
     mode: "onChange",
   });
+
+  const {
+    register: InviteeRegister,
+    handleSubmit: handleInvitee,
+    formState: { errors: InviteeError },
+    reset,
+  } = useForm<Invitee>();
+
+  const handleSaveInvitee: SubmitHandler<Invitee> = (data: any) => {
+    if (editingIndex !== null) {
+      const updatedInvitees = [...invitees];
+      updatedInvitees[editingIndex] = data;
+      setInvitees(updatedInvitees);
+      setEditingIndex(null);
+    } else {
+      setInvitees([...invitees, data]);
+    }
+    reset({
+      invitee_name: "", // reset invitee_name
+      invitee_email: "", // reset invitee_email
+    });
+  };
+
+  const handleEditInvitee = (index: number) => {
+    setEditingIndex(index);
+    reset(invitees[index]);
+  };
+
+  const handleSelectInvitee = (invitee_email: string) => {
+    setSelectedInvitees((prevSelectedInvitees) => {
+      const updatedSelectedInvitees = new Set(prevSelectedInvitees);
+      if (updatedSelectedInvitees.has(invitee_email)) {
+        updatedSelectedInvitees.delete(invitee_email);
+      } else {
+        updatedSelectedInvitees.add(invitee_email);
+      }
+      return updatedSelectedInvitees;
+    });
+  };
+
   type Invitee = {
     invitee_name?: string;
     invitee_email?: string;
@@ -52,19 +107,26 @@ const NewBooking = ({
     invitee: Invitee[];
   };
   const { createNewBooking } = useNewBookingContext();
-  const handleDateChange = (selectedDates: any) => {
-    const convertedDates = selectedDates.map((date: any) => date.toDate());
-    setDates(convertedDates);
+
+  const handleDateChange = (dates: DateObject[] | null) => {
+    if (!dates) {
+      setAllDates([]);
+      return;
+    }
+    const convertedDates = dates.map((dateObject) => dateObject.toDate());
+    setAllDates(convertedDates.sort());
     setValue("visit_dates", convertedDates);
   };
+
   const onSubmit = async (data: any) => {
+    handleControlStep();
     try {
       const { invitee_name, invitee_email, ...rest } = data;
       const inviteeArray: Invitee[] =
         invitee_name && invitee_email ? [{ invitee_name, invitee_email }] : [];
       const finalData: NewBookingContextData = {
         ...rest,
-        visit_dates: dates, 
+        visit_dates: dates,
         invitee: inviteeArray,
       };
 
@@ -130,6 +192,7 @@ const NewBooking = ({
       },
     },
   });
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -222,37 +285,13 @@ const NewBooking = ({
                   <Typography>Select Date*</Typography>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <DatePicker
-                      multiple
                       minDate={new Date()}
-                      value={dates.map((date) => new Date(date))}
+                      multiple
+                      value={allDates.map((date) => new DateObject({ date }))}
                       onChange={handleDateChange}
-                      render={(value, openCalendar) => (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            padding: "4px 8px",
-                            cursor: "pointer",
-                            width: "454px",
-                          }}
-                          onClick={openCalendar}
-                        >
-                          <input
-                            readOnly
-                            value={value}
-                            style={{
-                              border: "none",
-                              outline: "none",
-                              flex: 1,
-                              fontSize: "16px",
-                            }}
-                          />
-                          <CalendarTodayIcon style={{ marginLeft: "8px" }} />
-                        </Box>
-                      )}
+                      inputClass="datepicker-input"
                     />
+                    <DateIcon />
                   </Box>
 
                   <Divider />
@@ -426,55 +465,52 @@ const NewBooking = ({
                   {invite ? (
                     <DoNotDisturbOnOutlinedIcon
                       sx={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setInvite(false);
-                      }}
+                      onClick={() => setInvite(false)}
                     />
                   ) : (
                     <ControlPointOutlinedIcon
                       sx={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setInvite(true);
-                      }}
+                      onClick={() => setInvite(true)}
                     />
                   )}
                 </Box>
 
                 {invite && (
                   <>
-                    {/* name */}
                     <Typography>Name*</Typography>
                     <TextField
                       type="text"
                       fullWidth
                       placeholder="Enter Name"
-                      {...register("invitee_name", {
+                      {...InviteeRegister("invitee_name", {
                         required: "Name is required",
-
                         minLength: {
                           value: 3,
-                          message: "minimum three character",
+                          message: "Minimum three characters required",
                         },
                         maxLength: {
                           value: 20,
                           message: "Name cannot exceed 20 characters",
                         },
                       })}
+                      error={!!InviteeError.invitee_name}
+                      helperText={InviteeError.invitee_name?.message as string}
                     />
-                    {/* Email */}
                     <Typography>Email ID*</Typography>
                     <TextField
-                      type="emai"
+                      type="email"
                       fullWidth
                       placeholder="Enter Email ID"
-                      {...register("invitee_email", {
+                      {...InviteeRegister("invitee_email", {
                         required: "Email is required",
                         pattern: {
                           value:
-                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                            /^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,4}$/,
                           message: "Invalid email format",
                         },
                       })}
+                      error={!!InviteeError.invitee_email}
+                      helperText={InviteeError.invitee_email?.message as string}
                     />
                     <Box
                       sx={{
@@ -494,13 +530,64 @@ const NewBooking = ({
                             color: "white",
                           },
                         }}
+                        onClick={handleInvitee(handleSaveInvitee)}
                       >
-                        Save
+                        {editingIndex !== null ? "Save Changes" : "Save"}
                       </Button>
-                      <ClearIcon sx={{ cursor: "pointer" }} />
+                      <ClearIcon
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => setInvite(false)}
+                      />
                     </Box>
                   </>
                 )}
+
+                <Box sx={{ marginTop: "20px" }}>
+                  <Typography variant="h6">Invitee List</Typography>
+                  {invitees.map((invitee, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                        gap: "10px",
+                      }}
+                    >
+                      <Box
+                        onClick={() =>
+                          handleSelectInvitee(invitee.invitee_email!)
+                        }
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          cursor: "pointer",
+                          backgroundColor: selectedInvitees.has(
+                            invitee.invitee_email
+                          )
+                            ? ""
+                            : "",
+                        }}
+                      >
+                        {selectedInvitees.has(invitee.invitee_email) ? (
+                          <CheckBoxOutlineBlankIcon />
+                        ) : (
+                          <CheckBoxIcon sx={{ color: "black" }} />
+                        )}
+                      </Box>
+                      <Typography sx={{ mx: "10px" }}>
+                        {invitee.invitee_name}
+                      </Typography>
+
+                      <button
+                        onClick={() => handleEditInvitee(index)}
+                        style={{ marginTop: "7px" }}
+                      >
+                        <EditeIcon />
+                      </button>
+                    </Box>
+                  ))}
+                </Box>
 
                 <Divider />
 
@@ -521,7 +608,7 @@ const NewBooking = ({
                           color: "#A5ADBA",
                         }}
                       >
-                        10
+                        {allDates ? allDates.length * (2 + 1) : ""}
                       </Box>
                     </Box>
 
@@ -539,7 +626,9 @@ const NewBooking = ({
                           color: "#A5ADBA",
                         }}
                       >
-                        ₹500
+                        {allDates || inviteeData
+                          ? allDates.length * (2 + 1) * 1000
+                          : ""}
                       </Box>
                     </Box>
                   </Box>
@@ -569,6 +658,7 @@ const NewBooking = ({
                   <Button
                     variant="outlined"
                     sx={{ backgroundColor: "white", color: "black" }}
+                    onClick={handleClose}
                   >
                     Cancel
                   </Button>
