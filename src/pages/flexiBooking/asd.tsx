@@ -88,21 +88,20 @@ const Inventory = () => {
       await searchBookings(searchQuery, dates);
     }
   };
-  
 
-    useEffect(() => {
-      handleSearch();
-    }, [searchQuery]);
+//   useEffect(() => {
+//     handleSearch();
+//   }, [searchQuery]);
 
-    // useEffect(() => {
-    //   const timer = setTimeout(() => {
-    //     if (searchQuery.trim() || dates.length > 0) {
-    //       searchBookings(searchQuery, dates);
-    //     }
-    //   }, 500); // 500ms debounce time
-  
-    //   return () => clearTimeout(timer); // Cleanup the timeout on every re-render
-    // }, [searchQuery]);
+useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim() || dates.length > 0) {
+        searchBookings(searchQuery, dates);
+      }
+    }, 500); // 500ms debounce time
+
+    return () => clearTimeout(timer); // Cleanup the timeout on every re-render
+  }, [searchQuery]);
 
   const displayedData =
     searchResults && searchResults.length > 0
@@ -146,16 +145,16 @@ const Inventory = () => {
     setSelectedBooking(null);
   };
 
-  // const handleConfirmCancel = async () => {
-  //   if (selectedBooking) {
-  //     await handleUpdateBooking(selectedBooking); 
-  //     setOpen(false);
-  //     setSelectedBooking(null);
-  //     toast.success("Booking canceled successfully!");
-  //   }
-  // };
+//   const handleConfirmCancel = async () => {
+//     if (selectedBooking) {
+//       await handleUpdateBooking(selectedBooking);
+//       setOpen(false);
+//       setSelectedBooking(null);
+//       toast.success("Booking canceled successfully!");
+//     }
+//   };
 
-  const handleConfirmCancel = async () => {
+const handleConfirmCancel = async () => {
     if (selectedBooking) {
       try {
         await handleUpdateBooking(selectedBooking); 
@@ -332,14 +331,22 @@ const Inventory = () => {
             )}
           </Box>
         </Modal>
-        <TableContainer sx={{ maxHeight: "calc(100vh - 290px)" }}>
-          <Table stickyHeader>
+        <TableContainer>
+          <Table>
             <TableHead>
               <TableRow style={{ position: "sticky" }}>
                 <TableCell>
-                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left",color: "#717171",  whiteSpace: "nowrap", // Prevents text wrapping
-      overflow: "hidden", // Ensures the text stays within bounds
-      textOverflow: "ellipsis",}}>BOOKING ID</Typography> 
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      fontWeight: 400,
+                      lineHeight: "16px",
+                      textAlign: "left",
+                      color: "#717171",
+                    }}
+                  >
+                    BOOKING ID
+                  </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography
@@ -496,9 +503,14 @@ const Inventory = () => {
                         color: "#222222",
                       }}
                     >
-                     {Array.isArray(row.visit_dates) && row.visit_dates.length > 1
-    ? `${new Date(row.visit_dates[0]).toISOString().split('T')[0]} - ${new Date(row.visit_dates[row.visit_dates.length - 1]).toISOString().split('T')[0]}`
-    : new Date(row.visit_dates[0] || row.visit_dates).toISOString().split('T')[0]}
+                      {Array.isArray(row.visit_dates)
+                        ? row.visit_dates
+                            .map(
+                              (date) =>
+                                new Date(date).toISOString().split("T")[0]
+                            )
+                            .join(" / ")
+                        : new Date(row.visit_dates).toISOString().split("T")[0]}
                     </TableCell>
                     <TableCell
                       style={{
