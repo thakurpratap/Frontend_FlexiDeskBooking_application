@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DataProvider } from "./pages/DataContext";
 import { NewBookingContextProvider } from "./context_API/NewBookingContext";
 import RightSidebar from "./Components/Rightsidebar";
+import BookingDetails from "./Components/BookingDetails";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ function App() {
                   <div className="flex-1 overflow-auto ">
                     <Routes>
                       <Route path="/inventory" element={<Inventort />} />
+                      <Route path="/booking-details" element={<BookingDetails/>} />
                     </Routes>
                   </div>
                 </div>
