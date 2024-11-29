@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {Box,Button,ButtonBase,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,FormControl,IconButton,InputBase,Menu,MenuItem,Paper,Select,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,TextField,Typography,} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { DeleteIcon, EditeIcon, FilterIcon, ResentIcon, SearchIcon } from "../../assets/icons/Desk";
@@ -9,7 +9,7 @@ import Modal from "@mui/material/Modal";
 import NewBooking from "../../Components/NewBooking";
 import DatePicker from "react-multi-date-picker";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-
+import CloseIcon from '@mui/icons-material/Close';
 const Inventory = () => {
 
   const { bookings, isLoading ,searchBookings, searchResults, isSearching, searchError,handleUpdateBooking, handleResendPaymentEmail} = useDataContext();
@@ -34,31 +34,32 @@ const Inventory = () => {
       setBookingStep("payment_success")
       // setBookingStep("booking");
     }
-
   };
 
   const handleSearch = async  () => {
-    debugger
     if (searchQuery.trim() && dates.length > 0) {
       await searchBookings(searchQuery, dates);
       setFilterModalOpen(false); 
+      // setDates([]);
     } else if (searchQuery.trim() && dates.length == 0){
       await searchBookings(searchQuery, dates);
+      // setDates([]);
     }else if(dates.length > 0){
       setFilterModalOpen(false); 
       await searchBookings(searchQuery, dates);
+      // setDates([]);
     }
   };
+
     useEffect(() => {
       handleSearch();
     }, [searchQuery]);
 
   const displayedData = searchResults && searchResults.length > 0
     ? searchResults
-    : !searchQuery.trim()
-    ? bookings
-    : [];
-console.log(displayedData ,"all data");
+    : !searchQuery
+    ? bookings 
+    :  []
 
   const toggleFilterModal = () => {
     setFilterModalOpen(!filterModalOpen);
@@ -70,6 +71,7 @@ console.log(displayedData ,"all data");
 
   const handleClearFilters = () => {
     setFilterModalOpen(false);
+    setDates([]);
   };
 
   const handleMenuOpen = (
@@ -122,6 +124,28 @@ console.log(displayedData ,"all data");
     setDates(convertedDates);
     console.log(convertedDates ,"Dates in YYYY-MM-DD format"); 
   };
+
+  const [bookingTypes, setBookingTypes] = useState("Hot Desk"); 
+  const [state, setState] = useState({
+    mainPosition: "bottom",
+    relativePosition: "center",
+    fixMainPosition: true,
+    fixRelativePosition: true,
+    offsetY: 0,
+    offsetX: 5
+  })
+
+  const {
+    mainPosition,
+    relativePosition,
+    fixMainPosition,
+    fixRelativePosition,
+    offsetY,
+    offsetX
+  } = state
+
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const pickerRef = useRef(null); 
 
   return (
     <>
@@ -241,7 +265,10 @@ console.log(displayedData ,"all data");
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
                   {row.invitee.length > 0 ? `${row.invitee[0].invitee_name}${row.invitee.length > 1 ? ` +${row.invitee.length - 1}` : ""}` : "No Invitees"}
                   </TableCell>
-                  <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>{row.visit_dates}</TableCell>
+                  <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
+                  {/* {row.visit_dates.map((date) => new Date(date).toISOString().split('T')[0]).join(' / ')} */}
+                  {Array.isArray(row.visit_dates) ? row.visit_dates.map(date => new Date(date).toISOString().split('T')[0]).join(' / ') : new Date(row.visit_dates).toISOString().split('T')[0]}
+                  </TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
                   <Typography
                       sx={{display: "inline-block" ,backgroundColor:row.isActive ?"#79F2C0" : "#FFBDAD", color: "#42526E",fontWeight: "bold",padding: "4px 8px",
@@ -253,7 +280,7 @@ console.log(displayedData ,"all data");
                     <Typography
                       sx={{display: "inline-block" ,backgroundColor: row.payment_id?.payment_status ? "#79F2C0" : "#FFBDAD", color: "#42526E",fontWeight: "bold",padding: "4px 8px",
                         borderRadius: "4px",textAlign: "center", width: "auto" }} >
-                      {row.payment_id?.payment_status ? "pending" : "paid"}  
+                      {row.payment_id?.payment_status ?"paid": "pending" }  
                     </Typography>
                   </TableCell>
 
@@ -351,7 +378,7 @@ console.log(displayedData ,"all data");
       </Dialog>
 
  {/* filter Box */}
-      <Dialog open={filterModalOpen} onClose={toggleFilterModal} sx={{
+      <Dialog open={filterModalOpen} onClose={toggleFilterModal} sx={{ 
     '& .MuiDialog-paper': {
       width: '426px',
       height: '404px',
@@ -360,12 +387,25 @@ console.log(displayedData ,"all data");
         <DialogTitle sx={{  fontSize: "16px", fontWeight: 500,}} >
         Filters
         </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClearFilters}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
         <DialogContent>
           
           <FormControl sx={{height:"40px", width:"362px" }}>
-            <Typography variant="subtitle1" sx={{fontWeight:"400", color:"#717171",marginBottom:"10px"}}>Booking Type</Typography>
+            <Typography variant="subtitle1" sx={{fontWeight:"400", color:"#717171", marginBottom:"10px"}}>Booking Type *</Typography>
             <Select
-              displayEmpty
+            value={bookingTypes}
+              // displayEmpty
               sx={{ height:"40px" }}
             >
               <MenuItem value="All" disabled>All</MenuItem>
@@ -375,13 +415,17 @@ console.log(displayedData ,"all data");
           </FormControl>
 
           <FormControl fullWidth sx={{ marginTop: "50px",  }}>
-          <Typography className="text-sm font-medium" sx={{fontWeight:"400", color:"#717171", marginBottom:"10px"}}>Visit Date</Typography>
+          <Typography className="text-sm font-medium" sx={{fontWeight:"400", color:"#717171", marginBottom:"10px"}}>Visit Date *</Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>
             <DatePicker
-                      // multiple
-                      // minDate={new Date()}
-                        range 
+              calendarPosition={`${mainPosition}-${relativePosition}`}
+              fixMainPosition={fixMainPosition}
+              fixRelativePosition={fixRelativePosition}
+              offsetY={offsetY}
+              offsetX={offsetX}
+              // onClose={() => false}
                       dateSeparator="to"
+                      range
                       value={dates.map((date) => new Date(date))}
                       onChange={handleDateChange}
                       render={(value, openCalendar) => (
@@ -395,6 +439,7 @@ console.log(displayedData ,"all data");
                             cursor: "pointer",
                             height:"40px",
                             width: "362px",
+                            overflow:"auto"
                           }}
                           onClick={openCalendar}
                         >
@@ -407,7 +452,8 @@ console.log(displayedData ,"all data");
                               flex: 1,
                               fontSize: "16px",
                             }}
-                          />
+                            placeholder="Select dates"
+                          />   
                           <CalendarTodayIcon style={{ marginLeft: "8px" }} />
                         </Box>
                       )}
@@ -417,6 +463,17 @@ console.log(displayedData ,"all data");
         <FormControl fullWidth sx={{ marginTop: "20px"  }}>
           <Typography sx={{fontWeight:"400", color:"#717171", marginBottom:"10px"}} className="text-sm font-medium ">Booking Date</Typography>
           <DatePicker
+             style={{ 
+              width: "100%",
+              height: "26px",
+              boxSizing: "border-box"
+            }}
+            calendarPosition={`${mainPosition}-${relativePosition}`}
+            fixMainPosition={fixMainPosition}
+            fixRelativePosition={fixRelativePosition}
+            offsetY={offsetY}
+            offsetX={offsetX}
+            // onClose={() => false}
                       range 
                       dateSeparator="to"
                       render={(value, openCalendar) => (
@@ -442,6 +499,7 @@ console.log(displayedData ,"all data");
                               flex: 1,
                               fontSize: "16px",
                             }}
+                            placeholder="Select dates"
                           />
                           <CalendarTodayIcon style={{ marginLeft: "8px" }} />
                         </Box>
@@ -450,7 +508,7 @@ console.log(displayedData ,"all data");
         </FormControl>
         </DialogContent>
 
-       <DialogActions className="space-x-4" sx={{ justifyContent: 'flex-start', paddingLeft: '26px', width:"199px", height:"40px", gap:"6px", marginBottom:"26px" ,}}>
+       <DialogActions className="space-x-4" sx={{ justifyContent: 'flex-start', paddingLeft: '26px', width:"199px", height:"40px", gap:"6px", marginBottom:"8px" ,}}>
         <Button onClick={handleSearch} 
           sx={{width: '90px',height: '40px',padding: '8px 25px',gap: '8px',background: '#343434',color:"#ffffff", textTransform: "none",}}>Apply </Button>
         <Button
@@ -461,6 +519,7 @@ console.log(displayedData ,"all data");
             gap: '8px',
             borderRadius: '5px 0px 0px 0px',}}>  
           Cancel
+          {/* clear */}
         </Button>
       </DialogActions>
       </Dialog>

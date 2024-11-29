@@ -10,7 +10,7 @@ import BookingDetails from "./Components/BookingDetails";
 import { NewBookingContextProvider } from "./context_API/NewBookingContext";
 import RightSidebar from "./Components/Rightsidebar";
 import NewBooking from "./Components/NewBooking";
-// import Home from "./pages/Home";
+import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
