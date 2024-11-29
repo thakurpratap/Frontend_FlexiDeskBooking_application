@@ -10,13 +10,16 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
-import { useNavigate } from "react-router-dom";
-
-
-const PaymentDetails = ({handleControlStep}:{handleControlStep: () => void}) => {
+const PaymentDetails = ({
+  handleControlStep,
+  setIsOpenNewBooking,
+}: {
+  setIsOpenNewBooking: (isOpen: boolean) => void;
+  handleControlStep: () => void;
+}) => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState(false);
-  const navigate = useNavigate();
+
   const theme = createTheme({
     typography: {
       fontFamily: "Roboto",
@@ -72,15 +75,12 @@ const PaymentDetails = ({handleControlStep}:{handleControlStep: () => void}) => 
   });
 
   const handleMarkPaid = () => {
-
     if (!paymentMethod) {
       setError(true);
-      handleControlStep()
       return;
     }
-    setError(false); 
-
-    navigate("/payment-success");
+    setError(false);
+    handleControlStep();
   };
 
   return (
@@ -92,7 +92,7 @@ const PaymentDetails = ({handleControlStep}:{handleControlStep: () => void}) => 
           boxShadow: 3,
           position: "absolute",
           right: "10px",
-          backgroundColor:"white"
+          backgroundColor: "white",
         }}
       >
         <Box
@@ -108,7 +108,12 @@ const PaymentDetails = ({handleControlStep}:{handleControlStep: () => void}) => 
           }}
         >
           <Typography variant="h5">Payment Details</Typography>
-          <ClearIcon sx={{ cursor: "pointer" }} />
+          <ClearIcon
+            sx={{ cursor: "pointer" }}
+            onClick={() => {
+              if (setIsOpenNewBooking) setIsOpenNewBooking(false);
+            }}
+          />
         </Box>
 
         <Box className="mainPart">
@@ -264,9 +269,6 @@ const PaymentDetails = ({handleControlStep}:{handleControlStep: () => void}) => 
                   width: "86px",
                   height: "48px",
                   padding: "12px 25px",
-                }}
-                onClick={() => {
-                  navigate("/inventory");
                 }}
               >
                 Back

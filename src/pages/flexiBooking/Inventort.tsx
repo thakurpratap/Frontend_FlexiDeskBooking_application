@@ -37,6 +37,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Modal from "@mui/material/Modal";
 import NewBooking from "../../Components/NewBooking";
 import PaymentDetails from "../../Components/PaymentDetails";
+import PaymentSuccess from "../../Components/PaymentSuccess";
 
 const Inventory = () => {
   const {
@@ -58,7 +59,7 @@ const Inventory = () => {
   const [bookingStep, setBookingStep] = useState<
     "booking" | "payment" | "payment_success"
   >("booking");
-console.log("bookingStep ::",bookingStep)
+  console.log("bookingStep ::", bookingStep);
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(true);
 
@@ -106,7 +107,7 @@ console.log("bookingStep ::",bookingStep)
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
 
   const handleOpenDialog = (booking: any, bookingdata: any) => {
-   // console.log(booking, ">>>>>>>>>>>>>>>>>>>booking 75");
+    // console.log(booking, ">>>>>>>>>>>>>>>>>>>booking 75");
     setBookingType(bookingdata.booking_type);
     setSelectedBooking(booking);
     setOpen(true);
@@ -129,12 +130,10 @@ console.log("bookingStep ::",bookingStep)
     if (bookingStep === "booking") {
       setBookingStep("payment");
     } else if (bookingStep === "payment") {
-      setBookingStep("payment_success")
+      setBookingStep("payment_success");
       // setBookingStep("booking");
     }
-
   };
-
 
   return (
     <>
@@ -240,10 +239,15 @@ console.log("bookingStep ::",bookingStep)
                 />
               )}
               {bookingStep === "payment" && (
-                <PaymentDetails handleControlStep={handleControlStep} />
+                <PaymentDetails
+                  handleControlStep={handleControlStep}
+                  setIsOpenNewBooking={setIsOpenNewBooking}
+                />
               )}
 
-              {/* { bookingStep ==="success" && <success/>} */}
+              {bookingStep === "payment_success" && (
+                <PaymentSuccess setIsOpenNewBooking={setIsOpenNewBooking} />
+              )}
             </Box>
           </Modal>
         </Box>

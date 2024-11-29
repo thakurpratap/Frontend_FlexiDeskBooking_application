@@ -24,10 +24,6 @@ function App() {
                   <div className="flex-1 overflow-auto ">
                     <Routes>
                       <Route path="/inventory" element={<Inventory />} />
-                      <Route
-                        path="/booking-details"
-                        element={<BookingDetails />}
-                      />
                     </Routes>
                   </div>
                 </div>

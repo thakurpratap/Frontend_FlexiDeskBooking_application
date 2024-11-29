@@ -10,13 +10,14 @@ import {
   SelectChangeEvent,
   TextField,
   Button,
+  FormHelperText,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlined";
 import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { DateIcon } from "../assets/AllNewBookingIcon";
 import { EditeIcon } from "../assets/icons/Desk";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -29,7 +30,7 @@ const NewBooking = ({
   handleControlStep: () => void;
 }) => {
   const [hotDesk, setHotDesk] = useState<string>();
- 
+
   const [document, setDocument] = useState<string>("");
   const [dates, setDates] = useState<Array<Date>>([]);
   const [inviteeData, setInviteeData] = useState<Array<Invitee>>([]);
@@ -45,6 +46,7 @@ const NewBooking = ({
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     formState: { errors },
   } = useForm({
@@ -105,6 +107,7 @@ const NewBooking = ({
     identification_id: string;
     company_name: string;
     invitee: Invitee[];
+    special_request?: string;
   };
   const { createNewBooking } = useNewBookingContext();
 
@@ -119,19 +122,19 @@ const NewBooking = ({
   };
 
   const onSubmit = async (data: any) => {
-    handleControlStep();
     try {
       const { invitee_name, invitee_email, ...rest } = data;
       const inviteeArray: Invitee[] =
         invitee_name && invitee_email ? [{ invitee_name, invitee_email }] : [];
       const finalData: NewBookingContextData = {
         ...rest,
-        visit_dates: dates,
-        invitee: inviteeArray,
+        visit_dates: allDates,
+        invitee: invitees,
       };
 
       console.log("Final Form Data:", finalData);
       await createNewBooking(finalData);
+      handleControlStep();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -283,16 +286,36 @@ const NewBooking = ({
                 <FormControl fullWidth>
                   {/* Date */}
                   <Typography>Select Date*</Typography>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between", 
+                      border:"1px solid #DDDDDD",
+                      padding: "8px", 
+                      borderRadius: "4px", 
+                    }}
+                  >
                     <DatePicker
-                      minDate={new Date()}
                       multiple
                       value={allDates.map((date) => new DateObject({ date }))}
                       onChange={handleDateChange}
                       inputClass="datepicker-input"
+                      style={{
+                       border:"none",
+                       width:"20vw"
+                      }}
                     />
-                    <DateIcon />
+                    <DateIcon
+                      
+                    />
                   </Box>
+
+                  {/* {errors.visit_dates && (
+                      <FormHelperText sx={{ color: "#D32F2F" }}>
+                        {errors.visit_dates.message as string}
+                      </FormHelperText>
+                    )} */}
 
                   <Divider />
 
@@ -306,6 +329,10 @@ const NewBooking = ({
                     placeholder="Enter Name"
                     {...register("guest_name", {
                       required: "Name is required",
+                      pattern: {
+                        value: /^[A-Za-z\s]+$/,
+                        message: " Name must contain only letters",
+                      },
                       minLength: {
                         value: 3,
                         message: "minimum three character",
@@ -367,6 +394,14 @@ const NewBooking = ({
                     {...register("identification_info", {
                       required: "Please select a document type",
                     })}
+                    onChange={(e: SelectChangeEvent) => {
+                      const selectedValue = e.target.value;
+                      setDocument(selectedValue); // Update local state
+                      setValue("identification_info", selectedValue, {
+                        shouldValidate: true,
+                      }); // Update form value and trigger validation
+                    }}
+                    error={!!errors.identification_info}
                     sx={{
                       "& .MuiSelect-select": {
                         padding: "8px 14px",
@@ -382,9 +417,6 @@ const NewBooking = ({
                         selected
                       )
                     }
-                    onChange={(e: SelectChangeEvent) => {
-                      setDocument(e.target.value);
-                    }}
                   >
                     <MenuItem
                       value="GST ID"
@@ -413,6 +445,12 @@ const NewBooking = ({
                       Aadhar Card / Pan No. / Driver’s Licence / Passport ID
                     </MenuItem>
                   </Select>
+                  {errors.identification_info && (
+                    <FormHelperText sx={{ color: "#D32F2F" }}>
+                      {errors.identification_info.message as string}
+                    </FormHelperText>
+                  )}
+
                   {document === "GST ID" && (
                     <>
                       <Typography>GST ID*</Typography>
@@ -423,6 +461,8 @@ const NewBooking = ({
                         {...register("identification_id", {
                           required: "GST ID is required",
                         })}
+                        error={!!errors.identification_id}
+                        helperText={errors.identification_id?.message as string}
                       />
 
                       <Typography>Company Name</Typography>
@@ -432,7 +472,13 @@ const NewBooking = ({
                         placeholder="Enter Company Name"
                         {...register("company_name", {
                           required: "Company Name is required",
+                          pattern: {
+                            value: /^[A-Za-z\s]+$/,
+                            message: "Company Name must contain only letters",
+                          },
                         })}
+                        error={!!errors.company_name}
+                        helperText={errors.company_name?.message as string}
                       />
                     </>
                   )}
@@ -447,7 +493,13 @@ const NewBooking = ({
                         placeholder="Enter Document ID"
                         {...register("identification_id", {
                           required: "Document ID is required",
+                          pattern: {
+                            value: /^[A-Za-z0-9]+$/,
+                            message: "Document ID must be alphanumeric",
+                          },
                         })}
+                        error={!!errors.identification_id}
+                        helperText={errors.identification_id?.message as string}
                       />
                     </>
                   )}
@@ -484,6 +536,10 @@ const NewBooking = ({
                       placeholder="Enter Name"
                       {...InviteeRegister("invitee_name", {
                         required: "Name is required",
+                        pattern: {
+                          value: /^[A-Za-z\s]+$/,
+                          message: " Name must contain only letters",
+                        },
                         minLength: {
                           value: 3,
                           message: "Minimum three characters required",
@@ -627,7 +683,7 @@ const NewBooking = ({
                         }}
                       >
                         {allDates || inviteeData
-                          ? allDates.length * (2 + 1) * 1000
+                          ? allDates.length * (inviteeData.length + 1) * 1000
                           : ""}
                       </Box>
                     </Box>
@@ -636,7 +692,11 @@ const NewBooking = ({
                   <Typography variant="subtitle2">
                     Special Requests (If any)
                   </Typography>
-                  <TextField type="text" fullWidth />
+                  <TextField
+                    type="text"
+                    fullWidth
+                    {...register("special_request")}
+                  />
                 </Box>
                 <Divider />
 
