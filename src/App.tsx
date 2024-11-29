@@ -9,12 +9,13 @@ import { DataProvider } from "./pages/DataContext";
 import BookingDetails from "./Components/BookingDetails";
 import { NewBookingContextProvider } from "./context_API/NewBookingContext";
 import RightSidebar from "./Components/Rightsidebar";
+import NewBooking from "./Components/NewBooking";
 // import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
 function App() {
-  const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
+  // const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
@@ -29,10 +30,10 @@ function App() {
                     <Routes>
                     {/* <Route path="/" element={<Home />} /> */}
                       <Route path="/inventory" element={<Inventory />} />
-                      <Route
+                      {/* <Route
                         path="/booking-details"
                         element={<BookingDetails />}
-                      />
+                      /> */}
                     </Routes>
                   </div>
                 </div>

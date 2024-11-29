@@ -23,6 +23,20 @@ const Inventory = () => {
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(false);
 
+  const [bookingStep, setBookingStep] = useState<
+    "booking" | "payment" | "payment_success"
+  >("booking");
+
+  const handleControlStep = () => {
+    if (bookingStep === "booking") {
+      setBookingStep("payment");
+    } else if (bookingStep === "payment") {
+      setBookingStep("payment_success")
+      // setBookingStep("booking");
+    }
+
+  };
+
   const handleSearch = async  () => {
     debugger
     if (searchQuery.trim() && dates.length > 0) {
@@ -71,6 +85,7 @@ console.log(displayedData ,"all data");
     setAnchorEl(null);
     setSelectedRow(null);
   };
+  
 
   const [open, setOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
@@ -169,7 +184,18 @@ console.log(displayedData ,"all data");
                 top: "7%",
               }}
             >
-              <NewBooking setIsOpenNewBooking={setIsOpenNewBooking} />
+              {/* <NewBooking setIsOpenNewBooking={setIsOpenNewBooking} /> */}
+              {bookingStep === "booking" && (
+                <NewBooking
+                  setIsOpenNewBooking={setIsOpenNewBooking}
+                  handleControlStep={handleControlStep}
+                />
+              )}
+              {/* {bookingStep === "payment" && (
+                <PaymentDetails handleControlStep={handleControlStep} />
+              )}
+
+              { bookingStep ==="payment_success" && <PaymentSuccess/>} */}
             </Box>
           </Modal>
         <TableContainer>
