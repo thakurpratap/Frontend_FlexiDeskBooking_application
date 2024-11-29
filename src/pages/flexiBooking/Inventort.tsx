@@ -50,9 +50,20 @@ const Inventory = () => {
       // setDates([]);
     }
   };
+  
+
+    // useEffect(() => {
+    //   handleSearch();
+    // }, [searchQuery]);
 
     useEffect(() => {
-      handleSearch();
+      const timer = setTimeout(() => {
+        if (searchQuery.trim() || dates.length > 0) {
+          searchBookings(searchQuery, dates);
+        }
+      }, 500); // 500ms debounce time
+  
+      return () => clearTimeout(timer); // Cleanup the timeout on every re-render
     }, [searchQuery]);
 
   const displayedData = searchResults && searchResults.length > 0
@@ -104,12 +115,26 @@ const Inventory = () => {
     setSelectedBooking(null);
   };
 
+  // const handleConfirmCancel = async () => {
+  //   if (selectedBooking) {
+  //     await handleUpdateBooking(selectedBooking); 
+  //     setOpen(false);
+  //     setSelectedBooking(null);
+  //     toast.success("Booking canceled successfully!");
+  //   }
+  // };
+
   const handleConfirmCancel = async () => {
     if (selectedBooking) {
-      await handleUpdateBooking(selectedBooking); 
-      setOpen(false);
-      setSelectedBooking(null);
-      toast.success("Booking canceled successfully!");
+      try {
+        await handleUpdateBooking(selectedBooking); 
+        await searchBookings(searchQuery, dates); 
+        setOpen(false);
+        setSelectedBooking(null);
+        toast.success("Booking canceled successfully!");
+      } catch (error) {
+        toast.error("Failed to cancel booking. Please try again.");
+      }
     }
   };
 
@@ -143,9 +168,6 @@ const Inventory = () => {
     offsetY,
     offsetX
   } = state
-
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const pickerRef = useRef(null); 
 
   return (
     <>
@@ -222,12 +244,14 @@ const Inventory = () => {
               { bookingStep ==="payment_success" && <PaymentSuccess/>} */}
             </Box>
           </Modal>
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ maxHeight: "calc(100vh - 290px)" }}>
+          <Table stickyHeader>
             <TableHead>
               <TableRow  style={{position :"sticky"}}>
                 <TableCell>
-                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left",color: "#717171",}}>BOOKING ID</Typography> 
+                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left",color: "#717171",  whiteSpace: "nowrap", // Prevents text wrapping
+      overflow: "hidden", // Ensures the text stays within bounds
+      textOverflow: "ellipsis",}}>BOOKING ID</Typography> 
                 </TableCell>
                 <TableCell>
                   <Typography sx={{ fontSize: "12px",fontWeight: 400,lineHeight: "16px",color: "#717171",}}>USER NAME</Typography>
@@ -266,8 +290,10 @@ const Inventory = () => {
                   {row.invitee.length > 0 ? `${row.invitee[0].invitee_name}${row.invitee.length > 1 ? ` +${row.invitee.length - 1}` : ""}` : "No Invitees"}
                   </TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
-                  {/* {row.visit_dates.map((date) => new Date(date).toISOString().split('T')[0]).join(' / ')} */}
-                  {Array.isArray(row.visit_dates) ? row.visit_dates.map(date => new Date(date).toISOString().split('T')[0]).join(' / ') : new Date(row.visit_dates).toISOString().split('T')[0]}
+                  {/* {Array.isArray(row.visit_dates) ? row.visit_dates.map(date => new Date(date).toISOString().split('T')[0]).join(' / ') : new Date(row.visit_dates).toISOString().split('T')[0]} */}
+                  {Array.isArray(row.visit_dates) && row.visit_dates.length > 1
+    ? `${new Date(row.visit_dates[0]).toISOString().split('T')[0]} - ${new Date(row.visit_dates[row.visit_dates.length - 1]).toISOString().split('T')[0]}`
+    : new Date(row.visit_dates[0] || row.visit_dates).toISOString().split('T')[0]}
                   </TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
                   <Typography

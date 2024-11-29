@@ -47,6 +47,9 @@ const Sidebar = () => {
 
   const handleMenuClick = (menuName: string) => {
     setActiveMenu(menuName);
+    if (menuName !== "Inventory") {
+      setInventoryOpen(false); // Close inventory dropdown if any other menu is clicked
+    }
   };
 
   return (
