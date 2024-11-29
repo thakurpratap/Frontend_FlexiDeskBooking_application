@@ -2,15 +2,19 @@ import { createContext, useContext } from "react";
 import axios from "axios";
 import { useMutation, UseMutateFunction } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import React,{useState} from "react"
+// type NewBookingContextType = {
+//   createNewBooking: UseMutateFunction<
+//     any,
+//     unknown,
+//     NewBookingContextData,
+//     unknown
+//   >;
+// };
 type NewBookingContextType = {
-  createNewBooking: UseMutateFunction<
-    any,
-    unknown,
-    NewBookingContextData,
-    unknown
-  >;
+  createNewBooking: UseMutateFunction<any, unknown, NewBookingContextData, unknown>;
+  bookingData: any; 
 };
-
 type Invitee = {
   invitee_name?: string;
   invitee_email?: string;
@@ -35,13 +39,14 @@ export const NewBookingContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const [bookingData, setBookingData] = useState<any>(null);
   const mutation = useMutation({
     mutationFn: async (data: NewBookingContextData) => {
       const res = await axios.post(
         `https://flexi-desk-booking.onrender.com/api/flexibooking/add-booking`,
         data
       );
-      console.log(res);
+      setBookingData(res.data);
       return res.data;
     },
     onSuccess: (data) => {
@@ -52,7 +57,6 @@ export const NewBookingContextProvider = ({
       console.log("Booking created successfully:", data);
     },
     onError: (error: any) => {
-      // Show an error toast
       toast.error(error?.response?.data?.message || "Error creating booking", {
         position: "top-right",
       });
@@ -61,7 +65,7 @@ export const NewBookingContextProvider = ({
   });
 
   return (
-    <NewBookingContext.Provider value={{ createNewBooking: mutation.mutate }}>
+    <NewBookingContext.Provider value={{ createNewBooking: mutation.mutate,bookingData }}>
       {children}
     </NewBookingContext.Provider>
   );

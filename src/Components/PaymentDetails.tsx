@@ -10,15 +10,51 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
-const PaymentDetails = ({
+import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
+import { toast, } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import { useNewBookingContext } from "../context_API/NewBookingContext";
+
+const PaymentDetails = (
+  {
   handleControlStep,
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
   handleControlStep: () => void;
-}) => {
+}
+) => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState(false);
+  const { dayPasses, totalCost, setPaymentDetails, submitPaymentDetails } =
+    usePaymentDetailsContext();
+  const gstCharges = totalCost * 0.18;
+  const grandTotal = totalCost + gstCharges;
+  const { bookingData } = useNewBookingContext();
+      
+  const handleMarkPaid = async () => {
+    if (!paymentMethod) {
+      setError(true);
+      return;
+    }
+    setError(false);
+
+    try {
+      await submitPaymentDetails({
+        dayPasses,
+        totalCost,
+        grandTotal,
+        paymentMethod,
+      });
+
+      toast.success("Payment successful!");
+      handleControlStep()
+    } catch (error) {
+      console.error("Error submitting payment details:", error);
+      toast.error("Payment failed. Please try again.");
+    }
+  };
 
   const theme = createTheme({
     typography: {
@@ -73,15 +109,6 @@ const PaymentDetails = ({
       },
     },
   });
-
-  const handleMarkPaid = () => {
-    if (!paymentMethod) {
-      setError(true);
-      return;
-    }
-    setError(false);
-    handleControlStep();
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -142,7 +169,7 @@ const PaymentDetails = ({
                       mb: "8px",
                     }}
                   >
-                    10
+                    {dayPasses}
                   </Box>
                 </Box>
 
@@ -157,7 +184,7 @@ const PaymentDetails = ({
                       borderRadius: "4px",
                     }}
                   >
-                    ₹500
+                    ₹{totalCost}
                   </Box>
                 </Box>
               </Box>
@@ -180,7 +207,7 @@ const PaymentDetails = ({
                 color: "#A5ADBA",
               }}
             >
-              ₹6949.00
+              ₹{grandTotal}
             </Box>
 
             <Typography variant="subtitle1">Payment Options</Typography>

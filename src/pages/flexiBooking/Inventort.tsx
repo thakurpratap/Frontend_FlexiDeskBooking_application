@@ -71,7 +71,7 @@ const Inventort = () => {
   const handleCloseNewBooking = () => setIsOpenNewBooking(true);
 
   const handleSearch = async () => {
-    debugger;
+    // debugger;
     if (searchQuery.trim() && dates.length > 0) {
       await searchBookings(searchQuery, dates);
       setFilterModalOpen(false);
@@ -107,7 +107,7 @@ const Inventort = () => {
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, rowId: any) => {
-    debugger;
+    // debugger;
     setAnchorEl(event.currentTarget);
     setSelectedRow(rowId);
   };

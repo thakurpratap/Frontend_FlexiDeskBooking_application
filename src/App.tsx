@@ -9,6 +9,8 @@ import { DataProvider } from "./pages/DataContext";
 import { NewBookingContextProvider } from "./context_API/NewBookingContext";
 import RightSidebar from "./Components/Rightsidebar";
 import BookingDetails from "./Components/BookingDetails";
+import { PaymentDetailsProvider } from "./context_API/PaymentDetailsContext";
+import PaymentDetails from "./Components/PaymentDetails";
 
 const queryClient = new QueryClient();
 
@@ -18,23 +20,28 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <NewBookingContextProvider>
-            <DataProvider>
-              <div className="flex h-screen">
-                <Sidebar />
-                <div className="flex-1 flex flex-col">
-                  <Navbar />
-                  <div className="flex-1 overflow-auto ">
-                    <Routes>
-                      <Route path="/inventory" element={<Inventort />} />
-                      <Route path="/booking-details" element={<BookingDetails/>} />
-                    </Routes>
+            <PaymentDetailsProvider>
+              <DataProvider>
+                <div className="flex h-screen">
+                  <Sidebar />
+                  <div className="flex-1 flex flex-col">
+                    <Navbar />
+                    <div className="flex-1 overflow-auto ">
+                      <Routes>
+                        <Route path="/inventory" element={<Inventort />} />
+                        <Route
+                          path="/booking-details"
+                          element={<BookingDetails />}
+                        />
+                      </Routes>
+                    </div>
+                  </div>
+                  <div className="h-screen fixed top-0 right-0 z-10 ">
+                    <RightSidebar />
                   </div>
                 </div>
-                <div className="h-screen fixed top-0 right-0 z-10 ">
-                  <RightSidebar />
-                </div>
-              </div>
-            </DataProvider>
+              </DataProvider>
+            </PaymentDetailsProvider>
           </NewBookingContextProvider>
         </BrowserRouter>
       </QueryClientProvider>

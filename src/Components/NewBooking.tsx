@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import {
   Box,
@@ -22,6 +22,7 @@ import { DateIcon } from "../assets/AllNewBookingIcon";
 import { EditeIcon } from "../assets/icons/Desk";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
 const NewBooking = ({
   handleControlStep,
   setIsOpenNewBooking,
@@ -52,6 +53,15 @@ const NewBooking = ({
   } = useForm({
     mode: "onChange",
   });
+
+  const { setPaymentDetails } = usePaymentDetailsContext();
+
+  const dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
+  const totalCost = allDates && invitees ? dayPasses * 1000 : 0;
+
+  useEffect(() => {
+    setPaymentDetails(dayPasses, totalCost);
+  }, [dayPasses, totalCost, setPaymentDetails]);
 
   const {
     register: InviteeRegister,
@@ -662,9 +672,10 @@ const NewBooking = ({
                           color: "#A5ADBA",
                         }}
                       >
-                        {allDates
+                        {dayPasses}
+                        {/* {allDates
                           ? allDates.length * (invitees.length + 1)
-                          : ""}
+                          : ""} */}
                       </Box>
                     </Box>
 
@@ -682,9 +693,10 @@ const NewBooking = ({
                           color: "#A5ADBA",
                         }}
                       >
-                        {allDates || invitees
+                        {/* {allDates || invitees
                           ? allDates.length * (invitees.length + 1) * 1000
-                          : ""}
+                          : ""} */}
+                        {totalCost}
                       </Box>
                     </Box>
                   </Box>
