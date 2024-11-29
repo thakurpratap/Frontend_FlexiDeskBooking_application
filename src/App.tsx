@@ -8,9 +8,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DataProvider } from "./pages/DataContext";
 import { NewBookingContextProvider } from "./context_API/NewBookingContext";
 import RightSidebar from "./Components/Rightsidebar";
+import NewBooking from "./Components/NewBooking";
+import Home from "./pages/Home";
 import BookingDetails from "./Components/BookingDetails";
 import { PaymentDetailsProvider } from "./context_API/PaymentDetailsContext";
 import PaymentDetails from "./Components/PaymentDetails";
+
 
 const queryClient = new QueryClient();
 
