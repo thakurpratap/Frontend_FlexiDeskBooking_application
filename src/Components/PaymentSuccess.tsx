@@ -3,8 +3,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
 import { ShareIcon, SuccessSign } from "../assets/AllNewBookingIcon";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import { toast, } from "react-toastify";
 import axios from "axios";
-
 const PaymentSuccess = ({
   setIsOpenNewBooking,
 }: {
@@ -66,8 +66,7 @@ const PaymentSuccess = ({
 
   const handleDownloadInvoice = async () => {
     const apiUrl =
-      "http://localhost:3001/api/flexibooking/get-invoice-pdf/67480e586ecab7142d993c48";
-
+      `https://flexi-desk-booking.onrender.com/api/flexibooking/get-invoice-pdf/`;
     try {
       const response = await axios.get(apiUrl, {
         responseType: "blob",
@@ -82,7 +81,7 @@ const PaymentSuccess = ({
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading the PDF:", error);
-      alert("Failed to download the PDF. Please try again.");
+      toast.error("Failed to download the PDF. Please try again.");
     }
   };
 

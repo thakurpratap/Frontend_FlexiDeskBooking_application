@@ -10,6 +10,8 @@ import NewBooking from "../../Components/NewBooking";
 import DatePicker from "react-multi-date-picker";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CloseIcon from '@mui/icons-material/Close';
+import PaymentSuccess from "../../Components/PaymentSuccess";
+import PaymentDetails from "../../Components/PaymentDetails";
 const Inventory = () => {
 
   const { bookings, isLoading ,searchBookings, searchResults, isSearching, searchError,handleUpdateBooking, handleResendPaymentEmail} = useDataContext();
@@ -32,7 +34,6 @@ const Inventory = () => {
       setBookingStep("payment");
     } else if (bookingStep === "payment") {
       setBookingStep("payment_success")
-      // setBookingStep("booking");
     }
   };
 
@@ -40,14 +41,11 @@ const Inventory = () => {
     if (searchQuery.trim() && dates.length > 0) {
       await searchBookings(searchQuery, dates);
       setFilterModalOpen(false); 
-      // setDates([]);
     } else if (searchQuery.trim() && dates.length == 0){
       await searchBookings(searchQuery, dates);
-      // setDates([]);
     }else if(dates.length > 0){
       setFilterModalOpen(false); 
       await searchBookings(searchQuery, dates);
-      // setDates([]);
     }
   };
 
@@ -64,10 +62,6 @@ const Inventory = () => {
   const toggleFilterModal = () => {
     setFilterModalOpen(!filterModalOpen);
   };
-
-  // const handleApplyFilters = () => {
-  //   setFilterModalOpen(false); 
-  // };
 
   const handleClearFilters = () => {
     setFilterModalOpen(false);
@@ -208,18 +202,23 @@ const Inventory = () => {
                 top: "7%",
               }}
             >
-              {/* <NewBooking setIsOpenNewBooking={setIsOpenNewBooking} /> */}
-              {bookingStep === "booking" && (
+            
+                          {bookingStep === "booking" && (
                 <NewBooking
                   setIsOpenNewBooking={setIsOpenNewBooking}
                   handleControlStep={handleControlStep}
                 />
               )}
-              {/* {bookingStep === "payment" && (
-                <PaymentDetails handleControlStep={handleControlStep} />
+              {bookingStep === "payment" && (
+                <PaymentDetails
+                  handleControlStep={handleControlStep}
+                  setIsOpenNewBooking={setIsOpenNewBooking}
+                />
               )}
 
-              { bookingStep ==="payment_success" && <PaymentSuccess/>} */}
+              {bookingStep === "payment_success" && (
+                <PaymentSuccess setIsOpenNewBooking={setIsOpenNewBooking} />
+              )}
             </Box>
           </Modal>
         <TableContainer>
@@ -256,7 +255,6 @@ const Inventory = () => {
               {displayedData.length > 0 ? (
               displayedData.map((row) => (  
                 <TableRow key={row._id}
-                // style={{ backgroundColor: !row.isActive ? "#f5f5f5" : "transparent", pointerEvents: !row.isActive ? "none" : "auto",opacity: !row.isActive ? 0.6 : 1,}} 
                 >
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}} >{row.bookingId}</TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>{row.guest_name}</TableCell>
@@ -266,7 +264,6 @@ const Inventory = () => {
                   {row.invitee.length > 0 ? `${row.invitee[0].invitee_name}${row.invitee.length > 1 ? ` +${row.invitee.length - 1}` : ""}` : "No Invitees"}
                   </TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
-                  {/* {row.visit_dates.map((date) => new Date(date).toISOString().split('T')[0]).join(' / ')} */}
                   {Array.isArray(row.visit_dates) ? row.visit_dates.map(date => new Date(date).toISOString().split('T')[0]).join(' / ') : new Date(row.visit_dates).toISOString().split('T')[0]}
                   </TableCell>
                   <TableCell style={{fontSize: "14px",fontWeight: 400,lineHeight: "20.3px",color: "#222222",}}>
@@ -290,7 +287,6 @@ const Inventory = () => {
                       aria-label="more"
                       onClick={(e) => handleMenuOpen(e, row._id)}
                       sx={{
-                        // transform: 'translateX(-5%)',
                         backgroundColor: 'transparent',
                         boxShadow: 'none', 
                         border: 'none', 
