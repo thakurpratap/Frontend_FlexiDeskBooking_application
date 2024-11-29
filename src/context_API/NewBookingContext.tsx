@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import axios from "axios";
 import { useMutation, UseMutateFunction } from "@tanstack/react-query";
-
+import { toast } from "react-toastify";
 type NewBookingContextType = {
   createNewBooking: UseMutateFunction<
     any,
@@ -17,7 +17,7 @@ type Invitee = {
 };
 
 type NewBookingContextData = {
-  booking_type:string;
+  booking_type: string;
   visit_dates: Date[];
   guest_name: string;
   guest_email: string;
@@ -44,11 +44,19 @@ export const NewBookingContextProvider = ({
       console.log(res);
       return res.data;
     },
-    onSuccess: () => {
-      console.log("Booking created successfully!");
+    onSuccess: (data) => {
+      toast.success(data.message || "Booking created successfully!", {
+        position: "top-right",
+       
+      });
+      console.log("Booking created successfully:", data);
     },
-    onError: () => {
-      console.log("Error creating ");
+    onError: (error: any) => {
+      // Show an error toast
+      toast.error(error?.response?.data?.message || "Error creating booking", {
+        position: "top-right",
+      });
+      console.log("Error creating booking:", error);
     },
   });
 
