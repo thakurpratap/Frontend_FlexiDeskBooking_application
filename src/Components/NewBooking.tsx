@@ -290,10 +290,10 @@ const NewBooking = ({
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "space-between", 
-                      border:"1px solid #DDDDDD",
-                      padding: "8px", 
-                      borderRadius: "4px", 
+                      justifyContent: "space-between",
+                      border: "1px solid #DDDDDD",
+                      padding: "8px",
+                      borderRadius: "4px",
                     }}
                   >
                     <DatePicker
@@ -302,13 +302,11 @@ const NewBooking = ({
                       onChange={handleDateChange}
                       inputClass="datepicker-input"
                       style={{
-                       border:"none",
-                       width:"20vw"
+                        border: "none",
+                        width: "20vw",
                       }}
                     />
-                    <DateIcon
-                      
-                    />
+                    <DateIcon />
                   </Box>
 
                   {/* {errors.visit_dates && (
@@ -664,7 +662,9 @@ const NewBooking = ({
                           color: "#A5ADBA",
                         }}
                       >
-                        {allDates ? allDates.length * (2 + 1) : ""}
+                        {allDates
+                          ? allDates.length * (invitees.length + 1)
+                          : ""}
                       </Box>
                     </Box>
 
@@ -682,8 +682,8 @@ const NewBooking = ({
                           color: "#A5ADBA",
                         }}
                       >
-                        {allDates || inviteeData
-                          ? allDates.length * (inviteeData.length + 1) * 1000
+                        {allDates || invitees
+                          ? allDates.length * (invitees.length + 1) * 1000
                           : ""}
                       </Box>
                     </Box>
