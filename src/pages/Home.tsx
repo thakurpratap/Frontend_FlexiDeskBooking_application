@@ -70,71 +70,142 @@ const cards: CardData[] = [
 const Home = () => {
   return (
     <>
-
-
-
-{/* <div style={{ border: "2px solid #0074E1", borderRadius: "8px", padding: "16px", background: "#f5f5f5" }}>
-      <h2 style={{ marginBottom: "16px", textAlign: "center", color: "#000" }}>Overview</h2>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: "16px" }}>
-        <OccupancyChart />
-        <SpaceGrowthChart />
-        <CompaniesBarChart />
-      </div>
-    </div> */}
-
-{/* <div style={{ border: "2px solid #0074E1", borderRadius: "8px", padding: "16px" }}>
-      <h2 style={{ marginBottom: "16px" }}>Overview</h2>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: "16px" }}>
-        <OccupancyChart />
-        <SpaceGrowthChart />
-        <CompaniesBarChart />
-      </div>
-    </div> */}
-    <div className="mr-20">
-    <div style={{ padding: "20px", background: "#f5f5f5", borderRadius: "8px" }}>
-      <h2>Overview</h2>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: "16px" }}>
-        <OccupancyChart />
-        <SpaceGrowthChart />
-        <CompaniesBarChart />
-      </div>
-    </div>
-    <Box className="p-4 bg-[#F7F7F7]">
-      <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-[556px]  ">
-        {cards.map((card, index) => (
-          <Box
-            key={index}
-            className="rounded-lg p-4 border border-solid border-[#B7B7B7] bg-[#FFFEFE] " sx={{padding:"32px", gap:"10px"}} 
-            // className="w-[458px] h-[266px]  gap-3  bg-[#FFFEFE] border-solid border-gray-400 rounded-tl-[10px] rounded-tr-[10px] opacity-100"
+      <div className="mr-20">
+        <div
+          style={{
+            padding: "20px",
+            background: "#f5f5f5",
+            borderRadius: "5px",
+          }}
+        >
+          <h2>Overview</h2>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "24px",
+              flexWrap: "wrap", 
+            }}
           >
-            <Box className="flex flex-col items-start mb-4">
-              {card.icon}
-              <Typography variant="h6" className="h-[20px] text-[#222222] text-[16px] font-medium leading-[20px] text-left underline-from-font text-decoration-skip" style={{marginTop:"10px"}} >
-                {card.title}
-              </Typography>
-            </Box>
-            <Box className="grid grid-cols-3 gap-4">
-              {card.stats.map((stat, statIndex) => (
-                <Box key={statIndex} className="text-center mt-10">
-                  <Typography className="text-[#484848] text-[14px] font-normal leading-[20.3px] text-left underline-from-font">
-                    {stat.label}
-                  </Typography>
-                  <Typography className="text-[21px] font-medium leading-[26.25px] text-left underline-from-font">
-                    {stat.value}
+            <div
+              style={{
+                flex: "1 1 300px", 
+                maxWidth: "33%", 
+                height: "auto",
+              }}
+            >
+              <OccupancyChart />
+            </div>
+            <div
+              style={{
+                flex: "1 1 300px",
+                maxWidth: "33%",
+                height: "auto",
+              }}
+            >
+              <SpaceGrowthChart />
+            </div>
+            <div
+              style={{
+                flex: "1 1 300px",
+                maxWidth: "33%",
+                height: "auto",
+              }}
+            >
+              <CompaniesBarChart />
+            </div>
+          </div>
+        </div>
+
+        <Box className="p-4 bg-[#F7F7F7]">
+          <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-[226px]">
+            {cards.map((card, index) => (
+              <Box
+                key={index}
+                className="rounded-lg p-4 border border-solid border-[#B7B7B7] bg-[#FFFEFE]"
+                sx={{ padding: "32px", gap: "10px" }}
+              >
+                <Box className="flex flex-col items-start mb-4">
+                  {card.icon}
+                  <Typography
+                    variant="h6"
+                    className="h-[20px] text-[#222222] text-[16px] font-medium leading-[20px] text-left underline-from-font text-decoration-skip"
+                    style={{ marginTop: "10px" }}
+                  >
+                    {card.title}
                   </Typography>
                 </Box>
-              ))}
-            </Box>
+                <Box className="grid grid-cols-3 gap-4">
+                  {card.stats.map((stat, statIndex) => (
+                    <Box key={statIndex} className="text-center mt-10">
+                      <Typography className="text-[#484848] text-[14px] font-normal leading-[20.3px] text-left underline-from-font">
+                        {stat.label}
+                      </Typography>
+                      <Typography className="text-[21px] font-medium leading-[26.25px] text-left underline-from-font">
+                        {stat.value}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            ))}
           </Box>
-        ))}
-      </Box>
-    </Box>
-    </div>
+        </Box>
+      </div>
     </>
   );
 };
 
 export default Home;
+
+
+// const Home = () => {
+//   return (
+//     <>
+//     <div className="mr-20">
+//     <div style={{ flex: "1 1 300px", padding: "20px", background: "#f5f5f5", borderRadius: "5px" }}>
+//       <h2>Overview</h2>
+//       <div style={{ display: "flex", justifyContent: "space-between", gap: "24px" }}>
+//         <OccupancyChart />
+//         <SpaceGrowthChart />  
+//         <CompaniesBarChart />
+//       </div>
+//     </div>
+//     <Box className="p-4 bg-[#F7F7F7]">
+//       <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-[226px]">
+//         {cards.map((card, index) => (
+//           <Box
+//             key={index}
+//             className="rounded-lg p-4 border border-solid border-[#B7B7B7] bg-[#FFFEFE] " sx={{padding:"32px", gap:"10px"}} 
+//           >
+//             <Box className="flex flex-col items-start mb-4">
+//               {card.icon}
+//               <Typography variant="h6" className="h-[20px] text-[#222222] text-[16px] font-medium leading-[20px] text-left underline-from-font text-decoration-skip" style={{marginTop:"10px"}} >
+//                 {card.title}
+//               </Typography>
+//             </Box>
+//             <Box className="grid grid-cols-3 gap-4">
+//               {card.stats.map((stat, statIndex) => (
+//                 <Box key={statIndex} className="text-center mt-10">
+//                   <Typography className="text-[#484848] text-[14px] font-normal leading-[20.3px] text-left underline-from-font">
+//                     {stat.label}
+//                   </Typography>
+//                   <Typography className="text-[21px] font-medium leading-[26.25px] text-left underline-from-font">
+//                     {stat.value}
+//                   </Typography>
+//                 </Box>
+//               ))}
+//             </Box>
+//           </Box>
+//         ))}
+//       </Box>
+//     </Box>
+//     </div>
+//     </>
+//   );
+// };
+
+// export default Home;
 
 
 

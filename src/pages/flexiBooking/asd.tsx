@@ -44,25 +44,6 @@ import PaymentSuccess from "../../Components/PaymentSuccess";
 import PaymentDetails from "../../Components/PaymentDetails";
 import BookingDetails from "../../Components/BookingDetails";
 import { useNavigate } from "react-router-dom";
-interface BookingDetailsDataRow {
-  _id: string;
-  booking_type: string;
-  company_name: string;
-  createdAt: string;
-  guest_assign_desk: string;
-  guest_checkin_status: boolean;
-  guest_email: string;
-  guest_name: string;
-  guest_phone: number;
-  identification_id: string;
-  identification_info: string;
-  invitee: Array<{ name: string; email: string }>;
-  isActive: boolean;
-  updatedAt: string;
-  visit_dates: string[];
-  __v: number;
-}
-
 const Inventory = () => {
   const {
     bookings,
@@ -80,11 +61,7 @@ const Inventory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
-  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
-    useState(false);
-  const [bookingDetailsData, setBookingDetailsData] =
-    useState<BookingDetailsDataRow | null>(null);
-  console.log("bookingDetailsData", bookingDetailsData);
+
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(false);
 
@@ -111,21 +88,20 @@ const Inventory = () => {
       await searchBookings(searchQuery, dates);
     }
   };
-  
 
-    useEffect(() => {
-      handleSearch();
-    }, [searchQuery]);
+//   useEffect(() => {
+//     handleSearch();
+//   }, [searchQuery]);
 
-    // useEffect(() => {
-    //   const timer = setTimeout(() => {
-    //     if (searchQuery.trim() || dates.length > 0) {
-    //       searchBookings(searchQuery, dates);
-    //     }
-    //   }, 500); // 500ms debounce time
-  
-    //   return () => clearTimeout(timer); // Cleanup the timeout on every re-render
-    // }, [searchQuery]);
+useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim() || dates.length > 0) {
+        searchBookings(searchQuery, dates);
+      }
+    }, 500); // 500ms debounce time
+
+    return () => clearTimeout(timer); // Cleanup the timeout on every re-render
+  }, [searchQuery]);
 
   const displayedData =
     searchResults && searchResults.length > 0
@@ -169,16 +145,16 @@ const Inventory = () => {
     setSelectedBooking(null);
   };
 
-  // const handleConfirmCancel = async () => {
-  //   if (selectedBooking) {
-  //     await handleUpdateBooking(selectedBooking); 
-  //     setOpen(false);
-  //     setSelectedBooking(null);
-  //     toast.success("Booking canceled successfully!");
-  //   }
-  // };
+//   const handleConfirmCancel = async () => {
+//     if (selectedBooking) {
+//       await handleUpdateBooking(selectedBooking);
+//       setOpen(false);
+//       setSelectedBooking(null);
+//       toast.success("Booking canceled successfully!");
+//     }
+//   };
 
-  const handleConfirmCancel = async () => {
+const handleConfirmCancel = async () => {
     if (selectedBooking) {
       try {
         await handleUpdateBooking(selectedBooking); 
@@ -228,17 +204,15 @@ const Inventory = () => {
   const navigate = useNavigate();
 
   const handleGetBookingDetails = async (row: any) => {
-    setBookingDetailsData(row);
-    setIsBookingDetailsModalOpen(true)
-    // navigate("/booking-details", { state: { row } });
-  };
+    console.log(row);
 
-  const handleOpenBookingDetailsModal = () => {
-    setIsBookingDetailsModalOpen(true);
-  };
+    // Navigate to booking details and pass `row` as state
 
-  const handleCloseBookingDetailsModal = () => {
-    setIsBookingDetailsModalOpen(false);
+    // navigate("/booking-details");
+
+    navigate("/booking-details", { state: { row } });
+
+    // <Link to="/booking-details" ><BookingDetails {...row} /></Link>
   };
   return (
     <>
@@ -357,32 +331,22 @@ const Inventory = () => {
             )}
           </Box>
         </Modal>
-
-     
-        <Modal
-          open={isBookingDetailsModalOpen}
-          onClose={handleCloseBookingDetailsModal}
-        >
-          <Box
-            sx={{
-              position: "absolute",
-              top: "5%",
-              right: "0%",
-            }}
-          >
-            {bookingDetailsData && (
-              <BookingDetails bookingDetailsData={bookingDetailsData} />
-            )}
-          </Box>
-        </Modal>
-          <TableContainer sx={{ maxHeight: "calc(100vh - 290px)" }}>
-          <Table stickyHeader>
+        <TableContainer>
+          <Table>
             <TableHead>
               <TableRow style={{ position: "sticky" }}>
                 <TableCell>
-                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left",color: "#717171",  whiteSpace: "nowrap", // Prevents text wrapping
-      overflow: "hidden", // Ensures the text stays within bounds
-      textOverflow: "ellipsis",}}>BOOKING ID</Typography> 
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      fontWeight: 400,
+                      lineHeight: "16px",
+                      textAlign: "left",
+                      color: "#717171",
+                    }}
+                  >
+                    BOOKING ID
+                  </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography
@@ -539,9 +503,14 @@ const Inventory = () => {
                         color: "#222222",
                       }}
                     >
-                     {Array.isArray(row.visit_dates) && row.visit_dates.length > 1
-    ? `${new Date(row.visit_dates[0]).toISOString().split('T')[0]} - ${new Date(row.visit_dates[row.visit_dates.length - 1]).toISOString().split('T')[0]}`
-    : new Date(row.visit_dates[0] || row.visit_dates).toISOString().split('T')[0]}
+                      {Array.isArray(row.visit_dates)
+                        ? row.visit_dates
+                            .map(
+                              (date) =>
+                                new Date(date).toISOString().split("T")[0]
+                            )
+                            .join(" / ")
+                        : new Date(row.visit_dates).toISOString().split("T")[0]}
                     </TableCell>
                     <TableCell
                       style={{

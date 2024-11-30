@@ -9,6 +9,9 @@ import { NewBookingContextProvider } from "./context_API/NewBookingContext";
 import RightSidebar from "./Components/Rightsidebar";
 import Home from "./pages/Home";
 import { PaymentDetailsProvider } from "./context_API/PaymentDetailsContext";
+import PaymentDetails from "./Components/PaymentDetails";
+import { HomeIcon } from "./assets/icons/Desk";
+
 
 
 const queryClient = new QueryClient();
@@ -27,6 +30,7 @@ function App() {
                     <Navbar />
                     <div className="flex-1 overflow-auto ">
                       <Routes>
+                      <Route path="/inventory" element={<Home />} />
                         <Route path="/inventory" element={<Inventort />} />
                       </Routes>
                     </div>
