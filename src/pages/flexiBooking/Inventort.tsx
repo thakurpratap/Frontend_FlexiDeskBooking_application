@@ -44,6 +44,25 @@ import PaymentSuccess from "../../Components/PaymentSuccess";
 import PaymentDetails from "../../Components/PaymentDetails";
 import BookingDetails from "../../Components/BookingDetails";
 import { useNavigate } from "react-router-dom";
+interface BookingDetailsDataRow {
+  _id: string;
+  booking_type: string;
+  company_name: string;
+  createdAt: string;
+  guest_assign_desk: string;
+  guest_checkin_status: boolean;
+  guest_email: string;
+  guest_name: string;
+  guest_phone: number;
+  identification_id: string;
+  identification_info: string;
+  invitee: Array<{ name: string; email: string }>;
+  isActive: boolean;
+  updatedAt: string;
+  visit_dates: string[];
+  __v: number;
+}
+
 const Inventory = () => {
   const {
     bookings,
@@ -61,7 +80,11 @@ const Inventory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
-
+  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
+    useState(false);
+  const [bookingDetailsData, setBookingDetailsData] =
+    useState<BookingDetailsDataRow | null>(null);
+  console.log("bookingDetailsData", bookingDetailsData);
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(false);
 
@@ -180,15 +203,17 @@ const Inventory = () => {
   const navigate = useNavigate();
 
   const handleGetBookingDetails = async (row: any) => {
-    console.log(row);
+    setBookingDetailsData(row);
+    setIsBookingDetailsModalOpen(true)
+    // navigate("/booking-details", { state: { row } });
+  };
 
-    // Navigate to booking details and pass `row` as state
+  const handleOpenBookingDetailsModal = () => {
+    setIsBookingDetailsModalOpen(true);
+  };
 
-    // navigate("/booking-details");
-
-    navigate("/booking-details", { state: { row } });
-
-    // <Link to="/booking-details" ><BookingDetails {...row} /></Link>
+  const handleCloseBookingDetailsModal = () => {
+    setIsBookingDetailsModalOpen(false);
   };
   return (
     <>
@@ -304,6 +329,23 @@ const Inventory = () => {
 
             {bookingStep === "payment_success" && (
               <PaymentSuccess setIsOpenNewBooking={setIsOpenNewBooking} />
+            )}
+          </Box>
+        </Modal>
+        {/* BookingDetails */}
+        <Modal
+          open={isBookingDetailsModalOpen}
+          onClose={handleCloseBookingDetailsModal}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: "5%",
+              right: "0%",
+            }}
+          >
+            {bookingDetailsData && (
+              <BookingDetails bookingDetailsData={bookingDetailsData} />
             )}
           </Box>
         </Modal>
