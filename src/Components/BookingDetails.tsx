@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Box,
   Typography,
@@ -12,25 +11,39 @@ import {
   InputLabel,
   MenuItem,
 } from "@mui/material";
-
 import ClearIcon from "@mui/icons-material/Clear";
-
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
-
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-
-import { useLocation } from "react-router-dom";
-
 import axios from "axios";
-
-const BookingDetails = () => {
-  const location = useLocation();
-
-  const row = location.state?.row;
-
-  console.log(row, "asauysfg");
+interface BookingDetailsProps {
+  bookingDetailsData: {
+    _id: string;
+    booking_type: string;
+    company_name: string;
+    createdAt: string;
+    guest_assign_desk: string;
+    guest_checkin_status: boolean;
+    guest_email: string;
+    guest_name: string;
+    guest_phone: number;
+    identification_id: string;
+    identification_info: string;
+    invitee: Array<{ name: string; email: string }>;
+    isActive: boolean;
+    updatedAt: string;
+    visit_dates: string[];
+    __v: number;
+  };
+}
+const BookingDetails: React.FC<BookingDetailsProps> = ({
+  bookingDetailsData,
+}) => {
+  if (!bookingDetailsData) {
+    console.log("loading...");
+  }
+ 
+  console.log(bookingDetailsData, "bookingDetailsData");
 
   const handleDownloadInvoice = async (ID: any) => {
     const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/get-invoice-pdf/${ID}`;
@@ -134,33 +147,23 @@ const BookingDetails = () => {
         className="Booking Details"
         sx={{
           position: "absolute",
-
           right: "70px",
-
           width: "500px",
-
           my: "10px",
-
-          overflowY: "auto", // Enable vertical scrolling
-
-          maxHeight: "800px", // Set a max height to trigger scrolling
+          backgroundColor: "white",
+          overflowY: "auto",
+          maxHeight: "800px",
         }}
       >
         <Box
           className="Nav"
           sx={{
             display: "flex",
-
             justifyContent: "space-between",
-
             alignItems: "center",
-
             backgroundColor: "#F7F7F7",
-
             height: "65px",
-
             px: "20px",
-
             borderBottom: "1px solid #E7E7E7",
           }}
         >
@@ -168,13 +171,11 @@ const BookingDetails = () => {
             variant="body1"
             sx={{
               padding: "6px 16px",
-
               borderRadius: "30px",
-
               border: "1px solid #DDDDDD",
             }}
           >
-            Booking ID: {row.bookingId}
+            Booking ID:
           </Typography>
 
           <Box>
@@ -182,21 +183,13 @@ const BookingDetails = () => {
               variant="outlined"
               sx={{
                 backgroundColor: "white",
-
                 color: "#222222",
-
                 border: "1px solid #BDBDBD",
-
                 textTransform: "none",
-
                 width: "54px",
-
                 height: "32px",
-
                 padding: "4px 15px",
-
                 fontSize: "14px",
-
                 borderRadius: "5px",
               }}
             >
@@ -212,11 +205,8 @@ const BookingDetails = () => {
             className="Booking Details"
             sx={{
               display: "flex",
-
               justifyContent: "space-between",
-
               my: "10px",
-
               overflowY: "scroll",
             }}
           >
@@ -226,60 +216,65 @@ const BookingDetails = () => {
               variant="body1"
               sx={{
                 fontSize: "12px ",
-
                 fontWeight: "600",
-
                 color: "#006644",
-
                 px: "4px",
-
                 borderRadius: "3px",
-
-                backgroundColor: row.isActive ? "#79F2C0" : "#FFBDAD",
-
+                backgroundColor: bookingDetailsData.isActive
+                  ? "#79F2C0"
+                  : "#FFBDAD",
                 display: "flex",
-
                 alignItems: "center",
               }}
             >
-              {row.isActive ? "CONFIRMED" : "CANCELLED"}
+              {bookingDetailsData.isActive ? "CONFIRMED" : "CANCELLED"}
             </Typography>
           </Box>
 
           <Typography variant="body2">Reserver</Typography>
 
-          <Typography variant="subtitle1">{row.guest_name}</Typography>
+          <Typography variant="subtitle1">
+            {bookingDetailsData.guest_name}
+          </Typography>
 
           <Grid className="bookingDetals" container spacing={2}>
             <Grid item xs={6}>
               <Typography variant="body2">Email ID</Typography>
 
-              <Typography variant="subtitle1">{row.guest_email}</Typography>
+              <Typography variant="subtitle1">
+                {bookingDetailsData.guest_email}
+              </Typography>
             </Grid>
 
             <Grid item xs={6}>
               <Typography variant="body2">Ph. No</Typography>
 
-              <Typography variant="subtitle1">{row.guest_phone}</Typography>
+              <Typography variant="subtitle1">
+                {bookingDetailsData.guest_phone}
+              </Typography>
             </Grid>
 
             <Grid item xs={6}>
               <Typography variant="body2">Booking Type</Typography>
 
-              <Typography variant="subtitle1">{row.booking_type}</Typography>
+              <Typography variant="subtitle1">
+                {bookingDetailsData.booking_type}
+              </Typography>
             </Grid>
 
             <Grid item xs={6}>
               <Typography variant="body2">Booking Date</Typography>
 
-              <Typography variant="subtitle1">{row.createdAt}</Typography>
+              <Typography variant="subtitle1">
+                {bookingDetailsData.createdAt}
+              </Typography>
             </Grid>
 
             <Grid item xs={6}>
               <Typography variant="body2">Day Passes</Typography>
 
               <Typography variant="subtitle1">
-                {row.payment_id?.day_passes}
+                {/* {bookingDetailsData.payment_id?.day_passes} */}
               </Typography>
             </Grid>
 
@@ -287,8 +282,8 @@ const BookingDetails = () => {
               <Typography variant="body2">Visit Date</Typography>
 
               <Typography variant="subtitle1">
-                {Array.isArray(row.visit_dates)
-                  ? row.visit_dates.map(
+                {Array.isArray(bookingDetailsData.visit_dates)
+                  ? bookingDetailsData.visit_dates.map(
                       (date: string) =>
                         new Date(date).toISOString().split("T")[0] + " "
                     )
@@ -302,7 +297,7 @@ const BookingDetails = () => {
               </Typography>
 
               <Typography variant="subtitle1">
-                ₹{row.payment_id?.sub_total_cost}
+                {/* ₹{bookingDetailsData.payment_id?.sub_total_cost} */}
               </Typography>
             </Grid>
 
@@ -310,7 +305,7 @@ const BookingDetails = () => {
               <Typography variant="body2">Payment Method</Typography>
 
               <Typography variant="subtitle1">
-                {row.payment_id?.payment_method}
+                {/* {bookingDetailsData.payment_id?.payment_method} */}
               </Typography>
             </Grid>
           </Grid>
@@ -324,7 +319,7 @@ const BookingDetails = () => {
           <Typography variant="body2">Name</Typography>
 
           <Typography variant="subtitle1" sx={{ marginBottom: "0px" }}>
-            {row.guest_name}
+            {bookingDetailsData.guest_name}
           </Typography>
 
           <Typography
@@ -336,7 +331,9 @@ const BookingDetails = () => {
 
           <Typography variant="body2">Identification Information</Typography>
 
-          <Typography variant="subtitle1">{row.identification_id}</Typography>
+          <Typography variant="subtitle1">
+            {bookingDetailsData.identification_id}
+          </Typography>
 
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="subtitle2">Check-In Status</Typography>
@@ -365,7 +362,7 @@ const BookingDetails = () => {
 
           <Divider />
 
-          {row.invitee.map((inviteDetails: any) => {
+          {bookingDetailsData.invitee.map((inviteDetails: any) => {
             return (
               <>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -426,7 +423,9 @@ const BookingDetails = () => {
 
           <Typography variant="h6">Special Requests</Typography>
 
-          <Typography variant="subtitle2">{row.special_request}</Typography>
+          <Typography variant="subtitle2">
+            {/* {bookingDetailsData.special_request} */}
+          </Typography>
 
           <Divider />
 
@@ -437,7 +436,7 @@ const BookingDetails = () => {
               <Typography variant="body2">Discount Given</Typography>
 
               <Typography variant="subtitle1">
-                {row.payment_id?.discount}
+                {/* {bookingDetailsData.payment_id?.discount} */}
               </Typography>
             </Grid>
 
@@ -445,7 +444,7 @@ const BookingDetails = () => {
               <Typography variant="body2">Coupon Used</Typography>
 
               <Typography variant="subtitle1">
-                {row.payment_id?.coupon_code}
+                {/* {bookingDetailsData.payment_id?.coupon_code} */}
               </Typography>
             </Grid>
           </Grid>
@@ -454,17 +453,11 @@ const BookingDetails = () => {
             className="Download"
             sx={{
               width: "332px",
-
               height: "131px",
-
               borderRadius: "10px",
-
               border: "1px solid #E7E7E7",
-
               display: "flex",
-
               alignItems: "center",
-
               padding: "20px",
             }}
           >
@@ -489,7 +482,9 @@ const BookingDetails = () => {
 
                 <Box sx={{ color: "#2F80ED", marginLeft: "131px" }}>
                   <FileDownloadOutlinedIcon
-                    onClick={() => handleDownloadInvoice(row._id)}
+                    onClick={() =>
+                      handleDownloadInvoice(bookingDetailsData._id)
+                    }
                   />
                 </Box>
               </Box>
