@@ -22,7 +22,8 @@ const PaymentDetails = (
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
-  handleControlStep: () => void;
+  handleControlStep: (direction: "next" | "back") => void;
+  // handleControlStep: () => void;
 }
 ) => {
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -49,7 +50,7 @@ const PaymentDetails = (
       });
 
       toast.success("Payment successful!");
-      handleControlStep()
+      handleControlStep("next")
     } catch (error) {
       console.error("Error submitting payment details:", error);
       toast.error("Payment failed. Please try again.");
@@ -297,6 +298,7 @@ const PaymentDetails = (
                   height: "48px",
                   padding: "12px 25px",
                 }}
+                onClick={() => handleControlStep("back")}
               >
                 Back
               </Button>
