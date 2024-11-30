@@ -92,11 +92,27 @@ const Inventory = () => {
     "booking" | "payment" | "payment_success"
   >("booking");
 
-  const handleControlStep = () => {
-    if (bookingStep === "booking") {
-      setBookingStep("payment");
-    } else if (bookingStep === "payment") {
-      setBookingStep("payment_success");
+  // const handleControlStep = () => {
+  //   if (bookingStep === "booking") {
+  //     setBookingStep("payment");
+  //   } else if (bookingStep === "payment") {
+  //     setBookingStep("payment_success");
+  //   }
+  // };
+
+  const handleControlStep = (direction: "next" | "back") => {
+    if (direction === "next") {
+      if (bookingStep === "booking") {
+        setBookingStep("payment");
+      } else if (bookingStep === "payment") {
+        setBookingStep("payment_success");
+      }
+    } else if (direction === "back") {
+      if (bookingStep === "payment") {
+        setBookingStep("booking");
+      } else if (bookingStep === "payment_success") {
+        setBookingStep("payment");
+      }
     }
   };
 

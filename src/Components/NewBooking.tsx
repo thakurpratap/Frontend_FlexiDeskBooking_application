@@ -23,12 +23,15 @@ import { EditeIcon } from "../assets/icons/Desk";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
+
+
 const NewBooking = ({
   handleControlStep,
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
-  handleControlStep: () => void;
+  handleControlStep: (direction: "next" | "back") => void;
+  // handleControlStep: () => void;
 }) => {
   const [hotDesk, setHotDesk] = useState<string>();
 
@@ -144,7 +147,7 @@ const NewBooking = ({
 
       console.log("Final Form Data:", finalData);
       await createNewBooking(finalData);
-      handleControlStep();
+      handleControlStep("next");
     } catch (error) {
       console.error("Error submitting form:", error);
     }
