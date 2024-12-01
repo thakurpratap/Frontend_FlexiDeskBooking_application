@@ -7,12 +7,15 @@ interface PaymentDetails {
   dayPasses: number;
   totalCost: number;
   grandTotal: number;
+  isBackTracker: boolean;
   setPaymentDetails: (dayPasses: number, totalCost: number) => void;
   submitPaymentDetails: (paymentDetails: PaymentDetailsAPI) => Promise<void>;
+  setIsBackTracker: (value: boolean) => void;
   // paymentData: PaymentDataDetails;
   paymentData: PaymentData | null;
   genrateInvoice : any;
 }
+
 
 
 interface PaymentDetailsAPI {
@@ -33,8 +36,9 @@ interface PaymentData {
   // paymentData : any;
 }
 
-
-const PaymentDetailsContext = createContext<PaymentDetails | undefined>(undefined);
+const PaymentDetailsContext = createContext<PaymentDetails | undefined>(
+  undefined
+);
 
 export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -42,6 +46,7 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
   const { bookingData } = useNewBookingContext();
   const [dayPasses, setDayPasses] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
+  const [isBackTracker, setIsBackTracker] = useState<boolean>(false);
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
   const setPaymentDetails = (dayPasses: number, totalCost: number) => {
@@ -70,13 +75,14 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       console.log("Payment API Response:", response.data);
-      setPaymentData(response.data); 
+      setPaymentData(response.data);
     } catch (error) {
       console.error("Error submitting payment details:", error);
-      throw error; 
+      throw error;
     }
   };
 
+  const grandTotal = totalCost * 1.18;
   const genrateInvoice = async() => {
     console.log(bookingData.booking._id,"booking id");
         const apiUrl =
@@ -97,7 +103,7 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-  const grandTotal = totalCost * 1.18; 
+  //const grandTotal = totalCost * 1.18; 
 
   return (
     <PaymentDetailsContext.Provider
@@ -107,6 +113,8 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
         grandTotal,
         setPaymentDetails,
         submitPaymentDetails,
+        setIsBackTracker,
+        isBackTracker,
         genrateInvoice,
         paymentData,
       }}

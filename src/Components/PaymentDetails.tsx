@@ -11,32 +11,43 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
-import { toast, } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
+// import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
 
-const PaymentDetails = (
-  {
+const PaymentDetails = ({
   handleControlStep,
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
+  //  handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
   handleControlStep: (direction: "next" | "back") => void;
+}) => {
+  // handleControlStep: (direction: "next" | "back") => void;
   // handleControlStep: () => void;
-}
-) => {
+  // }
+  // ) =>
+  //    {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState(false);
-  const { dayPasses, totalCost, setPaymentDetails, submitPaymentDetails, genrateInvoice} =
-    usePaymentDetailsContext();
+  const {
+    dayPasses,
+    totalCost,
+    setPaymentDetails,
+    submitPaymentDetails,
+    genrateInvoice,
+  } = usePaymentDetailsContext();
+  const { setIsBackTracker } = usePaymentDetailsContext();
   const gstCharges = totalCost * 0.18;
   const grandTotal = totalCost + gstCharges;
 
   const { bookingData } = useNewBookingContext();
+
   const { paymentData } = usePaymentDetailsContext();
-      
+
   const handleMarkPaid = async () => {
     if (!paymentMethod) {
       setError(true);
@@ -52,7 +63,8 @@ const PaymentDetails = (
       });
       await genrateInvoice();
       toast.success("Payment successful!");
-      handleControlStep("next")
+      //handleControlStep("payment_success");
+      handleControlStep("next");
     } catch (error) {
       console.error("Error submitting payment details:", error);
       toast.error("Payment failed. Please try again.");
@@ -300,7 +312,14 @@ const PaymentDetails = (
                   height: "48px",
                   padding: "12px 25px",
                 }}
-                onClick={() => handleControlStep("back")}
+                // onClick={() => {
+                //   handleControlStep("booking");
+                //   setIsBackTracker(true);
+                // }}
+                onClick={() => {
+                  handleControlStep("back");
+                  setIsBackTracker(true);
+                }}
               >
                 Back
               </Button>
