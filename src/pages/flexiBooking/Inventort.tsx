@@ -37,11 +37,65 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "@mui/material/Modal";
 import NewBooking from "../../Components/NewBooking";
-import DatePicker from "react-multi-date-picker";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CloseIcon from "@mui/icons-material/Close";
 import PaymentSuccess from "../../Components/PaymentSuccess";
 import PaymentDetails from "../../Components/PaymentDetails";
+import BookingDetails from "../../Components/BookingDetails";
+import { useNavigate } from "react-router-dom";
+import CircularLoader from "../../Components/CircularLoader";
+
+
+
+interface BookingDetailsDataRow {
+
+    _id: string;
+    booking_type: string;
+    visit_dates: string[]; 
+    guest_name: string;
+    guest_email: string;
+    guest_phone: number;
+    guest_checkin_status: boolean;
+    guest_assign_desk: string;
+    identification_info: string;
+    identification_id: string;
+    company_name: string;
+    invitee: Invitee[];
+    special_request: string;
+    isActive: boolean;
+    createdAt: string; 
+    updatedAt: string; 
+    bookingId: number;
+    __v: number;
+    payment_id: Payment;
+
+}
+
+interface Invitee {
+  invitee_name: string;
+  invitee_email: string;
+  invitee_checkin_status: boolean;
+  invitee_assign_desk: string;
+  _id: string;
+}
+
+interface Payment {
+  _id: string;
+  day_passes: number;
+  sub_total_cost: number;
+  gst_charges: number;
+  discount: number;
+  coupon_code: string;
+  grand_total: number;
+  payment_method: string;
+  payment_status: string;
+  booking_id: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+}
+
 const Inventory = () => {
   const {
     bookings,
@@ -59,6 +113,12 @@ const Inventory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
+  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
+    useState(false);
+  const [bookingDetailsData, setBookingDetailsData] =
+    useState<BookingDetailsDataRow | null>(null);
+
+  console.log("bookingDetailsData", bookingDetailsData);
 
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(false);
@@ -67,15 +127,37 @@ const Inventory = () => {
     "booking" | "payment" | "payment_success"
   >("booking");
 
-  const handleControlStep = (
-    step: "booking" | "payment" | "payment_success"
-  ) => {
-    setBookingStep(step)
+  // const handleControlStep = (
+  //   step: "booking" | "payment" | "payment_success"
+  // ) => {
+  //   setBookingStep(step)
     // if (bookingStep === "booking") {
     //   setBookingStep("payment");
     // } else if (bookingStep === "payment") {
     //   setBookingStep("payment_success");
     // }
+  // const handleControlStep = () => {
+  //   if (bookingStep === "booking") {
+  //     setBookingStep("payment");
+  //   } else if (bookingStep === "payment") {
+  //     setBookingStep("payment_success");
+  //   }
+  // };
+
+  const handleControlStep = (direction: "next" | "back") => {
+    if (direction === "next") {
+      if (bookingStep === "booking") {
+        setBookingStep("payment");
+      } else if (bookingStep === "payment") {
+        setBookingStep("payment_success");
+      }
+    } else if (direction === "back") {
+      if (bookingStep === "payment") {
+        setBookingStep("booking");
+      } else if (bookingStep === "payment_success") {
+        setBookingStep("payment");
+      }
+    }
   };
 
   const handleSearch = async () => {
@@ -89,10 +171,21 @@ const Inventory = () => {
       await searchBookings(searchQuery, dates);
     }
   };
+  
 
   useEffect(() => {
     handleSearch();
   }, [searchQuery]);
+
+    // useEffect(() => {
+    //   const timer = setTimeout(() => {
+    //     if (searchQuery.trim() || dates.length > 0) {
+    //       searchBookings(searchQuery, dates);
+    //     }
+    //   }, 500); // 500ms debounce time
+  
+    //   return () => clearTimeout(timer); // Cleanup the timeout on every re-render
+    // }, [searchQuery]);
 
   const displayedData =
     searchResults && searchResults.length > 0
@@ -136,15 +229,28 @@ const Inventory = () => {
     setSelectedBooking(null);
   };
 
+  // const handleConfirmCancel = async () => {
+  //   if (selectedBooking) {
+  //     await handleUpdateBooking(selectedBooking); 
+  //     setOpen(false);
+  //     setSelectedBooking(null);
+  //     toast.success("Booking canceled successfully!");
+  //   }
+  // };
+
   const handleConfirmCancel = async () => {
     if (selectedBooking) {
-      await handleUpdateBooking(selectedBooking);
-      setOpen(false);
-      setSelectedBooking(null);
-      toast.success("Booking canceled successfully!");
+      try {
+        await handleUpdateBooking(selectedBooking); 
+        await searchBookings(searchQuery, dates); 
+        setOpen(false);
+        setSelectedBooking(null);
+        toast.success("Booking canceled successfully!");
+      } catch (error) {
+        toast.error("Failed to cancel booking. Please try again.");
+      }
     }
   };
-
   const [dates, setDates] = useState<Array<Date>>([]);
 
   console.log(dates, "selected dates >>>>>>>>>>>>");
@@ -178,7 +284,21 @@ const Inventory = () => {
 
   const [calendarOpen, setCalendarOpen] = useState(false);
   const pickerRef = useRef(null);
+  const navigate = useNavigate();
 
+  const handleGetBookingDetails = async (row: any) => {
+    setBookingDetailsData(row);
+    setIsBookingDetailsModalOpen(true)
+    // navigate("/booking-details", { state: { row } });
+  };
+
+  const handleOpenBookingDetailsModal = () => {
+    setIsBookingDetailsModalOpen(true);
+  };
+
+  const handleCloseBookingDetailsModal = () => {
+    setIsBookingDetailsModalOpen(false);
+  };
   return (
     <>
       <div
@@ -274,8 +394,8 @@ const Inventory = () => {
           <Box
             sx={{
               position: "absolute",
-              right: "60px",
-              top: "7%",
+              right: "72px",
+              top: "7.5%",
             }}
           >
             {bookingStep === "booking" && (
@@ -292,26 +412,39 @@ const Inventory = () => {
             )}
 
             {bookingStep === "payment_success" && (
-              <PaymentSuccess setIsOpenNewBooking={setIsOpenNewBooking} />
+              <PaymentSuccess 
+              setIsOpenNewBooking={setIsOpenNewBooking} 
+              setBookingStep = {setBookingStep} 
+              />
             )}
           </Box>
         </Modal>
-        <TableContainer>
-          <Table>
+
+     
+        <Modal
+          open={isBookingDetailsModalOpen}
+          onClose={handleCloseBookingDetailsModal}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: "5%",
+              right: "0%",
+            }}
+          >
+            {bookingDetailsData && (
+              <BookingDetails bookingDetailsData={bookingDetailsData} />
+            )}
+          </Box>
+        </Modal>
+          <TableContainer sx={{ maxHeight: "calc(100vh - 290px)" }}>
+          <Table stickyHeader>
             <TableHead>
               <TableRow style={{ position: "sticky" }}>
                 <TableCell>
-                  <Typography
-                    sx={{
-                      fontSize: "12px",
-                      fontWeight: 400,
-                      lineHeight: "16px",
-                      textAlign: "left",
-                      color: "#717171",
-                    }}
-                  >
-                    BOOKING ID
-                  </Typography>
+                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left",color: "#717171",  whiteSpace: "nowrap", // Prevents text wrapping
+      overflow: "hidden", // Ensures the text stays within bounds
+      textOverflow: "ellipsis",}}>BOOKING ID</Typography> 
                 </TableCell>
                 <TableCell>
                   <Typography
@@ -410,6 +543,7 @@ const Inventory = () => {
                         lineHeight: "20.3px",
                         color: "#222222",
                       }}
+                      onClick={() => handleGetBookingDetails(row)}
                     >
                       {row.bookingId}
                     </TableCell>
@@ -467,14 +601,9 @@ const Inventory = () => {
                         color: "#222222",
                       }}
                     >
-                      {Array.isArray(row.visit_dates)
-                        ? row.visit_dates
-                            .map(
-                              (date) =>
-                                new Date(date).toISOString().split("T")[0]
-                            )
-                            .join(" / ")
-                        : new Date(row.visit_dates).toISOString().split("T")[0]}
+                     {Array.isArray(row.visit_dates) && row.visit_dates.length > 1
+    ? `${new Date(row.visit_dates[0]).toISOString().split('T')[0]} - ${new Date(row.visit_dates[row.visit_dates.length - 1]).toISOString().split('T')[0]}`
+    : new Date(row.visit_dates[0] || row.visit_dates).toISOString().split('T')[0]}
                     </TableCell>
                     <TableCell
                       style={{
@@ -573,7 +702,26 @@ const Inventory = () => {
                           </span>
                         </MenuItem>
                         <MenuItem
-                          onClick={handleMenuClose}
+                        //  <MenuItem
+                        //   onClick={handleMenuClose}
+                        //   sx={{ width: "224px", height: "32px" }}
+                        // >
+                        //   <span>
+                        //     <EditeIcon sx={{ marginRight: "14px" }} />
+                        //   </span>
+                        //   <span
+                        //     style={{
+                        //       fontSize: "14px",
+                        //       padding: "2px 4px",
+                        //       color: "#172B4D",
+                        //     }}
+                        //   >
+                        //     Edit Booking
+                        //   </span>
+                        // </MenuItem> 
+                        // <MenuItem>
+                          key={row._id}
+                          onClick={() => handleGetBookingDetails(row)}
                           sx={{ width: "224px", height: "32px" }}
                         >
                           <span>
@@ -618,15 +766,16 @@ const Inventory = () => {
               ) : searchQuery.trim() ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
-                    No bookings found for .
+                  <CircularLoader />
+                   
                   </TableCell>
                 </TableRow>
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    No data Found
-                  </TableCell>
-                </TableRow>
+                <TableCell colSpan={8} align="center">
+                  <CircularLoader />
+                </TableCell>
+              </TableRow>
               )}
             </TableBody>
           </Table>

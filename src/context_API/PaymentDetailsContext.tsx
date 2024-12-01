@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import axios from "axios";
 import { useNewBookingContext } from "./NewBookingContext";
+import { toast } from "react-toastify";
 
 interface PaymentDetails {
   dayPasses: number;
@@ -10,19 +11,29 @@ interface PaymentDetails {
   setPaymentDetails: (dayPasses: number, totalCost: number) => void;
   submitPaymentDetails: (paymentDetails: PaymentDetailsAPI) => Promise<void>;
   setIsBackTracker: (value: boolean) => void;
-
+  // paymentData: PaymentDataDetails;
+  paymentData: PaymentData | null;
+  genrateInvoice : any;
 }
+
+
 
 interface PaymentDetailsAPI {
   dayPasses: number;
   totalCost: number;
   grandTotal: number;
   paymentMethod: string;
+
+  // paymentData : any;
 }
 
 interface PaymentData {
   paymentId: string;
   status: string;
+  payment : any;
+  booking_id : any;
+  _id : any ;
+  // paymentData : any;
 }
 
 const PaymentDetailsContext = createContext<PaymentDetails | undefined>(
@@ -72,6 +83,27 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const grandTotal = totalCost * 1.18;
+  const genrateInvoice = async() => {
+    console.log(bookingData.booking._id,"booking id");
+        const apiUrl =
+      `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${bookingData.booking._id}`;
+    try {
+      const response = await axios.post(apiUrl);
+      // const url = window.URL.createObjectURL(new Blob([response.data]));
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.setAttribute("download", "invoice.pdf");
+      // document.body.appendChild(link);
+      // link.click();
+      // link.remove();
+      // window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading the PDF:", error);
+      toast.error("Failed to download the PDF. Please try again.");
+    }
+  }
+
+  //const grandTotal = totalCost * 1.18; 
 
   return (
     <PaymentDetailsContext.Provider
@@ -83,6 +115,8 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
         submitPaymentDetails,
         setIsBackTracker,
         isBackTracker,
+        genrateInvoice,
+        paymentData,
       }}
     >
       {children}

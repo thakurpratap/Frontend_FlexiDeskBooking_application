@@ -31,9 +31,11 @@ const NewBooking = ({
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
-  handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
+  // handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
+  handleControlStep: (direction: "next" | "back") => void;
+  // handleControlStep: () => void;
 }) => {
-  const [hotDesk, setHotDesk] = useState<string>();
+  const [hotDesk, setHotDesk] = useState<string>("");
 
   const [document, setDocument] = useState<string>("");
   const [dates, setDates] = useState<Array<Date>>([]);
@@ -47,7 +49,7 @@ const NewBooking = ({
   const [invite, setInvite] = useState<boolean>(false);
   const [invitees, setInvitees] = useState<Invitee[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-   
+
   // for update
   useEffect(() => {
     if (isBackTracker && bookingData?.booking) {
@@ -122,13 +124,13 @@ const NewBooking = ({
       setInvitees([...invitees, data]);
     }
     reset({
-      invitee_name: "", 
-      invitee_email: "", 
+      invitee_name: "",
+      invitee_email: "",
     });
   };
 
   const handleEditInvitee = (index: number) => {
-    setInvite(true)
+    setInvite(true);
     setEditingIndex(index);
     reset(invitees[index]);
   };
@@ -187,13 +189,18 @@ const NewBooking = ({
 
       if (isUpdateMode) {
         await updateGuestDetails(finalData);
+        handleControlStep("next");
         console.log("Booking updated successfully! >>>", finalData);
         toast.success("Booking updated successfully!");
       } else {
         await createNewBooking(finalData);
+        handleControlStep("next");
         console.log("New booking created successfully! >>>", finalData);
       }
-      handleControlStep("payment");
+      //  handleControlStep("payment");
+      console.log("Final Form Data:", finalData);
+      // await createNewBooking(finalData);
+      // handleControlStep("next");
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -264,6 +271,7 @@ const NewBooking = ({
           boxShadow: 3,
           position: "absolute",
           right: "0",
+          background: "#FFFFFF",
         }}
       >
         <Box
@@ -357,7 +365,10 @@ const NewBooking = ({
                   >
                     <DatePicker
                       multiple
+                      // dateSeparator="to"
+                      // range
                       value={allDates.map((date) => new DateObject({ date }))}
+                      // value={allDates.map((date) => new Date(date))}
                       onChange={handleDateChange}
                       inputClass="datepicker-input"
                       style={{
@@ -446,7 +457,7 @@ const NewBooking = ({
                     })}
                     onChange={(e: SelectChangeEvent) => {
                       const selectedValue = e.target.value;
-                      setDocument(selectedValue); 
+                      setDocument(selectedValue);
                       setValue("identification_info", selectedValue, {
                         shouldValidate: true,
                       });
