@@ -37,29 +37,62 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "@mui/material/Modal";
 import NewBooking from "../../Components/NewBooking";
-import DatePicker from "react-multi-date-picker";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CloseIcon from "@mui/icons-material/Close";
 import PaymentSuccess from "../../Components/PaymentSuccess";
 import PaymentDetails from "../../Components/PaymentDetails";
 import BookingDetails from "../../Components/BookingDetails";
 import { useNavigate } from "react-router-dom";
+import CircularLoader from "../../Components/CircularLoader";
+
+
+
 interface BookingDetailsDataRow {
+
+    _id: string;
+    booking_type: string;
+    visit_dates: string[]; 
+    guest_name: string;
+    guest_email: string;
+    guest_phone: number;
+    guest_checkin_status: boolean;
+    guest_assign_desk: string;
+    identification_info: string;
+    identification_id: string;
+    company_name: string;
+    invitee: Invitee[];
+    special_request: string;
+    isActive: boolean;
+    createdAt: string; 
+    updatedAt: string; 
+    bookingId: number;
+    __v: number;
+    payment_id: Payment;
+
+}
+
+interface Invitee {
+  invitee_name: string;
+  invitee_email: string;
+  invitee_checkin_status: boolean;
+  invitee_assign_desk: string;
   _id: string;
-  booking_type: string;
-  company_name: string;
-  createdAt: string;
-  guest_assign_desk: string;
-  guest_checkin_status: boolean;
-  guest_email: string;
-  guest_name: string;
-  guest_phone: number;
-  identification_id: string;
-  identification_info: string;
-  invitee: Array<{ name: string; email: string }>;
-  isActive: boolean;
-  updatedAt: string;
-  visit_dates: string[];
+}
+
+interface Payment {
+  _id: string;
+  day_passes: number;
+  sub_total_cost: number;
+  gst_charges: number;
+  discount: number;
+  coupon_code: string;
+  grand_total: number;
+  payment_method: string;
+  payment_status: string;
+  booking_id: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   __v: number;
 }
 
@@ -84,7 +117,9 @@ const Inventory = () => {
     useState(false);
   const [bookingDetailsData, setBookingDetailsData] =
     useState<BookingDetailsDataRow | null>(null);
+
   console.log("bookingDetailsData", bookingDetailsData);
+
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(false);
 
@@ -351,8 +386,8 @@ const Inventory = () => {
           <Box
             sx={{
               position: "absolute",
-              right: "60px",
-              top: "7%",
+              right: "72px",
+              top: "7.5%",
             }}
           >
             {bookingStep === "booking" && (
@@ -369,7 +404,10 @@ const Inventory = () => {
             )}
 
             {bookingStep === "payment_success" && (
-              <PaymentSuccess setIsOpenNewBooking={setIsOpenNewBooking} />
+              <PaymentSuccess 
+              setIsOpenNewBooking={setIsOpenNewBooking} 
+              setBookingStep = {setBookingStep} 
+              />
             )}
           </Box>
         </Modal>
@@ -655,8 +693,26 @@ const Inventory = () => {
                             Resend Payment Email
                           </span>
                         </MenuItem>
-                        <MenuItem
+                        {/* <MenuItem
                           onClick={handleMenuClose}
+                          sx={{ width: "224px", height: "32px" }}
+                        >
+                          <span>
+                            <EditeIcon sx={{ marginRight: "14px" }} />
+                          </span>
+                          <span
+                            style={{
+                              fontSize: "14px",
+                              padding: "2px 4px",
+                              color: "#172B4D",
+                            }}
+                          >
+                            Edit Booking
+                          </span>
+                        </MenuItem> */}
+                        <MenuItem
+                          key={row._id}
+                          onClick={() => handleGetBookingDetails(row)}
                           sx={{ width: "224px", height: "32px" }}
                         >
                           <span>
@@ -701,15 +757,16 @@ const Inventory = () => {
               ) : searchQuery.trim() ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
-                    No bookings found for .
+                  <CircularLoader />
+                   
                   </TableCell>
                 </TableRow>
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    No data Found
-                  </TableCell>
-                </TableRow>
+                <TableCell colSpan={8} align="center">
+                  <CircularLoader />
+                </TableCell>
+              </TableRow>
               )}
             </TableBody>
           </Table>
@@ -843,7 +900,8 @@ const Inventory = () => {
                 // onClose={() => false}
                 dateSeparator="to"
                 range
-                value={dates.map((date) => new Date(date))}
+                value={dates.map((date) => new DateObject({ date }))}
+                // value={dates.map((date) => new Date(date))}
                 onChange={handleDateChange}
                 render={(value, openCalendar) => (
                   <Box
