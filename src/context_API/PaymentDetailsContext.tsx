@@ -6,11 +6,12 @@ interface PaymentDetails {
   dayPasses: number;
   totalCost: number;
   grandTotal: number;
+  isBackTracker: boolean;
   setPaymentDetails: (dayPasses: number, totalCost: number) => void;
   submitPaymentDetails: (paymentDetails: PaymentDetailsAPI) => Promise<void>;
-  // paymentData: PaymentDataDetails;
-}
+  setIsBackTracker: (value: boolean) => void;
 
+}
 
 interface PaymentDetailsAPI {
   dayPasses: number;
@@ -24,8 +25,9 @@ interface PaymentData {
   status: string;
 }
 
-
-const PaymentDetailsContext = createContext<PaymentDetails | undefined>(undefined);
+const PaymentDetailsContext = createContext<PaymentDetails | undefined>(
+  undefined
+);
 
 export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -33,6 +35,7 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
   const { bookingData } = useNewBookingContext();
   const [dayPasses, setDayPasses] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
+  const [isBackTracker, setIsBackTracker] = useState<boolean>(false);
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
   const setPaymentDetails = (dayPasses: number, totalCost: number) => {
@@ -61,14 +64,14 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       console.log("Payment API Response:", response.data);
-      setPaymentData(response.data); 
+      setPaymentData(response.data);
     } catch (error) {
       console.error("Error submitting payment details:", error);
-      throw error; 
+      throw error;
     }
   };
 
-  const grandTotal = totalCost * 1.18; 
+  const grandTotal = totalCost * 1.18;
 
   return (
     <PaymentDetailsContext.Provider
@@ -78,7 +81,8 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
         grandTotal,
         setPaymentDetails,
         submitPaymentDetails,
-        // paymentData,
+        setIsBackTracker,
+        isBackTracker,
       }}
     >
       {children}

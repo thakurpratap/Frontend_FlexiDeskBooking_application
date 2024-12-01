@@ -11,28 +11,28 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
-import { toast, } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
+// import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
 
-const PaymentDetails = (
-  {
+const PaymentDetails = ({
   handleControlStep,
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
-  handleControlStep: () => void;
-}
-) => {
+  handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
+}) => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState(false);
   const { dayPasses, totalCost, setPaymentDetails, submitPaymentDetails } =
     usePaymentDetailsContext();
+  const { setIsBackTracker } = usePaymentDetailsContext();
   const gstCharges = totalCost * 0.18;
   const grandTotal = totalCost + gstCharges;
   const { bookingData } = useNewBookingContext();
-      
+
   const handleMarkPaid = async () => {
     if (!paymentMethod) {
       setError(true);
@@ -49,7 +49,7 @@ const PaymentDetails = (
       });
 
       toast.success("Payment successful!");
-      handleControlStep()
+      handleControlStep("payment_success");
     } catch (error) {
       console.error("Error submitting payment details:", error);
       toast.error("Payment failed. Please try again.");
@@ -296,6 +296,10 @@ const PaymentDetails = (
                   width: "86px",
                   height: "48px",
                   padding: "12px 25px",
+                }}
+                onClick={() => {
+                  handleControlStep("booking");
+                  setIsBackTracker(true);
                 }}
               >
                 Back
