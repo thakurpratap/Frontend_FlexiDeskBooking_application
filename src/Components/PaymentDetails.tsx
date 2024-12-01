@@ -14,6 +14,7 @@ import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
 import { toast, } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
 
 const PaymentDetails = (
@@ -28,11 +29,13 @@ const PaymentDetails = (
 ) => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState(false);
-  const { dayPasses, totalCost, setPaymentDetails, submitPaymentDetails } =
+  const { dayPasses, totalCost, setPaymentDetails, submitPaymentDetails, genrateInvoice} =
     usePaymentDetailsContext();
   const gstCharges = totalCost * 0.18;
   const grandTotal = totalCost + gstCharges;
+
   const { bookingData } = useNewBookingContext();
+  const { paymentData } = usePaymentDetailsContext();
       
   const handleMarkPaid = async () => {
     if (!paymentMethod) {
@@ -40,7 +43,6 @@ const PaymentDetails = (
       return;
     }
     setError(false);
-
     try {
       await submitPaymentDetails({
         dayPasses,
@@ -48,7 +50,7 @@ const PaymentDetails = (
         grandTotal,
         paymentMethod,
       });
-
+      await genrateInvoice();
       toast.success("Payment successful!");
       handleControlStep("next")
     } catch (error) {

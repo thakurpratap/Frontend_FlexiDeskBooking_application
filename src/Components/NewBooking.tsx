@@ -218,6 +218,7 @@ const NewBooking = ({
           boxShadow: 3,
           position: "absolute",
           right: "0",
+          background :"#FFFFFF",
         }}
       >
         <Box
@@ -234,7 +235,7 @@ const NewBooking = ({
           <Typography variant="h5">New Booking</Typography>
           <ClearIcon sx={{ cursor: "pointer" }} onClick={handleClose} />
         </Box>
-        <Box sx={{ maxHeight: "600px", overflowY: "auto" }}>
+        <Box sx={{ maxHeight: "800px", overflowY: "auto" }}>
           <Box sx={{ px: "20px" }}>
             <Typography variant="h6">Booking Details</Typography>
 
@@ -311,7 +312,10 @@ const NewBooking = ({
                   >
                     <DatePicker
                       multiple
+                      // dateSeparator="to"
+                      // range
                       value={allDates.map((date) => new DateObject({ date }))}
+                      // value={allDates.map((date) => new Date(date))}
                       onChange={handleDateChange}
                       inputClass="datepicker-input"
                       style={{
