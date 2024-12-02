@@ -17,48 +17,88 @@ import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlin
 import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { DateIcon } from "../assets/AllNewBookingIcon";
 import { EditeIcon } from "../assets/icons/Desk";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
-
+import { useUpdateGuestDetailsContext } from "../context_API/UpdateCreateGuestDetailsContext";
+import { toast } from "react-toastify";
 
 const NewBooking = ({
   handleControlStep,
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
+  // handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
   handleControlStep: (direction: "next" | "back") => void;
   // handleControlStep: () => void;
 }) => {
-  const [hotDesk, setHotDesk] = useState<string>();
+  const [hotDesk, setHotDesk] = useState<string>("");
 
   const [document, setDocument] = useState<string>("");
   const [dates, setDates] = useState<Array<Date>>([]);
   const [inviteeData, setInviteeData] = useState<Array<Invitee>>([]);
   const [allDates, setAllDates] = useState<Date[]>([]);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
 
   const [selectedInvitees, setSelectedInvitees] = useState<
     Set<string | undefined>
   >(new Set());
   const [invite, setInvite] = useState<boolean>(false);
   const [invitees, setInvitees] = useState<Invitee[]>([]);
-  console.log(invitees);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  // for update
+  useEffect(() => {
+    if (isBackTracker && bookingData?.booking) {
+      setIsUpdateMode(true);
+      const initialDates =
+        bookingData?.booking?.visit_dates?.map((date: any) => new Date(date)) ||
+        [];
+      const hasInitee =
+        bookingData.booking.invitee.length > 0
+          ? bookingData.booking.invitee.map((item: any) => ({
+              invitee_name: item.invitee_name,
+              invitee_email: item.invitee_email,
+            }))
+          : [];
+      const editDetails = {
+        booking_type: bookingData.booking.booking_type,
+        guest_email: bookingData.booking.guest_email,
+        guest_name: bookingData.booking.guest_name,
+        guest_phone: bookingData.booking.guest_phone,
+        identification_id: bookingData.booking.identification_id,
+        identification_info: bookingData.booking.identification_info,
+        invitee: hasInitee,
+        special_request: bookingData.booking.special_request,
+        visit_dates: initialDates,
+        company_name: bookingData.booking.company_name,
+      };
+      setDocument(editDetails.identification_info);
+      setAllDates(initialDates);
+      setInvitees(hasInitee);
+      setHotDesk(bookingData.booking.booking_type);
+      Object.entries(editDetails).forEach(([key, value]) => {
+        setValue(key as keyof typeof editDetails, value);
+      });
+    }
+  }, [hotDesk]);
+
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm({
     mode: "onChange",
   });
-
-  const { setPaymentDetails } = usePaymentDetailsContext();
-
+  const { updateGuestDetails } = useUpdateGuestDetailsContext();
+  const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
+  const { bookingData } = useNewBookingContext();
   const dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
   const totalCost = allDates && invitees ? dayPasses * 1000 : 0;
 
@@ -70,6 +110,7 @@ const NewBooking = ({
     register: InviteeRegister,
     handleSubmit: handleInvitee,
     formState: { errors: InviteeError },
+    setValue: setFormInvitee,
     reset,
   } = useForm<Invitee>();
 
@@ -83,12 +124,13 @@ const NewBooking = ({
       setInvitees([...invitees, data]);
     }
     reset({
-      invitee_name: "", // reset invitee_name
-      invitee_email: "", // reset invitee_email
+      invitee_name: "",
+      invitee_email: "",
     });
   };
 
   const handleEditInvitee = (index: number) => {
+    setInvite(true);
     setEditingIndex(index);
     reset(invitees[index]);
   };
@@ -145,9 +187,20 @@ const NewBooking = ({
         invitee: invitees,
       };
 
+      if (isUpdateMode) {
+        await updateGuestDetails(finalData);
+        handleControlStep("next");
+        console.log("Booking updated successfully! >>>", finalData);
+        //toast.success("Booking updated successfully!");
+      } else {
+        await createNewBooking(finalData);
+        handleControlStep("next");
+        console.log("New booking created successfully! >>>", finalData);
+      }
+      //  handleControlStep("payment");
       console.log("Final Form Data:", finalData);
-      await createNewBooking(finalData);
-      handleControlStep("next");
+      // await createNewBooking(finalData);
+      // handleControlStep("next");
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -218,7 +271,7 @@ const NewBooking = ({
           boxShadow: 3,
           position: "absolute",
           right: "0",
-          background :"#FFFFFF",
+          background: "#FFFFFF",
         }}
       >
         <Box
@@ -235,7 +288,7 @@ const NewBooking = ({
           <Typography variant="h5">New Booking</Typography>
           <ClearIcon sx={{ cursor: "pointer" }} onClick={handleClose} />
         </Box>
-        <Box sx={{ maxHeight: "800px", overflowY: "auto" }}>
+        <Box sx={{ maxHeight: "600px", overflowY: "auto" }}>
           <Box sx={{ px: "20px" }}>
             <Typography variant="h6">Booking Details</Typography>
 
@@ -325,13 +378,6 @@ const NewBooking = ({
                     />
                     <DateIcon />
                   </Box>
-
-                  {/* {errors.visit_dates && (
-                      <FormHelperText sx={{ color: "#D32F2F" }}>
-                        {errors.visit_dates.message as string}
-                      </FormHelperText>
-                    )} */}
-
                   <Divider />
 
                   <Typography variant="h6">Guest Details</Typography>
@@ -411,10 +457,10 @@ const NewBooking = ({
                     })}
                     onChange={(e: SelectChangeEvent) => {
                       const selectedValue = e.target.value;
-                      setDocument(selectedValue); // Update local state
+                      setDocument(selectedValue);
                       setValue("identification_info", selectedValue, {
                         shouldValidate: true,
-                      }); // Update form value and trigger validation
+                      });
                     }}
                     error={!!errors.identification_info}
                     sx={{
@@ -680,9 +726,6 @@ const NewBooking = ({
                         }}
                       >
                         {dayPasses}
-                        {/* {allDates
-                          ? allDates.length * (invitees.length + 1)
-                          : ""} */}
                       </Box>
                     </Box>
 
@@ -700,9 +743,6 @@ const NewBooking = ({
                           color: "#A5ADBA",
                         }}
                       >
-                        {/* {allDates || invitees
-                          ? allDates.length * (invitees.length + 1) * 1000
-                          : ""} */}
                         {totalCost}
                       </Box>
                     </Box>

@@ -2,18 +2,15 @@ import { createContext, useContext } from "react";
 import axios from "axios";
 import { useMutation, UseMutateFunction } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import React,{useState} from "react"
-// type NewBookingContextType = {
-//   createNewBooking: UseMutateFunction<
-//     any,
-//     unknown,
-//     NewBookingContextData,
-//     unknown
-//   >;
-// };
+import React, { useState } from "react";
 type NewBookingContextType = {
-  createNewBooking: UseMutateFunction<any, unknown, NewBookingContextData, unknown>;
-  bookingData: any; 
+  createNewBooking: UseMutateFunction<
+    any,
+    unknown,
+    NewBookingContextData,
+    unknown
+  >;
+  bookingData: any;
 };
 type Invitee = {
   invitee_name?: string;
@@ -50,10 +47,9 @@ export const NewBookingContextProvider = ({
       return res.data;
     },
     onSuccess: (data) => {
-      toast.success(data.message || "Booking created successfully!", {
-        position: "top-right",
-       
-      });
+      // toast.success(data.message || "Booking created successfully!", {
+      //   position: "top-right",
+      // });
       console.log("Booking created successfully:", data);
     },
     onError: (error: any) => {
@@ -65,7 +61,9 @@ export const NewBookingContextProvider = ({
   });
 
   return (
-    <NewBookingContext.Provider value={{ createNewBooking: mutation.mutate,bookingData }}>
+    <NewBookingContext.Provider
+      value={{ createNewBooking: mutation.mutate, bookingData }}
+    >
       {children}
     </NewBookingContext.Provider>
   );

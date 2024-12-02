@@ -121,12 +121,21 @@ const Inventory = () => {
   console.log("bookingDetailsData", bookingDetailsData);
 
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
-  const handleCloseNewBooking = () => setIsOpenNewBooking(false);
+  const handleCloseNewBooking = () => setIsOpenNewBooking(true);
 
   const [bookingStep, setBookingStep] = useState<
     "booking" | "payment" | "payment_success"
   >("booking");
 
+  // const handleControlStep = (
+  //   step: "booking" | "payment" | "payment_success"
+  // ) => {
+  //   setBookingStep(step)
+    // if (bookingStep === "booking") {
+    //   setBookingStep("payment");
+    // } else if (bookingStep === "payment") {
+    //   setBookingStep("payment_success");
+    // }
   // const handleControlStep = () => {
   //   if (bookingStep === "booking") {
   //     setBookingStep("payment");
@@ -164,9 +173,9 @@ const Inventory = () => {
   };
   
 
-    useEffect(() => {
-      handleSearch();
-    }, [searchQuery]);
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery]);
 
     // useEffect(() => {
     //   const timer = setTimeout(() => {
@@ -242,7 +251,6 @@ const Inventory = () => {
       }
     }
   };
-
   const [dates, setDates] = useState<Array<Date>>([]);
 
   console.log(dates, "selected dates >>>>>>>>>>>>");
@@ -693,24 +701,25 @@ const Inventory = () => {
                             Resend Payment Email
                           </span>
                         </MenuItem>
-                        {/* <MenuItem
-                          onClick={handleMenuClose}
-                          sx={{ width: "224px", height: "32px" }}
-                        >
-                          <span>
-                            <EditeIcon sx={{ marginRight: "14px" }} />
-                          </span>
-                          <span
-                            style={{
-                              fontSize: "14px",
-                              padding: "2px 4px",
-                              color: "#172B4D",
-                            }}
-                          >
-                            Edit Booking
-                          </span>
-                        </MenuItem> */}
                         <MenuItem
+                        //  <MenuItem
+                        //   onClick={handleMenuClose}
+                        //   sx={{ width: "224px", height: "32px" }}
+                        // >
+                        //   <span>
+                        //     <EditeIcon sx={{ marginRight: "14px" }} />
+                        //   </span>
+                        //   <span
+                        //     style={{
+                        //       fontSize: "14px",
+                        //       padding: "2px 4px",
+                        //       color: "#172B4D",
+                        //     }}
+                        //   >
+                        //     Edit Booking
+                        //   </span>
+                        // </MenuItem> 
+                        // <MenuItem>
                           key={row._id}
                           onClick={() => handleGetBookingDetails(row)}
                           sx={{ width: "224px", height: "32px" }}
@@ -900,8 +909,7 @@ const Inventory = () => {
                 // onClose={() => false}
                 dateSeparator="to"
                 range
-                value={dates.map((date) => new DateObject({ date }))}
-                // value={dates.map((date) => new Date(date))}
+                value={dates.map((date) => new Date(date))}
                 onChange={handleDateChange}
                 render={(value, openCalendar) => (
                   <Box
