@@ -112,7 +112,7 @@ const Inventory = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
-  const [isOpenNewBooking, setIsOpenNewBooking] = useState(true);
+  const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
   const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
     useState(false);
   const [bookingDetailsData, setBookingDetailsData] =
