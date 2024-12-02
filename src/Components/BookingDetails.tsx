@@ -17,12 +17,13 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 interface BookingDetailsProps {
   bookingDetailsData: {
     _id: string;
     booking_type: string;
-    visit_dates: string[]; 
+    visit_dates: string[];
     guest_name: string;
     guest_email: string;
     guest_phone: number;
@@ -34,8 +35,8 @@ interface BookingDetailsProps {
     invitee: Invitee[];
     special_request: string;
     isActive: boolean;
-    createdAt: string; 
-    updatedAt: string; 
+    createdAt: string;
+    updatedAt: string;
     bookingId: number;
     __v: number;
     payment_id: Payment;
@@ -65,6 +66,15 @@ interface Payment {
   updatedAt: string; // ISO date string
   __v: number;
 }
+interface InviteeError {
+  invitee_name?: string;
+  invitee_email?: string;
+  invitee_phone?: string;
+}
+
+interface Errors {
+  [inviteeId: string]: InviteeError;
+}
 
 const BookingDetails: React.FC<BookingDetailsProps> = ({
   bookingDetailsData,
@@ -73,9 +83,16 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     console.log("loading...");
   }
   const [isEdit, setIsEdit] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [clearButton, setClearButton] = useState(true);
 
   const [updateData, setUpdateData] = useState(bookingDetailsData || {});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [inviteErrors, setInviteErrors] = useState<Errors>({});
+
+  const handleEditClick = () => {
+    setIsEdit(true); // Switch to edit mode
+  };
 
   const handleCloseNewBooking = () => {
     setClearButton(!clearButton);
@@ -84,26 +101,139 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    if (name === "guest_name") {
+      if (!value.trim()) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Name is required",
+        }));
+      } else if (!/^[A-Za-z\s]+$/.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Name must contain only letters",
+        }));
+      } else if (value.length < 3) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Name must be at least 3 characters",
+        }));
+      } else if (value.length > 20) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Name cannot exceed 20 characters",
+        }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      }
+    }
+
+    if (name === "guest_email") {
+      if (!value.trim()) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Email is required",
+        }));
+      } else if (!/^(?!.*\.\.)[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Enter a valid email address",
+        }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      }
+    }
+
+    if (name === "guest_phone") {
+      if (!value.trim()) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Phone number is required",
+        }));
+      } else if (!/^[6-9]\d{9}$/.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Phone number must be 10 digits and not start with 0-5",
+        }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      }
+    }
+
     setUpdateData((prevData) => ({ ...prevData, [name]: value }));
   };
+
   const handleInviteeChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     inviteeId: string
   ) => {
     const { name, value } = e.target;
 
+    // Copy current errors state
+    let updatedErrors = { ...inviteErrors };
+
+    // Validate name field
+    if (name === "invitee_name") {
+      if (!value.trim()) {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_name: "Name is required",
+        };
+      } else if (!/^(?!.*\.\.)[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_name: "Name must contain only letters",
+        };
+      } else if (value.length < 3) {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_name: "Name must be at least 3 characters",
+        };
+      } else if (value.length > 20) {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_name: "Name cannot exceed 20 characters",
+        };
+      } else {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_name: "", // Clear the error
+        };
+      }
+    }
+
+    // Validate email field
+    if (name === "invitee_email") {
+      if (!value.trim()) {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_email: "Email is required",
+        };
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_email: "Enter a valid email address",
+        };
+      } else {
+        updatedErrors[inviteeId] = {
+          ...updatedErrors[inviteeId],
+          invitee_email: "", // Clear the error
+        };
+      }
+    }
+
+    // Update the inviteErrors state with the new error messages
+    setInviteErrors(updatedErrors);
+
+    // Update the invitee data
     const updatedInvitees = updateData.invitee.map((invitee) =>
       invitee._id === inviteeId ? { ...invitee, [name]: value } : invitee
     );
-
     setUpdateData({ ...updateData, invitee: updatedInvitees });
   };
 
-  const handleUpdate = async (id: any) => {
-    setIsEdit(!isEdit);
+  const handleSaveClick = async (id: any) => {
     console.log("updateData", updateData);
-
-    // update API call here
 
     // Ensure invitee is defined and is an array before using map
     const inviteeData = Array.isArray(updateData.invitee)
@@ -133,7 +263,12 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       );
 
       console.log("Update successful:", response.data);
+
       setUpdateData(response.data.booking);
+      setIsEdit(false); // Switch to view mode after saving
+      setIsSaved(true); // Mark as saved
+
+      // Trigger the toast notification for success
 
       const apiUrlgenerateInvoice = `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${id}`;
       const generateResponse = await axios.post(apiUrlgenerateInvoice);
@@ -242,7 +377,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       },
     },
   });
-
+  if (isSaved) {
+    toast.success("Update successfully");
+  }
   return (
     <ThemeProvider theme={theme}>
       {clearButton ? (
@@ -259,7 +396,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
               height: "900px",
               maxHeight: "1000px",
               paddingBottom: "50px",
-              padding :"12px"
+              padding: "12px",
             }}
           >
             <Box
@@ -272,7 +409,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 height: "65px",
                 px: "20px",
                 borderBottom: "1px solid #E7E7E7",
-                   padding:"10px"
+                padding: "10px",
               }}
             >
               <Typography
@@ -299,8 +436,17 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                     padding: "4px 15px",
                     fontSize: "14px",
                     borderRadius: "5px",
+                    "&:hover": {
+                      backgroundColor: "#f5f5f5",
+                    },
                   }}
-                  onClick={() => handleUpdate(bookingDetailsData._id)}
+                  // Pass handleUpdate function as callback, not the result of calling it.
+                  onClick={
+                    isEdit
+                      ? () => handleSaveClick(bookingDetailsData._id)
+                      : handleEditClick
+                  }
+                  aria-label={isEdit ? "Save" : "Edit"}
                 >
                   {isEdit ? "Save" : "Edit"}
                 </Button>
@@ -352,6 +498,8 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                     name="guest_name"
                     value={updateData.guest_name}
                     onChange={handleOnChange}
+                    error={!!errors.guest_name}
+                    helperText={errors.guest_name}
                   />
                 )}
               </Typography>
@@ -368,6 +516,8 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                         name="guest_email"
                         value={updateData.guest_email}
                         onChange={handleOnChange}
+                        error={!!errors.guest_email}
+                        helperText={errors.guest_email}
                       />
                     )}
                   </Typography>
@@ -384,6 +534,8 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                         name="guest_phone"
                         value={updateData.guest_phone}
                         onChange={handleOnChange}
+                        error={!!errors.guest_phone}
+                        helperText={errors.guest_phone}
                       />
                     )}
                   </Typography>
@@ -502,11 +654,11 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
               </FormControl>
 
               <Divider />
-
               {updateData.invitee?.length > 0 ? (
                 updateData.invitee.map((inviteDetails: any) => {
+                  const inviteeErrors = inviteErrors[inviteDetails._id] || {};
                   return (
-                    <>
+                    <React.Fragment key={inviteDetails._id}>
                       <Box
                         sx={{
                           display: "flex",
@@ -528,6 +680,8 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                                 onChange={(e) =>
                                   handleInviteeChange(e, inviteDetails._id)
                                 }
+                                error={!!inviteeErrors.invitee_name}
+                                helperText={inviteeErrors.invitee_name}
                               />
                             )}
                           </Typography>
@@ -551,6 +705,8 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                                 onChange={(e) =>
                                   handleInviteeChange(e, inviteDetails._id)
                                 }
+                                error={!!inviteeErrors.invitee_email}
+                                helperText={inviteeErrors.invitee_email}
                               />
                             )}
                           </Typography>
@@ -560,7 +716,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                       <Typography variant="subtitle2">Assign Desk</Typography>
                       <FormControl fullWidth sx={{ py: "6px" }}>
                         <InputLabel
-                          sx={{ color: "black", postion: "absolute" }}
+                          sx={{ color: "black", position: "absolute" }}
                         >
                           Common Area (Default)
                         </InputLabel>
@@ -579,7 +735,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                       </FormControl>
 
                       <Divider />
-                    </>
+                    </React.Fragment>
                   );
                 })
               ) : (
