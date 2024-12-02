@@ -592,7 +592,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                   <Typography variant="body2">Payment Method</Typography>
 
                   <Typography variant="subtitle1">
-                    {bookingDetailsData.payment_id?.payment_method}
+                    {bookingDetailsData.payment_id?.payment_method ?? "Pending" }
                   </Typography>
                 </Grid>
               </Grid>
