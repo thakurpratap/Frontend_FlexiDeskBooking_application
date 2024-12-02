@@ -121,7 +121,7 @@ const Inventory = () => {
   console.log("bookingDetailsData", bookingDetailsData);
 
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
-  const handleCloseNewBooking = () => setIsOpenNewBooking(false);
+  const handleCloseNewBooking = () => setIsOpenNewBooking(true);
 
   const [bookingStep, setBookingStep] = useState<
     "booking" | "payment" | "payment_success"
