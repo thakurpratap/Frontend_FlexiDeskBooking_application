@@ -47,9 +47,9 @@ export const NewBookingContextProvider = ({
       return res.data;
     },
     onSuccess: (data) => {
-      toast.success(data.message || "Booking created successfully!", {
-        position: "top-right",
-      });
+      // toast.success(data.message || "Booking created successfully!", {
+      //   position: "top-right",
+      // });
       console.log("Booking created successfully:", data);
     },
     onError: (error: any) => {

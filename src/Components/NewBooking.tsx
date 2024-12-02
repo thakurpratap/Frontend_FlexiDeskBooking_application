@@ -191,7 +191,7 @@ const NewBooking = ({
         await updateGuestDetails(finalData);
         handleControlStep("next");
         console.log("Booking updated successfully! >>>", finalData);
-        toast.success("Booking updated successfully!");
+        //toast.success("Booking updated successfully!");
       } else {
         await createNewBooking(finalData);
         handleControlStep("next");

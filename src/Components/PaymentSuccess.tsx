@@ -3,15 +3,18 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
 import { ShareIcon, SuccessSign } from "../assets/AllNewBookingIcon";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-import { toast, } from "react-toastify";
+import { toast } from "react-toastify";
 import axios from "axios";
-import { PaymentDetailsProvider, usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
+import {
+  PaymentDetailsProvider,
+  usePaymentDetailsContext,
+} from "../context_API/PaymentDetailsContext";
 const PaymentSuccess = ({
   setIsOpenNewBooking,
-  setBookingStep
+  setBookingStep,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
-  setBookingStep : any;
+  setBookingStep: any;
 }) => {
   const theme = createTheme({
     typography: {
@@ -68,37 +71,32 @@ const PaymentSuccess = ({
   });
 
   const { paymentData } = usePaymentDetailsContext();
-  console.log(paymentData ,"payment success data ")
+  console.log(paymentData, "payment success data ");
 
+  const { payment = {} } = paymentData || {};
 
+  const {
+    booking_id = {},
+    payment_method = "N/A",
+    createdAt,
+    guest_name = "N/A",
+  } = payment;
 
-    const {
-      payment = {},
-    } = paymentData || {};
-  
-    const {
-      booking_id = {},
-      payment_method = "N/A",
-      createdAt,
-      guest_name = "N/A",
-    } = payment;
-  
-    const paymentTime = createdAt
-      ? new Date(createdAt).toLocaleString("en-US", {
-          dateStyle: "full",
-          timeStyle: "short",
-        })
-      : "Unknown";
+  const paymentTime = createdAt
+    ? new Date(createdAt).toLocaleString("en-US", {
+        dateStyle: "full",
+        timeStyle: "short",
+      })
+    : "Unknown";
 
   const handleDownloadInvoice = async () => {
-    console.log(booking_id._id, "invoice download >>>>>>>>>>>>>>>>")
-    const apiUrl =
-      `https://flexi-desk-booking.onrender.com/api/flexibooking/get-invoice-pdf/${booking_id._id}`;
+    console.log(booking_id._id, "invoice download >>>>>>>>>>>>>>>>");
+    const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/get-invoice-pdf/${booking_id._id}`;
     try {
       const response = await axios.get(apiUrl, {
         responseType: "blob",
       });
-      console.log(response ,"invoice download >>>>>>>>>>>>>>>>")
+      console.log(response, "invoice download >>>>>>>>>>>>>>>>");
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -110,6 +108,17 @@ const PaymentSuccess = ({
     } catch (error) {
       console.error("Error downloading the PDF:", error);
       toast.error("Failed to download the PDF. Please try again.");
+    }
+  };
+  const handleShareInvoice = async () => {
+    const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/send-invoice-pdf/${booking_id._id}`;
+    try {
+      await axios.post(apiUrl);
+      console.log("Share email successfully...");
+      toast.success("Share email successfully...")
+    } catch (error) {
+      toast.warning("Share email fail")
+      console.log(error);
     }
   };
 
@@ -141,11 +150,10 @@ const PaymentSuccess = ({
           <ClearIcon
             sx={{ cursor: "pointer" }}
             onClick={() => {
-              if (setIsOpenNewBooking){ 
-                setIsOpenNewBooking(false); 
-                setBookingStep("booking")
-              };
-
+              if (setIsOpenNewBooking) {
+                setIsOpenNewBooking(false);
+                setBookingStep("booking");
+              }
             }}
           />
         </Box>
@@ -171,13 +179,12 @@ const PaymentSuccess = ({
               justifyContent: "center",
               alignItems: "center",
             }}
-
           >
             <SuccessSign />
           </Box>
           <Typography variant="h4">Payment Success!</Typography>
           <Typography variant="body1" sx={{ color: "#6B778C" }}>
-          {booking_id.booking_type || "N/A"}, {paymentTime}
+            {booking_id.booking_type || "N/A"}, {paymentTime}
           </Typography>
         </Box>
 
@@ -239,6 +246,7 @@ const PaymentSuccess = ({
                 padding: "12px 25px",
               }}
               startIcon={<ShareIcon />}
+              onClick={handleShareInvoice}
             >
               Share Invoice
             </Button>

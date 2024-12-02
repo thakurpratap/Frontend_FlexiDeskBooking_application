@@ -112,7 +112,7 @@ const Inventory = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
-  const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
+  const [isOpenNewBooking, setIsOpenNewBooking] = useState(true);
   const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
     useState(false);
   const [bookingDetailsData, setBookingDetailsData] =
@@ -121,7 +121,7 @@ const Inventory = () => {
   console.log("bookingDetailsData", bookingDetailsData);
 
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
-  const handleCloseNewBooking = () => setIsOpenNewBooking(false);
+  const handleCloseNewBooking = () => setIsOpenNewBooking(true);
 
   const [bookingStep, setBookingStep] = useState<
     "booking" | "payment" | "payment_success"

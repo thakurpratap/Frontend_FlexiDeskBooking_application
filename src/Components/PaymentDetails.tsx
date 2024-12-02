@@ -258,7 +258,7 @@ const PaymentDetails = ({
                   }}
                 />
                 <Box sx={{ display: "flex" }}>
-                  <Radio value="Online" />
+                  <Radio value="Online" disabled />
                   <Typography
                     variant="body1"
                     sx={{ color: "#333", marginTop: "8px" }}
