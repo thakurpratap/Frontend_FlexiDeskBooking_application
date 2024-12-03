@@ -12,14 +12,18 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ClearIcon from "@mui/icons-material/Clear";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import axios from "axios";
 import { toast } from "react-toastify";
+import {CopyIcon,InfoIcon} from "../assets/AllNewBookingIcon"
 
 interface BookingDetailsProps {
+  setIsEdit:(edit:boolean)=>void,
+  isEdit:boolean,
   bookingDetailsData: {
     _id: string;
     booking_type: string;
@@ -78,14 +82,16 @@ interface Errors {
 
 const BookingDetails: React.FC<BookingDetailsProps> = ({
   bookingDetailsData,
+  setIsEdit,
+  isEdit
 }) => {
   if (!bookingDetailsData) {
     console.log("loading...");
   }
-  const [isEdit, setIsEdit] = useState(false);
+  
+  // const [isEdit, setIsEdit] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [clearButton, setClearButton] = useState(true);
-
   const [updateData, setUpdateData] = useState(bookingDetailsData || {});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [inviteErrors, setInviteErrors] = useState<Errors>({});
@@ -234,13 +240,14 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
   const handleSaveClick = async (id: any) => {
     console.log("updateData", updateData);
+    
 
     // Ensure invitee is defined and is an array before using map
     const inviteeData = Array.isArray(updateData.invitee)
       ? updateData.invitee.map((invitee) => ({
-          invitee_name: invitee.invitee_name,
-          invitee_email: invitee.invitee_email,
-        }))
+        invitee_name: invitee.invitee_name,
+        invitee_email: invitee.invitee_email,
+      }))
       : []; // Use an empty array if invitee is not available
 
     const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/update-booking/${id}`;
@@ -380,6 +387,30 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   if (isSaved) {
     toast.success("Update successfully");
   }
+
+  const copyContent = async (elementId: string) => {
+    try {
+      const textElement = document.getElementById(elementId);
+  
+      if (textElement) {
+        let text: string;
+  
+       
+        if (textElement instanceof HTMLInputElement || textElement instanceof HTMLTextAreaElement) {
+          text = textElement.value; // Use value for input/textarea
+        } else {
+          text = textElement.textContent || ""; // Use textContent for other elements
+        }
+  
+        // Copy text to clipboard
+        await navigator.clipboard.writeText(text);
+        // console.log("Copied to clipboard:", text);
+      }
+    } catch (error) {
+      console.error("Failed to copy:", error);
+    }
+  };
+  
   return (
     <ThemeProvider theme={theme}>
       {clearButton ? (
@@ -504,33 +535,48 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 )}
               </Typography>
 
+
               <Grid className="bookingDetals" container spacing={2}>
                 <Grid item xs={6}>
                   <Typography variant="body2">Email ID</Typography>
 
-                  <Typography variant="subtitle1">
-                    {!isEdit ? (
-                      updateData.guest_email
-                    ) : (
-                      <TextField
-                        name="guest_email"
-                        value={updateData.guest_email}
-                        onChange={handleOnChange}
-                        error={!!errors.guest_email}
-                        helperText={errors.guest_email}
-                      />
-                    )}
-                  </Typography>
+                  <Typography variant="subtitle1" sx={{display:"flex"}}> 
+                {!isEdit ? (
+                  <>
+                    <span id="guest_email_display">{updateData.guest_email}</span>
+                    <Box sx={{marginLeft:"10px"}} onClick={() => copyContent("guest_email_display")}>
+                      <CopyIcon/>
+                    </Box>
+                  </>
+                ) : (
+                  <TextField
+                    id="guest_email_input"
+                    name="guest_email"
+                    value={updateData.guest_email}
+                    onChange={handleOnChange}
+                    error={!!errors.guest_email}
+                    helperText={errors.guest_email}
+                  />
+                )}
+              </Typography>
+
                 </Grid>
 
                 <Grid item xs={6}>
                   <Typography variant="body2">Ph. No</Typography>
 
-                  <Typography variant="subtitle1">
+                  <Typography variant="subtitle1" sx={{display:"flex"}}>
                     {!isEdit ? (
-                      updateData.guest_phone
+                      <>
+                      <span id="guest_phone_input">{updateData.guest_phone}</span>
+                      <Box sx={{marginLeft:"10px"}} onClick={() => copyContent("guest_phone_input")}>
+                      <CopyIcon/>
+                      </Box>
+                    </>
+                      // updateData.guest_phone
                     ) : (
                       <TextField
+                       id="guest_phone_input"
                         name="guest_phone"
                         value={updateData.guest_phone}
                         onChange={handleOnChange}
@@ -571,9 +617,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                   <Typography variant="subtitle1">
                     {Array.isArray(bookingDetailsData.visit_dates)
                       ? bookingDetailsData.visit_dates.map(
-                          (date: string) =>
-                            new Date(date).toISOString().split("T")[0] + " "
-                        )
+                        (date: string) =>
+                          new Date(date).toISOString().split("T")[0] + " "
+                      )
                       : null}
                   </Typography>
                 </Grid>
@@ -583,16 +629,20 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                     Total Cost (Exclusive GST)
                   </Typography>
 
-                  <Typography variant="subtitle1">
+                  <Typography variant="subtitle1" sx={{display:"flex"}}>
                     ₹{bookingDetailsData.payment_id?.sub_total_cost}
+                    <Box sx={{marginLeft:"8px", marginTop:"4px"}}>
+                      <InfoIcon />
+                  </Box>
                   </Typography>
+
                 </Grid>
 
                 <Grid item xs={6}>
                   <Typography variant="body2">Payment Method</Typography>
 
                   <Typography variant="subtitle1">
-                    {bookingDetailsData.payment_id?.payment_method ?? "Pending" }
+                    {bookingDetailsData.payment_id?.payment_method ?? "Pending"}
                   </Typography>
                 </Grid>
               </Grid>
@@ -624,8 +674,14 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 Identification Information
               </Typography>
 
-              <Typography variant="subtitle1">
-                {bookingDetailsData.identification_id}
+              <Typography variant="subtitle1" sx = {{display:"flex"}}>
+                {/* {bookingDetailsData.identification_id} */}
+                <>
+                      <span id="guest_identification_id">{bookingDetailsData.identification_id}</span>
+                      <Box  sx = {{marginLeft:"10px",color:"skyblue"}} onClick={() => copyContent("guest_identification_id")}>
+                        <CopyIcon/>
+                      </Box>
+                </>
               </Typography>
 
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>

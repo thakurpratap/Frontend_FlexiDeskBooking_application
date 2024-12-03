@@ -60,9 +60,9 @@ const NewBooking = ({
       const hasInitee =
         bookingData.booking.invitee.length > 0
           ? bookingData.booking.invitee.map((item: any) => ({
-              invitee_name: item.invitee_name,
-              invitee_email: item.invitee_email,
-            }))
+            invitee_name: item.invitee_name,
+            invitee_email: item.invitee_email,
+          }))
           : [];
       const editDetails = {
         booking_type: bookingData.booking.booking_type,
@@ -165,12 +165,15 @@ const NewBooking = ({
     special_request?: string;
   };
   const { createNewBooking } = useNewBookingContext();
-
+  const [change, setChange] = useState(false);
   const handleDateChange = (dates: DateObject[] | null) => {
     if (!dates) {
+      debugger;
       setAllDates([]);
       return;
     }
+
+    setChange(!change);
     const convertedDates = dates.map((dateObject) => dateObject.toDate());
     setAllDates(convertedDates.sort());
     setValue("visit_dates", convertedDates);
@@ -267,7 +270,7 @@ const NewBooking = ({
       <Box
         sx={{
           width: "500px",
-          height: "1500px",
+          height: "95vh",
           boxShadow: 3,
           position: "absolute",
           right: "0",
@@ -288,7 +291,7 @@ const NewBooking = ({
           <Typography variant="h5">New Booking</Typography>
           <ClearIcon sx={{ cursor: "pointer" }} onClick={handleClose} />
         </Box>
-        <Box sx={{ maxHeight: "600px", overflowY: "auto" }}>
+        <Box sx={{ maxHeight: "85vh", overflowY: "auto" }}>
           <Box sx={{ px: "20px" }}>
             <Typography variant="h6">Booking Details</Typography>
 
@@ -365,6 +368,14 @@ const NewBooking = ({
                   >
                     <DatePicker
                       multiple
+                      // required = {true}
+                      // {...register("guest_phone", {
+                      //   required: "Phone is required",
+                      //   // pattern: {
+                      //   //   value: /^[0-9]{10}$/,
+                      //   //   message: "Phone number must be 10 digits",
+                      //   // },
+                      // })}
                       // dateSeparator="to"
                       // range
                       value={allDates.map((date) => new DateObject({ date }))}
@@ -432,21 +443,25 @@ const NewBooking = ({
                   {/* phone */}
                   <Typography>Ph. No.</Typography>
                   <TextField
-                    type="number"
+                    type="text"
                     fullWidth
                     placeholder="Enter Ph. No."
                     {...register("guest_phone", {
                       required: "Phone is required",
                       pattern: {
-                        value: /^[0-9]{10}$/,
-                        message: "Phone number must be 10 digits",
+                        value: /^[6-9][0-9]{9}$/,
+                        message: "Phone number must valid",
                       },
                     })}
                     error={!!errors.guest_phone}
-                    helperText={
-                      errors.guest_phone?.message as number | undefined
-                    }
+                    helperText={errors.guest_phone?.message as string | undefined}
+                    onKeyDown={(e) => {
+                      if (!/^\d$/.test(e.key) && e.key !== "Backspace" && e.key !== "Delete" && e.key !== "ArrowLeft" && e.key !== "ArrowRight") {
+                        e.preventDefault();
+                      }
+                    }}
                   />
+
                   <Typography>Identification Information</Typography>
                   <Select
                     labelId="demo-simple-select-label"
@@ -546,24 +561,24 @@ const NewBooking = ({
 
                   {document ===
                     "Aadhar Card / Pan No. / Driver’s Licence / Passport ID" && (
-                    <>
-                      <Typography>Identification Document*</Typography>
-                      <TextField
-                        type="text"
-                        fullWidth
-                        placeholder="Enter Document ID"
-                        {...register("identification_id", {
-                          required: "Document ID is required",
-                          pattern: {
-                            value: /^[A-Za-z0-9]+$/,
-                            message: "Document ID must be alphanumeric",
-                          },
-                        })}
-                        error={!!errors.identification_id}
-                        helperText={errors.identification_id?.message as string}
-                      />
-                    </>
-                  )}
+                      <>
+                        <Typography>Identification Document*</Typography>
+                        <TextField
+                          type="text"
+                          fullWidth
+                          placeholder="Enter Document ID"
+                          {...register("identification_id", {
+                            required: "Document ID is required",
+                            pattern: {
+                              value: /^[A-Za-z0-9]+$/,
+                              message: "Document ID must be alphanumeric",
+                            },
+                          })}
+                          error={!!errors.identification_id}
+                          helperText={errors.identification_id?.message as string}
+                        />
+                      </>
+                    )}
                   <Divider />
                 </FormControl>
 

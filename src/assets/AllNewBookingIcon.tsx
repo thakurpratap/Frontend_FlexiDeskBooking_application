@@ -112,3 +112,46 @@ export const editIcon = () => {
     </>
   );
 };
+
+export const CopyIcon = () => {
+  return (
+    <>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M13.125 13.125H16.875V3.125H6.875V6.875" stroke="#2F80ED" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M13.125 6.875H3.125V16.875H13.125V6.875Z" stroke="#2F80ED" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </>
+  );
+};
+
+export const InfoIcon = () => {
+  return (
+    <>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_21560_272383)">
+<path d="M8.00016 14.6666C11.6821 14.6666 14.6668 11.6818 14.6668 7.99992C14.6668 4.31802 11.6821 1.33325 8.00016 1.33325C4.31826 1.33325 1.3335 4.31802 1.3335 7.99992C1.3335 11.6818 4.31826 14.6666 8.00016 14.6666Z" stroke="#484848" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 10.6667V8" stroke="#484848" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 5.33325H8.00667" stroke="#484848" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_21560_272383">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+    </>
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
