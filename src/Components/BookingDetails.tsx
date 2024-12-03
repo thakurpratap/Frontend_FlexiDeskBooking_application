@@ -140,7 +140,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           ...prevErrors,
           [name]: "Email is required",
         }));
-      } else if (!/^(?!.*\.\.)[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      } else if (
+        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+      ) {
         setErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "Enter a valid email address",
@@ -153,7 +155,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     if (name === "identification_id") {
       // Regular expression to check for at least one uppercase letter
       const hasUppercase = /[A-Z]/.test(value);
-      
+
       if (value === "") {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -173,7 +175,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
         // Clear the error message if all validations pass
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [name]: "", 
+          [name]: "",
         }));
       }
     }
@@ -243,7 +245,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           ...updatedErrors[inviteeId],
           invitee_email: "Email is required",
         };
-      } else if (!/^(?!.*\.\.)[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      } else if (
+        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+      ) {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
           invitee_email: "Enter a valid email address",
