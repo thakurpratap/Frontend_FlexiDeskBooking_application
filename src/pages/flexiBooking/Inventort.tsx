@@ -115,6 +115,7 @@ const Inventory = () => {
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
   const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
     useState(false);
+  const[editBooking,setEditBooking]=useState(false)
   const [bookingDetailsData, setBookingDetailsData] =
     useState<BookingDetailsDataRow | null>(null);
 
@@ -433,7 +434,7 @@ const Inventory = () => {
             }}
           >
             {bookingDetailsData && (
-              <BookingDetails bookingDetailsData={bookingDetailsData} />
+              <BookingDetails bookingDetailsData={bookingDetailsData}  />
             )}
           </Box>
         </Modal>
