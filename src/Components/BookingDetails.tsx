@@ -173,7 +173,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
         // Clear the error message if all validations pass
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [name]: "", // Clear the error message
+          [name]: "", 
         }));
       }
     }
