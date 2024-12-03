@@ -18,6 +18,7 @@ import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutl
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import axios from "axios";
 import { toast } from "react-toastify";
+import formatDatesToOrdinal from "../utils/format";
 
 interface BookingDetailsProps {
   bookingDetailsData: {
@@ -103,7 +104,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     const { name, value } = e.target;
 
     if (name === "guest_name") {
-      if (!value.trim()) {
+      if (value === "") {
         setErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "Name is required",
@@ -112,6 +113,11 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
         setErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "Name must contain only letters",
+        }));
+      } else if (value.trimStart() !== value) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "No leading spaces",
         }));
       } else if (value.length < 3) {
         setErrors((prevErrors) => ({
@@ -141,6 +147,34 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
         }));
       } else {
         setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      }
+    }
+
+    if (name === "identification_id") {
+      // Regular expression to check for at least one uppercase letter
+      const hasUppercase = /[A-Z]/.test(value);
+      
+      if (value === "") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Field cannot be empty",
+        }));
+      } else if (value.length !== 15) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Must be exactly 15 characters long",
+        }));
+      } else if (!hasUppercase) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Characters Must be capital letters",
+        }));
+      } else {
+        // Clear the error message if all validations pass
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "", // Clear the error message
+        }));
       }
     }
 
@@ -174,20 +208,20 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
     // Validate name field
     if (name === "invitee_name") {
-      if (!value.trim()) {
+      if (value === "") {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
           invitee_name: "Name is required",
         };
-      } else if (!/^(?!.*\.\.)[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      } else if (!/^[A-Za-z\s]+$/.test(value)) {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
           invitee_name: "Name must contain only letters",
         };
-      } else if (value.length < 3) {
+      } else if (value.trimStart() !== value) {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
-          invitee_name: "Name must be at least 3 characters",
+          invitee_name: "No leading spaces",
         };
       } else if (value.length > 20) {
         updatedErrors[inviteeId] = {
@@ -209,7 +243,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           ...updatedErrors[inviteeId],
           invitee_email: "Email is required",
         };
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      } else if (!/^(?!.*\.\.)[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
           invitee_email: "Enter a valid email address",
@@ -234,6 +268,16 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
   const handleSaveClick = async (id: any) => {
     console.log("updateData", updateData);
+    const hasErrors = Object.values(errors).some((error) => error); // Check if there are any global errors
+    const hasInviteeErrors = Object.values(inviteErrors).some((error) =>
+      Object.values(error).some((fieldError) => fieldError)
+    ); // Check if there are any invitee errors
+
+    if (hasErrors || hasInviteeErrors) {
+      // Display an error message or simply return if there are validation errors
+      toast.error("Invalid input");
+      return; // Do not proceed with the update if there are errors
+    }
 
     // Ensure invitee is defined and is an array before using map
     const inviteeData = Array.isArray(updateData.invitee)
@@ -252,6 +296,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           guest_name: updateData.guest_name,
           guest_email: updateData.guest_email,
           guest_phone: updateData.guest_phone,
+          identification_id: updateData.identification_id,
           invitee: inviteeData,
           special_request: updateData.special_request,
         },
@@ -267,6 +312,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       setUpdateData(response.data.booking);
       setIsEdit(false); // Switch to view mode after saving
       setIsSaved(true); // Mark as saved
+      toast.success("Update successfully");
 
       // Trigger the toast notification for success
 
@@ -275,7 +321,6 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       console.log("generate invoice response", generateResponse.data);
     } catch (error) {
       console.error("Error updating booking:", error);
-      alert("Failed to update booking. Please try again.");
     }
   };
 
@@ -307,8 +352,6 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading the PDF:", error);
-
-      alert("Failed to download the PDF. Please try again.");
     }
   };
 
@@ -377,9 +420,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       },
     },
   });
-  if (isSaved) {
-    toast.success("Update successfully");
-  }
+  // if (isSaved) {
+  //   toast.success("Update successfully");
+  // }
   return (
     <ThemeProvider theme={theme}>
       {clearButton ? (
@@ -553,7 +596,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                   <Typography variant="body2">Booking Date</Typography>
 
                   <Typography variant="subtitle1">
-                    {bookingDetailsData.createdAt}
+                    {formatDatesToOrdinal([bookingDetailsData.createdAt])}
                   </Typography>
                 </Grid>
 
@@ -570,9 +613,8 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
                   <Typography variant="subtitle1">
                     {Array.isArray(bookingDetailsData.visit_dates)
-                      ? bookingDetailsData.visit_dates.map(
-                          (date: string) =>
-                            new Date(date).toISOString().split("T")[0] + " "
+                      ? bookingDetailsData.visit_dates.map((date: string) =>
+                          formatDatesToOrdinal([date])
                         )
                       : null}
                   </Typography>
@@ -592,7 +634,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                   <Typography variant="body2">Payment Method</Typography>
 
                   <Typography variant="subtitle1">
-                    {bookingDetailsData.payment_id?.payment_method ?? "Pending" }
+                    {bookingDetailsData.payment_id?.payment_method ?? "Pending"}
                   </Typography>
                 </Grid>
               </Grid>
@@ -621,11 +663,23 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
               </Typography>
 
               <Typography variant="body2">
-                Identification Information
+                {bookingDetailsData.identification_info}
               </Typography>
 
               <Typography variant="subtitle1">
-                {bookingDetailsData.identification_id}
+                {/* {bookingDetailsData.identification_id} */}
+
+                {!isEdit ? (
+                  updateData.identification_id
+                ) : (
+                  <TextField
+                    name="identification_id"
+                    value={updateData.identification_id}
+                    onChange={handleOnChange}
+                    error={!!errors.identification_id}
+                    helperText={errors.identification_id}
+                  />
+                )}
               </Typography>
 
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
