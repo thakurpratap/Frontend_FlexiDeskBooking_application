@@ -113,9 +113,8 @@ const Inventory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
-  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
-    useState(false);
-  const[editBooking,setEditBooking]=useState(false)
+  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] = useState(false);
+  const [isEdit,setIsEdit] = useState(false);
   const [bookingDetailsData, setBookingDetailsData] =
     useState<BookingDetailsDataRow | null>(null);
 
@@ -289,7 +288,15 @@ const Inventory = () => {
 
   const handleGetBookingDetails = async (row: any) => {
     setBookingDetailsData(row);
-    setIsBookingDetailsModalOpen(true)
+    setIsBookingDetailsModalOpen(true);
+    setIsEdit(true);
+    // navigate("/booking-details", { state: { row } });
+  };
+
+  const handleBookingDetails = async (row: any) => {
+    setBookingDetailsData(row);
+    setIsBookingDetailsModalOpen(true);
+    setIsEdit(false);
     // navigate("/booking-details", { state: { row } });
   };
 
@@ -434,7 +441,7 @@ const Inventory = () => {
             }}
           >
             {bookingDetailsData && (
-              <BookingDetails bookingDetailsData={bookingDetailsData}  />
+              <BookingDetails bookingDetailsData={bookingDetailsData} setIsEdit = {setIsEdit} isEdit = {isEdit} />
             )}
           </Box>
         </Modal>
@@ -544,7 +551,7 @@ const Inventory = () => {
                         lineHeight: "20.3px",
                         color: "#222222",
                       }}
-                      onClick={() => handleGetBookingDetails(row)}
+                      onClick={() => handleBookingDetails(row)}
                     >
                       {row.bookingId}
                     </TableCell>
