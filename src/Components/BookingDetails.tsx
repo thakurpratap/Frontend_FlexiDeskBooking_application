@@ -450,6 +450,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
         // Copy text to clipboard
         await navigator.clipboard.writeText(text);
+        toast.success("Copied Successfully!!")
         // console.log("Copied to clipboard:", text);
       }
     } catch (error) {
