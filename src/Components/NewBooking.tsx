@@ -54,6 +54,7 @@ const NewBooking = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   // for update
+  
   useEffect(() => {
     if (isBackTracker && bookingData?.booking) {
       setIsUpdateMode(true);
