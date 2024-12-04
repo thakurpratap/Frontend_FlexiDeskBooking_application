@@ -115,7 +115,7 @@ const NewBooking = ({
     formState: { errors: InviteeError },
     setValue: setFormInvitee,
     reset,
-  } = useForm<Invitee>({ mode: 'onChange' });
+  } = useForm<Invitee>({ mode: "onChange" });
 
   const handleSaveInvitee: SubmitHandler<Invitee> = (data: any) => {
     console.log("data", data);
@@ -205,6 +205,7 @@ const NewBooking = ({
   };
 
   const onSubmit = async (data: any) => {
+    
     try {
       const { invitee_name, invitee_email, ...rest } = data;
       const inviteeArray: Invitee[] =
@@ -472,7 +473,8 @@ const NewBooking = ({
                       required: "Name is required",
 
                       validate: (value) =>
-                        !value.startsWith(" ") || "Name should not start with a space",
+                        !value.startsWith(" ") ||
+                        "Name should not start with a space",
                       // pattern: {
                       //   value: /^(?!.*\s{2,})[A-Za-z0-9\s,./-]+$/,
                       //   message: "Name must not contain consecutive spaces or invalid characters",
@@ -618,18 +620,19 @@ const NewBooking = ({
                     <>
                       <Typography>GST ID*</Typography>
                       <TextField
-                        
                         type="text"
                         fullWidth
                         placeholder="Enter GST ID"
                         {...register("identification_id", {
                           required: "GST ID is required",
-                          maxLength : {
-                            value : 15,
-                            message : "GST ID should not be more than 15 characters"
+                          maxLength: {
+                            value: 15,
+                            message:
+                              "GST ID should not be more than 15 characters",
                           },
                           pattern: {
-                            value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+                            value:
+                              /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
                             message: "GST ID must be valid",
                           },
                         })}
@@ -658,31 +661,29 @@ const NewBooking = ({
 
                   {document ===
                     "Aadhar Card / Pan No. / Driver’s Licence / Passport ID" && (
-                      <>
-                        <Typography>Identification Document*</Typography>
-                        <TextField
-                          type="text"
-                          fullWidth
-                          placeholder="Enter Document ID"
-                          
-                          {...register("identification_id", {
-                            required: "Document ID is required",
-                            maxLength: {
-                              value: 15,
-                              message: "Document ID cannot exceed 15 characters",
-                            },
-                            pattern: {
-                              value: /^[A-Za-z0-9]+$/,
-                              message: "Document ID must be alphanumeric",
-                            },
-                          })}
-                          inputProps={{ style: { textTransform: "uppercase" } }}
-                          error={!!errors.identification_id}
-                          helperText={errors.identification_id?.message as string}
-                          
-                        />
-                      </>
-                    )}
+                    <>
+                      <Typography>Identification Document*</Typography>
+                      <TextField
+                        type="text"
+                        fullWidth
+                        placeholder="Enter Document ID"
+                        {...register("identification_id", {
+                          required: "Document ID is required",
+                          maxLength: {
+                            value: 15,
+                            message: "Document ID cannot exceed 15 characters",
+                          },
+                          pattern: {
+                            value: /^[A-Za-z0-9]+$/,
+                            message: "Document ID must be alphanumeric",
+                          },
+                        })}
+                        inputProps={{ style: { textTransform: "uppercase" } }}
+                        error={!!errors.identification_id}
+                        helperText={errors.identification_id?.message as string}
+                      />
+                    </>
+                  )}
                   <Divider />
                 </FormControl>
 
@@ -704,8 +705,7 @@ const NewBooking = ({
                       sx={{ cursor: "pointer" }}
                       onClick={() => setInvite(true)}
                     />
-                  )
-                  }
+                  )}
                 </Box>
 
                 {invite && (
@@ -718,8 +718,9 @@ const NewBooking = ({
                       {...InviteeRegister("invitee_name", {
                         required: "Name is required",
 
-                        validate: (value:any) =>
-                          !value.startsWith(" ") || "Name should not start with a space",
+                        validate: (value: any) =>
+                          !value.startsWith(" ") ||
+                          "Name should not start with a space",
                         pattern: {
                           value: /^[A-Za-z\s]+$/,
                           message: " Name must contain only letters",
@@ -878,17 +879,21 @@ const NewBooking = ({
                     type="text"
                     fullWidth
                     {...register("special_request", {
-                        maxLength: {
-      value: 15,
-      message: "Special Request cannot exceed 15 characters",
-    },
-    pattern: {
-      value: /^(?!\d+$)(?!.*\s{2,})(?!.*--)(?![-\s])[a-zA-Z0-9\s-]+$/,
-      message: "Only alphanumeric characters, spaces, and hyphens are allowed. No consecutive spaces or hyphens.",
-    },
-  })}
+                      maxLength: {
+                        value: 15,
+                        message: "Special Request cannot exceed 15 characters",
+                      },
+                      pattern: {
+                        value:
+                          /^(?!\d+$)(?!.*\s{2,})(?!.*--)(?![-\s])[a-zA-Z0-9\s-]+$/,
+                        message:
+                          "Only alphanumeric characters, spaces, and hyphens are allowed. No consecutive spaces or hyphens.",
+                      },
+                    })}
                     error={!!errors.special_request}
-                    helperText={errors.special_request?.message as string | undefined}
+                    helperText={
+                      errors.special_request?.message as string | undefined
+                    }
                   />
                 </Box>
                 <Divider />

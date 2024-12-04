@@ -245,7 +245,7 @@ const Inventory = () => {
         await searchBookings(searchQuery, dates); 
         setOpen(false);
         setSelectedBooking(null);
-        toast.success("Booking canceled successfully!");
+        toast.success("Booking cancelled successfully!");
       } catch (error) {
         toast.error("Failed to cancel booking. Please try again.");
       }
