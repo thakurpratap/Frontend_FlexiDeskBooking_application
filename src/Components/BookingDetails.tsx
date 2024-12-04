@@ -502,6 +502,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
               <Box>
                 <Button
                   variant="outlined"
+                  
                   sx={{
                     backgroundColor: "white",
                     color: "#222222",

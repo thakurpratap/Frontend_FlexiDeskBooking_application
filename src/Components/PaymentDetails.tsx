@@ -22,10 +22,12 @@ import { InfoIcon } from "../assets/AllNewBookingIcon";
 const PaymentDetails = ({
   handleControlStep,
   setIsOpenNewBooking,
+  setBookingStep,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
   //  handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
   handleControlStep: (direction: "next" | "back") => void;
+  setBookingStep: any;
 }) => {
   // handleControlStep: (direction: "next" | "back") => void;
   // handleControlStep: () => void;
@@ -154,7 +156,9 @@ const PaymentDetails = ({
           <ClearIcon
             sx={{ cursor: "pointer" }}
             onClick={() => {
-              if (setIsOpenNewBooking) setIsOpenNewBooking(false);
+              if (setIsOpenNewBooking) {
+                setIsOpenNewBooking(false) 
+                setBookingStep("booking");}
             }}
           />
         </Box>
