@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
+import { InfoIcon } from "../assets/AllNewBookingIcon";
 // import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
 
 const PaymentDetails = ({
@@ -204,7 +205,12 @@ const PaymentDetails = ({
                 </Box>
               </Box>
             </Box>
-            <Typography variant="subtitle2">GST Charges</Typography>
+            <Box sx={{display:"flex"}}>
+            <Typography variant="subtitle2" >GST Charges</Typography>
+            <Box sx={{marginTop:"10px",marginLeft:"5px"}}>
+            <InfoIcon />
+            </Box>
+            </Box>
             <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>
               18%
             </Box>

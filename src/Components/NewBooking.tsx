@@ -265,6 +265,13 @@ const NewBooking = ({
     },
   });
 
+  useEffect(() => {
+    debugger;
+    if (document !== "GST ID") {
+      setValue("company_name", ""); // Clear the field value
+    }
+  }, [document]);
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -450,7 +457,7 @@ const NewBooking = ({
                       required: "Phone is required",
                       pattern: {
                         value: /^[6-9][0-9]{9}$/,
-                        message: "Phone number must valid",
+                        message: "Phone number must be valid",
                       },
                     })}
                     error={!!errors.guest_phone}
@@ -536,6 +543,10 @@ const NewBooking = ({
                         placeholder="Enter GST ID"
                         {...register("identification_id", {
                           required: "GST ID is required",
+                          maxLength : {
+                            value : 15,
+                            message : "GST ID should not be more than 15 characters"
+                          }
                         })}
                         error={!!errors.identification_id}
                         helperText={errors.identification_id?.message as string}
@@ -567,8 +578,13 @@ const NewBooking = ({
                           type="text"
                           fullWidth
                           placeholder="Enter Document ID"
+                          
                           {...register("identification_id", {
                             required: "Document ID is required",
+                            maxLength: {
+                              value: 12,
+                              message: "Document ID cannot exceed 12 characters",
+                            },
                             pattern: {
                               value: /^[A-Za-z0-9]+$/,
                               message: "Document ID must be alphanumeric",
@@ -576,6 +592,7 @@ const NewBooking = ({
                           })}
                           error={!!errors.identification_id}
                           helperText={errors.identification_id?.message as string}
+                          
                         />
                       </>
                     )}
@@ -600,7 +617,8 @@ const NewBooking = ({
                       sx={{ cursor: "pointer" }}
                       onClick={() => setInvite(true)}
                     />
-                  )}
+                  )
+                  }
                 </Box>
 
                 {invite && (
