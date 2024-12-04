@@ -39,7 +39,7 @@ const NewBooking = ({
 
   const [document, setDocument] = useState<string>("");
   const [dates, setDates] = useState<Array<Date>>([]);
-  const [inviteeData, setInviteeData] = useState<Array<Invitee>>([]);
+  const [isSelected, setIsSelected] = useState(false);
   const [allDates, setAllDates] = useState<Date[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
@@ -104,8 +104,8 @@ const NewBooking = ({
   const { updateGuestDetails } = useUpdateGuestDetailsContext();
   const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
   const { bookingData } = useNewBookingContext();
-  const dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
-  const totalCost = allDates && invitees ? dayPasses * 1000 : 0;
+  let dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
+  let totalCost = allDates && invitees ? dayPasses * 1000 : 0;
 
   useEffect(() => {
     setPaymentDetails(dayPasses, totalCost);
@@ -117,9 +117,11 @@ const NewBooking = ({
     formState: { errors: InviteeError },
     setValue: setFormInvitee,
     reset,
-  } = useForm<Invitee>();
+  } = useForm<Invitee>({ mode: "onChange" });
 
   const handleSaveInvitee: SubmitHandler<Invitee> = (data: any) => {
+    console.log("data", data);
+
     if (editingIndex !== null) {
       const updatedInvitees = [...invitees];
       updatedInvitees[editingIndex] = data;
@@ -128,6 +130,7 @@ const NewBooking = ({
     } else {
       setInvitees([...invitees, data]);
     }
+
     reset({
       invitee_name: "",
       invitee_email: "",
@@ -141,6 +144,8 @@ const NewBooking = ({
   };
 
   const handleSelectInvitee = (invitee_email: string) => {
+    setIsSelected(true);
+
     setSelectedInvitees((prevSelectedInvitees) => {
       const updatedSelectedInvitees = new Set(prevSelectedInvitees);
       if (updatedSelectedInvitees.has(invitee_email)) {
@@ -203,6 +208,7 @@ const NewBooking = ({
   };
 
   const onSubmit = async (data: any) => {
+    
     try {
       const { invitee_name, invitee_email, ...rest } = data;
       const inviteeArray: Invitee[] =
@@ -287,6 +293,13 @@ const NewBooking = ({
       },
     },
   });
+
+  useEffect(() => {
+    debugger;
+    if (document !== "GST ID") {
+      setValue("company_name", ""); // Clear the field value
+    }
+  }, [document]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -460,16 +473,18 @@ const NewBooking = ({
                             "Name cannot start with a space"
                           );
                         },
+                      } ,
+                      maxLength: {
+                        value: 20,
+                        message: "Name cannot exceed 20 characters",
                       },
                       minLength: {
                         value: 3,
                         message: "minimum three character",
                       },
-                      maxLength: {
-                        value: 20,
-                        message: "Name cannot exceed 20 characters",
-                      },
+                    
                     })}
+                  
                     error={!!errors.guest_name}
                     helperText={
                       errors.guest_name?.message as string | undefined
@@ -515,7 +530,7 @@ const NewBooking = ({
                       required: "Phone is required",
                       pattern: {
                         value: /^[6-9][0-9]{9}$/,
-                        message: "Phone number must valid",
+                        message: "Phone number must be valid",
                       },
                     })}
                     error={!!errors.guest_phone}
@@ -609,12 +624,18 @@ const NewBooking = ({
                         placeholder="Enter GST ID"
                         {...register("identification_id", {
                           required: "GST ID is required",
-                          pattern: {
-                            value: /^[0-9A-Z]{15}$/,
+                          maxLength: {
+                            value: 15,
                             message:
-                              "GST ID must be 15 characters (uppercase letters and digits only)",
+                              "GST ID should not be more than 15 characters",
+                          },
+                          pattern: {
+                            value:
+                              /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+                            message: "GST ID must be valid",
                           },
                         })}
+                        inputProps={{ style: { textTransform: "uppercase" } }}
                         error={!!errors.identification_id}
                         helperText={errors.identification_id?.message as string}
                       />
@@ -647,6 +668,10 @@ const NewBooking = ({
                         placeholder="Enter Document ID"
                         {...register("identification_id", {
                           required: "Document ID is required",
+                          maxLength: {
+                            value: 15,
+                            message: "Document ID cannot exceed 15 characters",
+                          },
                           pattern: {
                             value: /^[A-Za-z0-9]+$/,
                             message: "Document ID must be alphanumeric",
@@ -670,6 +695,7 @@ const NewBooking = ({
                           //   }
                           // }
                         })}
+                        inputProps={{ style: { textTransform: "uppercase" } }}
                         error={!!errors.identification_id}
                         helperText={errors.identification_id?.message as string}
                       />
@@ -709,18 +735,10 @@ const NewBooking = ({
                       {...InviteeRegister("invitee_name", {
                         required: "Name is required",
                         validate: {
-                          onlyLetters: (value) => {
-                            return (
-                              /^[A-Za-z\s]+$/.test(value as string) ||
-                              "Name must contain only letters"
-                            );
-                          },
-                          noSpace: (value) => {
-                            return (
-                              !/^\s/.test(value as string) ||
-                              "Name cannot start with a space"
-                            );
-                          },
+                          onlyLetters: (value) =>
+                            /^[A-Za-z\s]+$/.test(value as string) || "Name must contain only letters",
+                          noSpace: (value) =>
+                            !/^\s/.test(value as string) || "Name cannot start with a space",
                         },
                         minLength: {
                           value: 3,
@@ -731,6 +749,7 @@ const NewBooking = ({
                           message: "Name cannot exceed 20 characters",
                         },
                       })}
+                      
                       error={!!InviteeError.invitee_name}
                       helperText={InviteeError.invitee_name?.message as string}
                     />
@@ -886,7 +905,22 @@ const NewBooking = ({
                   <TextField
                     type="text"
                     fullWidth
-                    {...register("special_request")}
+                    {...register("special_request", {
+                      maxLength: {
+                        value: 15,
+                        message: "Special Request cannot exceed 15 characters",
+                      },
+                      pattern: {
+                        value:
+                          /^(?!\d+$)(?!.*\s{2,})(?!.*--)(?![-\s])[a-zA-Z0-9\s-]+$/,
+                        message:
+                          "Only alphanumeric characters, spaces, and hyphens are allowed. No consecutive spaces or hyphens.",
+                      },
+                    })}
+                    error={!!errors.special_request}
+                    helperText={
+                      errors.special_request?.message as string | undefined
+                    }
                   />
                 </Box>
                 <Divider />
