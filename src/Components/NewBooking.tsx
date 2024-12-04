@@ -39,7 +39,7 @@ const NewBooking = ({
 
   const [document, setDocument] = useState<string>("");
   const [dates, setDates] = useState<Array<Date>>([]);
-  const [inviteeData, setInviteeData] = useState<Array<Invitee>>([]);
+  const [isSelected, setIsSelected] = useState(false);
   const [allDates, setAllDates] = useState<Date[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
@@ -63,9 +63,9 @@ const NewBooking = ({
       const hasInitee =
         bookingData.booking.invitee.length > 0
           ? bookingData.booking.invitee.map((item: any) => ({
-            invitee_name: item.invitee_name,
-            invitee_email: item.invitee_email,
-          }))
+              invitee_name: item.invitee_name,
+              invitee_email: item.invitee_email,
+            }))
           : [];
       const editDetails = {
         booking_type: bookingData.booking.booking_type,
@@ -95,15 +95,15 @@ const NewBooking = ({
     control,
     setValue,
     getValues,
-    formState: { errors , isValid},
+    formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
   });
   const { updateGuestDetails } = useUpdateGuestDetailsContext();
   const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
   const { bookingData } = useNewBookingContext();
-  const dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
-  const totalCost = allDates && invitees ? dayPasses * 1000 : 0;
+  let dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
+  let totalCost = allDates && invitees ? dayPasses * 1000 : 0;
 
   useEffect(() => {
     setPaymentDetails(dayPasses, totalCost);
@@ -115,9 +115,11 @@ const NewBooking = ({
     formState: { errors: InviteeError },
     setValue: setFormInvitee,
     reset,
-  } = useForm<Invitee>();
+  } = useForm<Invitee>({ mode: 'onChange' });
 
   const handleSaveInvitee: SubmitHandler<Invitee> = (data: any) => {
+    console.log("data", data);
+
     if (editingIndex !== null) {
       const updatedInvitees = [...invitees];
       updatedInvitees[editingIndex] = data;
@@ -126,6 +128,7 @@ const NewBooking = ({
     } else {
       setInvitees([...invitees, data]);
     }
+
     reset({
       invitee_name: "",
       invitee_email: "",
@@ -139,6 +142,8 @@ const NewBooking = ({
   };
 
   const handleSelectInvitee = (invitee_email: string) => {
+    setIsSelected(true);
+
     setSelectedInvitees((prevSelectedInvitees) => {
       const updatedSelectedInvitees = new Set(prevSelectedInvitees);
       if (updatedSelectedInvitees.has(invitee_email)) {
@@ -196,7 +201,7 @@ const NewBooking = ({
     const convertedDates = dates.map((dateObject) => dateObject.toDate());
     setAllDates(convertedDates.sort());
     setValue("visit_dates", convertedDates);
-    console.log(convertedDates, "Dates in YYYY-MM-DD format")
+    console.log(convertedDates, "Dates in YYYY-MM-DD format");
   };
 
   const onSubmit = async (data: any) => {
@@ -417,42 +422,42 @@ const NewBooking = ({
                     <DateIcon />
                   </Box> */}
 
-           <Box sx={{ display: "flex", alignItems: "center"}}>
-              <DatePicker
-              multiple
-              value={allDates.map((date) => new DateObject({ date }))}
-              onChange={handleDateChange}
-                render={(value, openCalendar) => (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      cursor: "pointer",
-                      height: "40px",
-                      width: "462px",
-                      overflow: "auto",
-                    }}
-                    onClick={openCalendar}
-                  >
-                    <input
-                      readOnly
-                      value={value}
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        flex: 1,
-                        fontSize: "16px",
-                      }}
-                      placeholder="Select dates"
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <DatePicker
+                      multiple
+                      value={allDates.map((date) => new DateObject({ date }))}
+                      onChange={handleDateChange}
+                      render={(value, openCalendar) => (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            padding: "4px 8px",
+                            cursor: "pointer",
+                            height: "40px",
+                            width: "462px",
+                            overflow: "auto",
+                          }}
+                          onClick={openCalendar}
+                        >
+                          <input
+                            readOnly
+                            value={value}
+                            style={{
+                              border: "none",
+                              outline: "none",
+                              flex: 1,
+                              fontSize: "16px",
+                            }}
+                            placeholder="Select dates"
+                          />
+                          <DateIcon />
+                        </Box>
+                      )}
                     />
-                    <DateIcon />
                   </Box>
-                )}
-              />
-            </Box>
 
                   <Divider />
 
@@ -465,18 +470,26 @@ const NewBooking = ({
                     placeholder="Enter Name"
                     {...register("guest_name", {
                       required: "Name is required",
+
+                      validate: (value) =>
+                        !value.startsWith(" ") || "Name should not start with a space",
+                      // pattern: {
+                      //   value: /^(?!.*\s{2,})[A-Za-z0-9\s,./-]+$/,
+                      //   message: "Name must not contain consecutive spaces or invalid characters",
+                      // },
                       pattern: {
                         value: /^[A-Za-z\s]+$/,
                         message: " Name must contain only letters",
                       },
-                      minLength: {
-                        value: 3,
-                        message: "minimum three character",
-                      },
+
                       maxLength: {
                         value: 20,
                         message: "Name cannot exceed 20 characters",
                       },
+                      // minLength: {
+                      //   value: 3,
+                      //   message: "minimum three character",
+                      // },
                     })}
                     error={!!errors.guest_name}
                     helperText={
@@ -518,9 +531,17 @@ const NewBooking = ({
                       },
                     })}
                     error={!!errors.guest_phone}
-                    helperText={errors.guest_phone?.message as string | undefined}
+                    helperText={
+                      errors.guest_phone?.message as string | undefined
+                    }
                     onKeyDown={(e) => {
-                      if (!/^\d$/.test(e.key) && e.key !== "Backspace" && e.key !== "Delete" && e.key !== "ArrowLeft" && e.key !== "ArrowRight") {
+                      if (
+                        !/^\d$/.test(e.key) &&
+                        e.key !== "Backspace" &&
+                        e.key !== "Delete" &&
+                        e.key !== "ArrowLeft" &&
+                        e.key !== "ArrowRight"
+                      ) {
                         e.preventDefault();
                       }
                     }}
@@ -696,14 +717,17 @@ const NewBooking = ({
                       placeholder="Enter Name"
                       {...InviteeRegister("invitee_name", {
                         required: "Name is required",
+
+                        validate: (value:any) =>
+                          !value.startsWith(" ") || "Name should not start with a space",
                         pattern: {
                           value: /^[A-Za-z\s]+$/,
                           message: " Name must contain only letters",
                         },
-                        minLength: {
-                          value: 3,
-                          message: "Minimum three characters required",
-                        },
+                        // minLength: {
+                        //   value: 3,
+                        //   message: "Minimum three characters required",
+                        // },
                         maxLength: {
                           value: 20,
                           message: "Name cannot exceed 20 characters",
@@ -853,7 +877,18 @@ const NewBooking = ({
                   <TextField
                     type="text"
                     fullWidth
-                    {...register("special_request")}
+                    {...register("special_request", {
+                        maxLength: {
+      value: 15,
+      message: "Special Request cannot exceed 15 characters",
+    },
+    pattern: {
+      value: /^(?!\d+$)(?!.*\s{2,})(?!.*--)(?![-\s])[a-zA-Z0-9\s-]+$/,
+      message: "Only alphanumeric characters, spaces, and hyphens are allowed. No consecutive spaces or hyphens.",
+    },
+  })}
+                    error={!!errors.special_request}
+                    helperText={errors.special_request?.message as string | undefined}
                   />
                 </Box>
                 <Divider />
