@@ -660,7 +660,7 @@ const Inventory = () => {
                           width: "auto",
                         }}
                       >
-                        {row.payment_id?.payment_status ? "paid" : "pending"}
+                        {row.payment_id?.payment_status ? "Paid" : "Pending"}
                       </Typography>
                     </TableCell>
 

@@ -25,7 +25,7 @@ type NewBookingContextData = {
   guest_phone: number;
   identification_info: string;
   identification_id: string;
-  company_name: string;
+  company_name?: string;
   invitee: Invitee[];
 };
 
@@ -39,6 +39,9 @@ export const NewBookingContextProvider = ({
   const [bookingData, setBookingData] = useState<any>(null);
   const mutation = useMutation({
     mutationFn: async (data: NewBookingContextData) => {
+      if(data.company_name === "" || data.identification_info==="Aadhar Card / Pan No. / Driver’s Licence / Passport ID"){
+        delete data.company_name;  
+      }
       const res = await axios.post(
         `https://flexi-desk-booking.onrender.com/api/flexibooking/add-booking`,
         data
