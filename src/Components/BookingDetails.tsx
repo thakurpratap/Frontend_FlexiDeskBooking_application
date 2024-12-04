@@ -192,10 +192,10 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           ...prevErrors,
           [name]: "Phone number is required",
         }));
-      } else if (!/^[6-9]\d{9}$/.test(value)) {
+      } else if (!/^[6-9][0-9]{9}$/.test(value)) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [name]: "Phone number must be 10 digits and not start with 0-5",
+          [name]: "Phone number must be valid",
         }));
       } else {
         setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -503,7 +503,6 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
               <Box>
                 <Button
                   variant="outlined"
-                  
                   sx={{
                     backgroundColor: "white",
                     color: "#222222",
