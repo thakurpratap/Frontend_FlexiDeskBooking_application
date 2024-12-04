@@ -17,7 +17,7 @@ import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlin
 import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { DateIcon } from "../assets/AllNewBookingIcon";
 import { EditeIcon } from "../assets/icons/Desk";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -54,7 +54,7 @@ const NewBooking = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   // for update
-  
+
   useEffect(() => {
     if (isBackTracker && bookingData?.booking) {
       setIsUpdateMode(true);
@@ -64,9 +64,9 @@ const NewBooking = ({
       const hasInitee =
         bookingData.booking.invitee.length > 0
           ? bookingData.booking.invitee.map((item: any) => ({
-            invitee_name: item.invitee_name,
-            invitee_email: item.invitee_email,
-          }))
+              invitee_name: item.invitee_name,
+              invitee_email: item.invitee_email,
+            }))
           : [];
       const editDetails = {
         booking_type: bookingData.booking.booking_type,
@@ -95,8 +95,9 @@ const NewBooking = ({
     handleSubmit,
     control,
     setValue,
+    trigger,
     getValues,
-    formState: { errors , isValid},
+    formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
   });
@@ -197,7 +198,8 @@ const NewBooking = ({
     const convertedDates = dates.map((dateObject) => dateObject.toDate());
     setAllDates(convertedDates.sort());
     setValue("visit_dates", convertedDates);
-    console.log(convertedDates, "Dates in YYYY-MM-DD format")
+    trigger("visit_dates");
+    console.log(convertedDates, "Dates in YYYY-MM-DD format");
   };
 
   const onSubmit = async (data: any) => {
@@ -377,76 +379,62 @@ const NewBooking = ({
                 <FormControl fullWidth>
                   {/* Date */}
                   <Typography>Select Date*</Typography>
-                  {/* <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      border: "1px solid #DDDDDD",
-                      padding: "8px",
-                      borderRadius: "4px",
-                      width: "20vw",
-                    }}
-                  >
-                    <DatePicker
-                      multiple
-                      // required = {true}
-                      // {...register("guest_phone", {
-                      //   required: "Phone is required",
-                      //   // pattern: {
-                      //   //   value: /^[0-9]{10}$/,
-                      //   //   message: "Phone number must be 10 digits",
-                      //   // },
-                      // })}
-                      // dateSeparator="to"
-                      // range
-                      value={allDates.map((date) => new DateObject({ date }))}
-                      onChange={handleDateChange}
-                      inputClass="datepicker-input"
-                      style={{
-                        border: "none",
-                        width: "20vw",
-                      }}
-                    />
-                    <DateIcon />
-                  </Box> */}
 
-           <Box sx={{ display: "flex", alignItems: "center"}}>
-              <DatePicker
-              multiple
-              value={allDates.map((date) => new DateObject({ date }))}
-              onChange={handleDateChange}
-                render={(value, openCalendar) => (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      cursor: "pointer",
-                      height: "40px",
-                      width: "462px",
-                      overflow: "auto",
-                    }}
-                    onClick={openCalendar}
-                  >
-                    <input
-                      readOnly
-                      value={value}
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        flex: 1,
-                        fontSize: "16px",
+                  <Box>
+                    <Controller
+                      name="visit_dates"
+                      control={control}
+                      rules={{
+                        required: "Please select at least one date",
                       }}
-                      placeholder="Select dates"
+                      render={({ field }) => (
+                        <DatePicker
+                          multiple
+                          value={allDates.map(
+                            (date) => new DateObject({ date })
+                          )}
+                          onChange={handleDateChange}
+                          render={(value, openCalendar) => (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                // border: "1px solid #ccc",
+                                borderRadius: "4px",
+                                padding: "4px 8px",
+                                cursor: "pointer",
+                                height: "40px",
+                                width: "462px",
+                                overflow: "auto",
+                                border: errors.visit_dates
+                                  ? "1px solid red"
+                                  : "1px solid #ccc",
+                              }}
+                              onClick={openCalendar}
+                            >
+                              <input
+                                readOnly
+                                value={value}
+                                style={{
+                                  border: "none",
+                                  outline: "none",
+                                  flex: 1,
+                                  fontSize: "16px",
+                                }}
+                                placeholder="Select dates"
+                              />
+                              <DateIcon />
+                            </Box>
+                          )}
+                        />
+                      )}
                     />
-                    <DateIcon />
+                    {errors.visit_dates && (
+                      <FormHelperText sx={{ color: "#D32F2F" }}>
+                        {errors.visit_dates.message as string}
+                      </FormHelperText>
+                    )}
                   </Box>
-                )}
-              />
-            </Box>
 
                   <Divider />
 
@@ -459,9 +447,19 @@ const NewBooking = ({
                     placeholder="Enter Name"
                     {...register("guest_name", {
                       required: "Name is required",
-                      pattern: {
-                        value: /^[A-Za-z\s]+$/,
-                        message: " Name must contain only letters",
+                      validate: {
+                        onlyLetters: (value) => {
+                          return (
+                            /^[A-Za-z\s]+$/.test(value) ||
+                            "Name must contain only letters"
+                          );
+                        },
+                        noSpace: (value) => {
+                          return (
+                            !/^\s/.test(value) ||
+                            "Name cannot start with a space"
+                          );
+                        },
                       },
                       minLength: {
                         value: 3,
@@ -486,10 +484,19 @@ const NewBooking = ({
                     placeholder="Enter Email ID"
                     {...register("guest_email", {
                       required: "Email is required",
-                      pattern: {
-                        value:
-                          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                        message: "Invalid email format",
+                      validate: {
+                        noSpace: (value) => {
+                          return (
+                            !/\s/.test(value) || "Email cannot contain spaces"
+                          );
+                        },
+                        InvalidFormat: (value) => {
+                          return (
+                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
+                              value
+                            ) || "Invalid email format"
+                          );
+                        },
                       },
                     })}
                     error={!!errors.guest_email}
@@ -512,9 +519,17 @@ const NewBooking = ({
                       },
                     })}
                     error={!!errors.guest_phone}
-                    helperText={errors.guest_phone?.message as string | undefined}
+                    helperText={
+                      errors.guest_phone?.message as string | undefined
+                    }
                     onKeyDown={(e) => {
-                      if (!/^\d$/.test(e.key) && e.key !== "Backspace" && e.key !== "Delete" && e.key !== "ArrowLeft" && e.key !== "ArrowRight") {
+                      if (
+                        !/^\d$/.test(e.key) &&
+                        e.key !== "Backspace" &&
+                        e.key !== "Delete" &&
+                        e.key !== "ArrowLeft" &&
+                        e.key !== "ArrowRight"
+                      ) {
                         e.preventDefault();
                       }
                     }}
@@ -531,8 +546,6 @@ const NewBooking = ({
                     onChange={(e: SelectChangeEvent) => {
                       const selectedValue = e.target.value;
                       setDocument(selectedValue);
-                      // setSelectedType(e.target.value);
-                      // setSelectedType(selectedValue);
                       setValue("identification_info", selectedValue, {
                         shouldValidate: true,
                       });
@@ -598,7 +611,8 @@ const NewBooking = ({
                           required: "GST ID is required",
                           pattern: {
                             value: /^[0-9A-Z]{15}$/,
-                            message: "GST ID must be 15 characters (uppercase letters and digits only)",
+                            message:
+                              "GST ID must be 15 characters (uppercase letters and digits only)",
                           },
                         })}
                         error={!!errors.identification_id}
@@ -641,7 +655,7 @@ const NewBooking = ({
                           //   if (!selectedType) {
                           //     return "Please select a document type"; // Handle missing type
                           //   }
-                          
+
                           //   switch (selectedType) {
                           //     case "Aadhar Card":
                           //       return /^\d{12}$/.test(value) || "Aadhar Card must be 12 digits";
@@ -655,8 +669,6 @@ const NewBooking = ({
                           //       return "Invalid type selected."; // Fallback for unexpected values
                           //   }
                           // }
-                          
-                          
                         })}
                         error={!!errors.identification_id}
                         helperText={errors.identification_id?.message as string}
@@ -696,9 +708,19 @@ const NewBooking = ({
                       placeholder="Enter Name"
                       {...InviteeRegister("invitee_name", {
                         required: "Name is required",
-                        pattern: {
-                          value: /^[A-Za-z\s]+$/,
-                          message: " Name must contain only letters",
+                        validate: {
+                          onlyLetters: (value) => {
+                            return (
+                              /^[A-Za-z\s]+$/.test(value as string) ||
+                              "Name must contain only letters"
+                            );
+                          },
+                          noSpace: (value) => {
+                            return (
+                              !/^\s/.test(value as string) ||
+                              "Name cannot start with a space"
+                            );
+                          },
                         },
                         minLength: {
                           value: 3,
@@ -719,15 +741,26 @@ const NewBooking = ({
                       placeholder="Enter Email ID"
                       {...InviteeRegister("invitee_email", {
                         required: "Email is required",
-                        pattern: {
-                          value:
-                            /^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,4}$/,
-                          message: "Invalid email format",
+                        validate: {
+                          // noSpace: (value) => {
+                          //   return (
+                          //     !/\s/.test(value || "") ||
+                          //     "Email cannot contain spaces"
+                          //   );
+                          // },
+                          InvalidFormat: (value) => {
+                            return (
+                              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
+                                value || ""
+                              ) || "Invalid email format"
+                            );
+                          },
                         },
                       })}
                       error={!!InviteeError.invitee_email}
                       helperText={InviteeError.invitee_email?.message as string}
                     />
+
                     <Box
                       sx={{
                         display: "flex",
