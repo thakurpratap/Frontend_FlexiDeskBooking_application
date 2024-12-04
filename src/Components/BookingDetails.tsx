@@ -12,19 +12,19 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ClearIcon from "@mui/icons-material/Clear";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {CopyIcon,InfoIcon} from "../assets/AllNewBookingIcon"
+import { CopyIcon, InfoIcon } from "../assets/AllNewBookingIcon";
 import formatDatesToOrdinal from "../utils/format";
 
 interface BookingDetailsProps {
-  setIsEdit:(edit:boolean)=>void,
-  isEdit:boolean,
+  setIsEdit: (edit: boolean) => void;
+  isEdit: boolean;
   bookingDetailsData: {
     _id: string;
     booking_type: string;
@@ -84,12 +84,12 @@ interface Errors {
 const BookingDetails: React.FC<BookingDetailsProps> = ({
   bookingDetailsData,
   setIsEdit,
-  isEdit
+  isEdit,
 }) => {
   if (!bookingDetailsData) {
     console.log("loading...");
   }
-  
+
   // const [isEdit, setIsEdit] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [clearButton, setClearButton] = useState(true);
@@ -130,10 +130,10 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           ...prevErrors,
           [name]: "Name must be at least 3 characters",
         }));
-      } else if (value.length > 20) {
+      } else if (value.length > 25) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [name]: "Name cannot exceed 20 characters",
+          [name]: "Name cannot exceed 25 characters",
         }));
       } else {
         setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -231,10 +231,10 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           ...updatedErrors[inviteeId],
           invitee_name: "No leading spaces",
         };
-      } else if (value.length > 20) {
+      } else if (value.length > 25) {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
-          invitee_name: "Name cannot exceed 20 characters",
+          invitee_name: "Name cannot exceed 25 characters",
         };
       } else {
         updatedErrors[inviteeId] = {
@@ -278,7 +278,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
   const handleSaveClick = async (id: any) => {
     console.log("updateData", updateData);
-    
+
     const hasErrors = Object.values(errors).some((error) => error); // Check if there are any global errors
     const hasInviteeErrors = Object.values(inviteErrors).some((error) =>
       Object.values(error).some((fieldError) => fieldError)
@@ -293,9 +293,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     // Ensure invitee is defined and is an array before using map
     const inviteeData = Array.isArray(updateData.invitee)
       ? updateData.invitee.map((invitee) => ({
-        invitee_name: invitee.invitee_name,
-        invitee_email: invitee.invitee_email,
-      }))
+          invitee_name: invitee.invitee_name,
+          invitee_email: invitee.invitee_email,
+        }))
       : []; // Use an empty array if invitee is not available
 
     const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/update-booking/${id}`;
@@ -432,21 +432,22 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     },
   });
 
-
   const copyContent = async (elementId: string) => {
     try {
       const textElement = document.getElementById(elementId);
-  
+
       if (textElement) {
         let text: string;
-  
-       
-        if (textElement instanceof HTMLInputElement || textElement instanceof HTMLTextAreaElement) {
+
+        if (
+          textElement instanceof HTMLInputElement ||
+          textElement instanceof HTMLTextAreaElement
+        ) {
           text = textElement.value; // Use value for input/textarea
         } else {
           text = textElement.textContent || ""; // Use textContent for other elements
         }
-  
+
         // Copy text to clipboard
         await navigator.clipboard.writeText(text);
         // console.log("Copied to clipboard:", text);
@@ -455,7 +456,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       console.error("Failed to copy:", error);
     }
   };
-  
+
   return (
     <ThemeProvider theme={theme}>
       {clearButton ? (
@@ -580,48 +581,56 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 )}
               </Typography>
 
-
               <Grid className="bookingDetals" container spacing={2}>
                 <Grid item xs={6}>
                   <Typography variant="body2">Email ID</Typography>
 
-                  <Typography variant="subtitle1" sx={{display:"flex"}}> 
-                {!isEdit ? (
-                  <>
-                    <span id="guest_email_display">{updateData.guest_email}</span>
-                    <Box sx={{marginLeft:"10px"}} onClick={() => copyContent("guest_email_display")}>
-                      <CopyIcon/>
-                    </Box>
-                  </>
-                ) : (
-                  <TextField
-                    id="guest_email_input"
-                    name="guest_email"
-                    value={updateData.guest_email}
-                    onChange={handleOnChange}
-                    error={!!errors.guest_email}
-                    helperText={errors.guest_email}
-                  />
-                )}
-              </Typography>
-
+                  <Typography variant="subtitle1" sx={{ display: "flex" }}>
+                    {!isEdit ? (
+                      <>
+                        <span id="guest_email_display">
+                          {updateData.guest_email}
+                        </span>
+                        <Box
+                          sx={{ marginLeft: "10px" }}
+                          onClick={() => copyContent("guest_email_display")}
+                        >
+                          <CopyIcon />
+                        </Box>
+                      </>
+                    ) : (
+                      <TextField
+                        id="guest_email_input"
+                        name="guest_email"
+                        value={updateData.guest_email}
+                        onChange={handleOnChange}
+                        error={!!errors.guest_email}
+                        helperText={errors.guest_email}
+                      />
+                    )}
+                  </Typography>
                 </Grid>
 
                 <Grid item xs={6}>
                   <Typography variant="body2">Ph. No</Typography>
 
-                  <Typography variant="subtitle1" sx={{display:"flex"}}>
+                  <Typography variant="subtitle1" sx={{ display: "flex" }}>
                     {!isEdit ? (
                       <>
-                      <span id="guest_phone_input">{updateData.guest_phone}</span>
-                      <Box sx={{marginLeft:"10px"}} onClick={() => copyContent("guest_phone_input")}>
-                      <CopyIcon/>
-                      </Box>
-                    </>
-                      // updateData.guest_phone
+                        <span id="guest_phone_input">
+                          {updateData.guest_phone}
+                        </span>
+                        <Box
+                          sx={{ marginLeft: "10px" }}
+                          onClick={() => copyContent("guest_phone_input")}
+                        >
+                          <CopyIcon />
+                        </Box>
+                      </>
                     ) : (
+                      // updateData.guest_phone
                       <TextField
-                       id="guest_phone_input"
+                        id="guest_phone_input"
                         name="guest_phone"
                         value={updateData.guest_phone}
                         onChange={handleOnChange}
@@ -673,13 +682,12 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                     Total Cost (Exclusive GST)
                   </Typography>
 
-                  <Typography variant="subtitle1" sx={{display:"flex"}}>
+                  <Typography variant="subtitle1" sx={{ display: "flex" }}>
                     ₹{bookingDetailsData.payment_id?.sub_total_cost}
-                    <Box sx={{marginLeft:"8px", marginTop:"4px"}}>
+                    <Box sx={{ marginLeft: "8px", marginTop: "4px" }}>
                       <InfoIcon />
-                  </Box>
+                    </Box>
                   </Typography>
-
                 </Grid>
 
                 <Grid item xs={6}>
@@ -718,17 +726,21 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 {bookingDetailsData.identification_info}
               </Typography>
 
-
-              <Typography variant="subtitle1" sx={{display:"flex"}}>
+              <Typography variant="subtitle1" sx={{ display: "flex" }}>
                 {/* {bookingDetailsData.identification_id} */}
 
                 {!isEdit ? (
                   <>
-                  <span id="guest_identification_id">{bookingDetailsData.identification_id}</span>
-                  <Box  sx = {{marginLeft:"10px",color:"skyblue"}} onClick={() => copyContent("guest_identification_id")}>
-                    <CopyIcon/>
-                  </Box>
-            </>
+                    <span id="guest_identification_id">
+                      {bookingDetailsData.identification_id}
+                    </span>
+                    <Box
+                      sx={{ marginLeft: "10px", color: "skyblue" }}
+                      onClick={() => copyContent("guest_identification_id")}
+                    >
+                      <CopyIcon />
+                    </Box>
+                  </>
                 ) : (
                   <TextField
                     name="identification_id"
@@ -738,13 +750,12 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                     helperText={errors.identification_id}
                   />
                 )}
-
               </Typography>
 
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between",  }}>
                 <Typography variant="subtitle2">Check-In Status</Typography>
 
-                <Switch inputProps={{ "aria-label": "controlled" }} />
+                <Switch   inputProps={{ "aria-label": "controlled" }} defaultChecked color="default" />
               </Box>
 
               <Typography variant="subtitle2">Assign Desk</Typography>
@@ -824,6 +835,19 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                             )}
                           </Typography>
                         </Box>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          
+                        }}
+                      >
+                        <Typography variant="subtitle2">
+                          Check-In Status
+                        </Typography>
+
+                        <Switch inputProps={{ "aria-label": "controlled" }} defaultChecked color="default" />
                       </Box>
 
                       <Typography variant="subtitle2">Assign Desk</Typography>
