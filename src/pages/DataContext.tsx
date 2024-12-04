@@ -44,7 +44,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const fetchBookings = async () => {
   const response = await axios.get("https://flexi-desk-booking.onrender.com/api/flexibooking?guest_name=&visit_dates=");
-  return response.data.data;
+  return response.data.data.reverse();
 };
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
