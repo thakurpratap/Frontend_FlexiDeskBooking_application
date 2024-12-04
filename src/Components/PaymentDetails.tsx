@@ -7,6 +7,7 @@ import {
   RadioGroup,
   Divider,
   Button,
+  TextField,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -45,6 +46,8 @@ const PaymentDetails = ({
   const { setIsBackTracker } = usePaymentDetailsContext();
   const gstCharges = totalCost * 0.18;
   const grandTotal = totalCost + gstCharges;
+  const [discount, setDiscount] = useState(""); 
+  const [couponCode, setCouponCode] = useState("");
 
   const { bookingData } = useNewBookingContext();
 
@@ -213,11 +216,48 @@ const PaymentDetails = ({
               18%
             </Box>
             <Typography variant="subtitle2">Discount</Typography>
-            <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>0%</Box>
+            <TextField
+              variant="outlined"
+              size="small"
+              value={discount}
+              onChange={(e) => {
+                let value = e.target.value.replace(/%/g, "").trim(); 
+                if (/^\d{0,4}$/.test(value)) { 
+                  const numericValue = parseInt(value, 10);
+                  if (!isNaN(numericValue) && numericValue >= 1 && numericValue <= 100) {
+                    setDiscount(`${numericValue}%`);
+                  } else if (value === "") {
+                    setDiscount(""); 
+                  }
+                }
+              }}
+              type="text"
+              sx={{
+                width: "100%",
+                backgroundColor: "#FAFBFC",
+                marginBottom: "10px",
+              }}
+              inputProps={{
+                min: 0,
+              }}
+            />
             <Typography variant="subtitle2">Coupon Code</Typography>
-            <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>
+            {/* <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>
               FREECOFFEE
-            </Box>
+            </Box> */}
+              <TextField
+              variant="outlined"
+              size="small"
+              value={couponCode}
+              // onChange={(e) => setCouponCode(e.target.value)}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              placeholder="Enter coupon code"
+              sx={{
+                width: "100%",
+                backgroundColor: "#FAFBFC",
+                marginBottom: "10px",
+              }}
+            />
             <Typography variant="subtitle2">Grand Total</Typography>
             <Box
               sx={{

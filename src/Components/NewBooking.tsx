@@ -458,18 +458,26 @@ const NewBooking = ({
                     placeholder="Enter Name"
                     {...register("guest_name", {
                       required: "Name is required",
+
+                      validate: (value) =>
+                        !value.startsWith(" ") || "Name should not start with a space",
+                      // pattern: {
+                      //   value: /^(?!.*\s{2,})[A-Za-z0-9\s,./-]+$/,
+                      //   message: "Name must not contain consecutive spaces or invalid characters",
+                      // },
                       pattern: {
                         value: /^[A-Za-z\s]+$/,
                         message: " Name must contain only letters",
                       },
-                      minLength: {
-                        value: 3,
-                        message: "minimum three character",
-                      },
+
                       maxLength: {
                         value: 20,
                         message: "Name cannot exceed 20 characters",
                       },
+                      // minLength: {
+                      //   value: 3,
+                      //   message: "minimum three character",
+                      // },
                     })}
                     error={!!errors.guest_name}
                     helperText={
@@ -852,7 +860,18 @@ const NewBooking = ({
                   <TextField
                     type="text"
                     fullWidth
-                    {...register("special_request")}
+                    {...register("special_request", {
+                        maxLength: {
+      value: 15,
+      message: "Special Request cannot exceed 15 characters",
+    },
+    pattern: {
+      value: /^(?!\d+$)(?!.*\s{2,})(?!.*--)(?![-\s])[a-zA-Z0-9\s-]+$/,
+      message: "Only alphanumeric characters, spaces, and hyphens are allowed. No consecutive spaces or hyphens.",
+    },
+  })}
+                    error={!!errors.special_request}
+                    helperText={errors.special_request?.message as string | undefined}
                   />
                 </Box>
                 <Divider />
