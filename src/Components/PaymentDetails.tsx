@@ -46,8 +46,9 @@ const PaymentDetails = ({
   } = usePaymentDetailsContext();
   const { setIsBackTracker } = usePaymentDetailsContext();
   const gstCharges = totalCost * 0.18;
-  const grandTotal = totalCost + gstCharges;
-  const [discount, setDiscount] = useState(""); 
+  // const grandTotal = totalCost + gstCharges;
+  const [discount, setDiscount] = useState(0); 
+  const grandTotal = totalCost - (totalCost*discount/100) + gstCharges;
   const [couponCode, setCouponCode] = useState("");
 
   const { bookingData } = useNewBookingContext();
@@ -221,7 +222,7 @@ const PaymentDetails = ({
             <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>
               18%
             </Box>
-            <Typography variant="subtitle2">Discount</Typography>
+            <Typography variant="subtitle2">Discount In %</Typography>
             <TextField
               variant="outlined"
               size="small"
@@ -231,9 +232,9 @@ const PaymentDetails = ({
                 if (/^\d{0,4}$/.test(value)) { 
                   const numericValue = parseInt(value, 10);
                   if (!isNaN(numericValue) && numericValue >= 1 && numericValue <= 100) {
-                    setDiscount(`${numericValue}%`);
+                    setDiscount(numericValue);
                   } else if (value === "") {
-                    setDiscount(""); 
+                    setDiscount(0); 
                   }
                 }
               }}
