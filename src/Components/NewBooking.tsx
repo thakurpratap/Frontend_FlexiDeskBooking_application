@@ -95,10 +95,8 @@ const NewBooking = ({
     control,
     setValue,
     getValues,
-    formState: { errors , isValid},
-  } = useForm({
-    mode: "onChange",
-  });
+    formState: { errors , isValid,},
+  } = useForm({ mode: 'onChange' });
   const { updateGuestDetails } = useUpdateGuestDetailsContext();
   const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
   const { bookingData } = useNewBookingContext();
@@ -115,7 +113,7 @@ const NewBooking = ({
     formState: { errors: InviteeError },
     setValue: setFormInvitee,
     reset,
-  } = useForm<Invitee>();
+  } = useForm<Invitee>({ mode: 'onChange' });
 
   const handleSaveInvitee: SubmitHandler<Invitee> = (data: any) => {
     if (editingIndex !== null) {
@@ -704,14 +702,17 @@ const NewBooking = ({
                       placeholder="Enter Name"
                       {...InviteeRegister("invitee_name", {
                         required: "Name is required",
+
+                        validate: (value:any) =>
+                          !value.startsWith(" ") || "Name should not start with a space",
                         pattern: {
                           value: /^[A-Za-z\s]+$/,
                           message: " Name must contain only letters",
                         },
-                        minLength: {
-                          value: 3,
-                          message: "Minimum three characters required",
-                        },
+                        // minLength: {
+                        //   value: 3,
+                        //   message: "Minimum three characters required",
+                        // },
                         maxLength: {
                           value: 20,
                           message: "Name cannot exceed 20 characters",
