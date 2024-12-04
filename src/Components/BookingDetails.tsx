@@ -524,6 +524,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                       : handleEditClick
                   }
                   aria-label={isEdit ? "Save" : "Edit"}
+                  disabled={!bookingDetailsData.isActive}
                 >
                   {isEdit ? "Save" : "Edit"}
                 </Button>
@@ -752,10 +753,14 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 )}
               </Typography>
 
-              <Box sx={{ display: "flex", justifyContent: "space-between",  }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography variant="subtitle2">Check-In Status</Typography>
 
-                <Switch   inputProps={{ "aria-label": "controlled" }} defaultChecked color="default" />
+                <Switch
+                  inputProps={{ "aria-label": "controlled" }}
+                  defaultChecked
+                  color="default"
+                />
               </Box>
 
               <Typography variant="subtitle2">Assign Desk</Typography>
@@ -840,14 +845,17 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                         sx={{
                           display: "flex",
                           justifyContent: "space-between",
-                          
                         }}
                       >
                         <Typography variant="subtitle2">
                           Check-In Status
                         </Typography>
 
-                        <Switch inputProps={{ "aria-label": "controlled" }} defaultChecked color="default" />
+                        <Switch
+                          inputProps={{ "aria-label": "controlled" }}
+                          defaultChecked
+                          color="default"
+                        />
                       </Box>
 
                       <Typography variant="subtitle2">Assign Desk</Typography>
