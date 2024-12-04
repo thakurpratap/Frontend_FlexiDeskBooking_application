@@ -416,6 +416,7 @@ const Inventory = () => {
               <PaymentDetails
                 handleControlStep={handleControlStep}
                 setIsOpenNewBooking={setIsOpenNewBooking}
+                setBookingStep = {setBookingStep}
               />
             )}
 

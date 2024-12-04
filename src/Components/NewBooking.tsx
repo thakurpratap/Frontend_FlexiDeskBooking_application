@@ -43,6 +43,9 @@ const NewBooking = ({
   const [allDates, setAllDates] = useState<Date[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
+  // const [selectedType, setSelectedType] = useState<string>("");
+  // console.log(selectedType,"selected vailidation type")
+
   const [selectedInvitees, setSelectedInvitees] = useState<
     Set<string | undefined>
   >(new Set());
@@ -92,7 +95,7 @@ const NewBooking = ({
     control,
     setValue,
     getValues,
-    formState: { errors },
+    formState: { errors , isValid},
   } = useForm({
     mode: "onChange",
   });
@@ -165,6 +168,22 @@ const NewBooking = ({
     special_request?: string;
   };
   const { createNewBooking } = useNewBookingContext();
+
+  // const handleDateChange = (dates: DateObject[] | null) => {
+  //   if (!dates) {
+  //     setAllDates([]);
+  //     return;
+  //   }
+  //   const convertedDates = dates.map((dateObject) => dateObject.toDate());
+  //   setAllDates(convertedDates.sort());
+  //   setValue("visit_dates", convertedDates);
+  // };
+
+  // const handleDateChange = (dateObject: any) => {
+  //   const convertedDates = dateObject.map(
+  //     (dateObject: any) => dateObject.toDate().toISOString().split("T")[0]
+  //   );
+
   const [change, setChange] = useState(false);
   const handleDateChange = (dates: DateObject[] | null) => {
     if (!dates) {
@@ -177,6 +196,7 @@ const NewBooking = ({
     const convertedDates = dates.map((dateObject) => dateObject.toDate());
     setAllDates(convertedDates.sort());
     setValue("visit_dates", convertedDates);
+    console.log(convertedDates, "Dates in YYYY-MM-DD format")
   };
 
   const onSubmit = async (data: any) => {
@@ -356,7 +376,7 @@ const NewBooking = ({
                 <FormControl fullWidth>
                   {/* Date */}
                   <Typography>Select Date*</Typography>
-                  <Box
+                  {/* <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
@@ -364,6 +384,7 @@ const NewBooking = ({
                       border: "1px solid #DDDDDD",
                       padding: "8px",
                       borderRadius: "4px",
+                      width: "20vw",
                     }}
                   >
                     <DatePicker
@@ -379,7 +400,6 @@ const NewBooking = ({
                       // dateSeparator="to"
                       // range
                       value={allDates.map((date) => new DateObject({ date }))}
-                      // value={allDates.map((date) => new Date(date))}
                       onChange={handleDateChange}
                       inputClass="datepicker-input"
                       style={{
@@ -388,11 +408,48 @@ const NewBooking = ({
                       }}
                     />
                     <DateIcon />
+                  </Box> */}
+
+           <Box sx={{ display: "flex", alignItems: "center"}}>
+              <DatePicker
+              multiple
+              value={allDates.map((date) => new DateObject({ date }))}
+              onChange={handleDateChange}
+                render={(value, openCalendar) => (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                      cursor: "pointer",
+                      height: "40px",
+                      width: "462px",
+                      overflow: "auto",
+                    }}
+                    onClick={openCalendar}
+                  >
+                    <input
+                      readOnly
+                      value={value}
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        flex: 1,
+                        fontSize: "16px",
+                      }}
+                      placeholder="Select dates"
+                    />
+                    <DateIcon />
                   </Box>
+                )}
+              />
+            </Box>
+
                   <Divider />
 
                   <Typography variant="h6">Guest Details</Typography>
-
                   {/* name */}
                   <Typography>Name*</Typography>
                   <TextField
@@ -473,6 +530,8 @@ const NewBooking = ({
                     onChange={(e: SelectChangeEvent) => {
                       const selectedValue = e.target.value;
                       setDocument(selectedValue);
+                      // setSelectedType(e.target.value);
+                      // setSelectedType(selectedValue);
                       setValue("identification_info", selectedValue, {
                         shouldValidate: true,
                       });
@@ -536,6 +595,10 @@ const NewBooking = ({
                         placeholder="Enter GST ID"
                         {...register("identification_id", {
                           required: "GST ID is required",
+                          pattern: {
+                            value: /^[0-9A-Z]{15}$/,
+                            message: "GST ID must be 15 characters (uppercase letters and digits only)",
+                          },
                         })}
                         error={!!errors.identification_id}
                         helperText={errors.identification_id?.message as string}
@@ -561,24 +624,44 @@ const NewBooking = ({
 
                   {document ===
                     "Aadhar Card / Pan No. / Driver’s Licence / Passport ID" && (
-                      <>
-                        <Typography>Identification Document*</Typography>
-                        <TextField
-                          type="text"
-                          fullWidth
-                          placeholder="Enter Document ID"
-                          {...register("identification_id", {
-                            required: "Document ID is required",
-                            pattern: {
-                              value: /^[A-Za-z0-9]+$/,
-                              message: "Document ID must be alphanumeric",
-                            },
-                          })}
-                          error={!!errors.identification_id}
-                          helperText={errors.identification_id?.message as string}
-                        />
-                      </>
-                    )}
+                    <>
+                      <Typography>Identification Document*</Typography>
+                      <TextField
+                        type="text"
+                        fullWidth
+                        placeholder="Enter Document ID"
+                        {...register("identification_id", {
+                          required: "Document ID is required",
+                          pattern: {
+                            value: /^[A-Za-z0-9]+$/,
+                            message: "Document ID must be alphanumeric",
+                          },
+                          // validate: (value) => {
+                          //   if (!selectedType) {
+                          //     return "Please select a document type"; // Handle missing type
+                          //   }
+                          
+                          //   switch (selectedType) {
+                          //     case "Aadhar Card":
+                          //       return /^\d{12}$/.test(value) || "Aadhar Card must be 12 digits";
+                          //     case "Pan No.":
+                          //       return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value) || "PAN No. format is invalid";
+                          //     case "Driver’s Licence":
+                          //       return /^[A-Z0-9]{8,16}$/.test(value) || "Driver's Licence must be 8-16 characters";
+                          //     case "Passport ID":
+                          //       return /^[A-Z][0-9]{7}$/.test(value) || "Passport ID format is invalid";
+                          //     default:
+                          //       return "Invalid type selected."; // Fallback for unexpected values
+                          //   }
+                          // }
+                          
+                          
+                        })}
+                        error={!!errors.identification_id}
+                        helperText={errors.identification_id?.message as string}
+                      />
+                    </>
+                  )}
                   <Divider />
                 </FormControl>
 
@@ -786,6 +869,7 @@ const NewBooking = ({
                     variant="contained"
                     sx={{ backgroundColor: "black", color: "white" }}
                     onClick={handleSubmit(onSubmit)}
+                    disabled={!isValid}
                   >
                     Next
                   </Button>
