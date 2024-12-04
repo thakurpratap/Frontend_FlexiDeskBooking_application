@@ -113,10 +113,9 @@ const Inventory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [booking_type, setBookingType] = useState("");
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
-  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
-    useState(false);
-  const [bookingDetailsData, setBookingDetailsData] =
-    useState<BookingDetailsDataRow | null>(null);
+
+  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] = useState(false);
+  const [bookingDetailsData, setBookingDetailsData] = useState<BookingDetailsDataRow | null>(null);
 
   console.log("bookingDetailsData", bookingDetailsData);
 
@@ -408,6 +407,7 @@ const Inventory = () => {
               <PaymentDetails
                 handleControlStep={handleControlStep}
                 setIsOpenNewBooking={setIsOpenNewBooking}
+                setBookingStep = {setBookingStep}
               />
             )}
 
