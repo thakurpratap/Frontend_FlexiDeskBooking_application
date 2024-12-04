@@ -39,7 +39,7 @@ const NewBooking = ({
 
   const [document, setDocument] = useState<string>("");
   const [dates, setDates] = useState<Array<Date>>([]);
-  const [inviteeData, setInviteeData] = useState<Array<Invitee>>([]);
+  const [isSelected, setIsSelected] = useState(false);
   const [allDates, setAllDates] = useState<Date[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
@@ -63,9 +63,9 @@ const NewBooking = ({
       const hasInitee =
         bookingData.booking.invitee.length > 0
           ? bookingData.booking.invitee.map((item: any) => ({
-            invitee_name: item.invitee_name,
-            invitee_email: item.invitee_email,
-          }))
+              invitee_name: item.invitee_name,
+              invitee_email: item.invitee_email,
+            }))
           : [];
       const editDetails = {
         booking_type: bookingData.booking.booking_type,
@@ -95,13 +95,15 @@ const NewBooking = ({
     control,
     setValue,
     getValues,
-    formState: { errors , isValid,},
-  } = useForm({ mode: 'onChange' });
+    formState: { errors, isValid },
+  } = useForm({
+    mode: "onChange",
+  });
   const { updateGuestDetails } = useUpdateGuestDetailsContext();
   const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
   const { bookingData } = useNewBookingContext();
-  const dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
-  const totalCost = allDates && invitees ? dayPasses * 1000 : 0;
+  let dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
+  let totalCost = allDates && invitees ? dayPasses * 1000 : 0;
 
   useEffect(() => {
     setPaymentDetails(dayPasses, totalCost);
@@ -116,6 +118,8 @@ const NewBooking = ({
   } = useForm<Invitee>({ mode: 'onChange' });
 
   const handleSaveInvitee: SubmitHandler<Invitee> = (data: any) => {
+    console.log("data", data);
+
     if (editingIndex !== null) {
       const updatedInvitees = [...invitees];
       updatedInvitees[editingIndex] = data;
@@ -124,6 +128,7 @@ const NewBooking = ({
     } else {
       setInvitees([...invitees, data]);
     }
+
     reset({
       invitee_name: "",
       invitee_email: "",
@@ -137,6 +142,8 @@ const NewBooking = ({
   };
 
   const handleSelectInvitee = (invitee_email: string) => {
+    setIsSelected(true);
+
     setSelectedInvitees((prevSelectedInvitees) => {
       const updatedSelectedInvitees = new Set(prevSelectedInvitees);
       if (updatedSelectedInvitees.has(invitee_email)) {
@@ -194,7 +201,7 @@ const NewBooking = ({
     const convertedDates = dates.map((dateObject) => dateObject.toDate());
     setAllDates(convertedDates.sort());
     setValue("visit_dates", convertedDates);
-    console.log(convertedDates, "Dates in YYYY-MM-DD format")
+    console.log(convertedDates, "Dates in YYYY-MM-DD format");
   };
 
   const onSubmit = async (data: any) => {
@@ -415,42 +422,42 @@ const NewBooking = ({
                     <DateIcon />
                   </Box> */}
 
-           <Box sx={{ display: "flex", alignItems: "center"}}>
-              <DatePicker
-              multiple
-              value={allDates.map((date) => new DateObject({ date }))}
-              onChange={handleDateChange}
-                render={(value, openCalendar) => (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      cursor: "pointer",
-                      height: "40px",
-                      width: "462px",
-                      overflow: "auto",
-                    }}
-                    onClick={openCalendar}
-                  >
-                    <input
-                      readOnly
-                      value={value}
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        flex: 1,
-                        fontSize: "16px",
-                      }}
-                      placeholder="Select dates"
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <DatePicker
+                      multiple
+                      value={allDates.map((date) => new DateObject({ date }))}
+                      onChange={handleDateChange}
+                      render={(value, openCalendar) => (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            padding: "4px 8px",
+                            cursor: "pointer",
+                            height: "40px",
+                            width: "462px",
+                            overflow: "auto",
+                          }}
+                          onClick={openCalendar}
+                        >
+                          <input
+                            readOnly
+                            value={value}
+                            style={{
+                              border: "none",
+                              outline: "none",
+                              flex: 1,
+                              fontSize: "16px",
+                            }}
+                            placeholder="Select dates"
+                          />
+                          <DateIcon />
+                        </Box>
+                      )}
                     />
-                    <DateIcon />
                   </Box>
-                )}
-              />
-            </Box>
 
                   <Divider />
 
@@ -524,9 +531,17 @@ const NewBooking = ({
                       },
                     })}
                     error={!!errors.guest_phone}
-                    helperText={errors.guest_phone?.message as string | undefined}
+                    helperText={
+                      errors.guest_phone?.message as string | undefined
+                    }
                     onKeyDown={(e) => {
-                      if (!/^\d$/.test(e.key) && e.key !== "Backspace" && e.key !== "Delete" && e.key !== "ArrowLeft" && e.key !== "ArrowRight") {
+                      if (
+                        !/^\d$/.test(e.key) &&
+                        e.key !== "Backspace" &&
+                        e.key !== "Delete" &&
+                        e.key !== "ArrowLeft" &&
+                        e.key !== "ArrowRight"
+                      ) {
                         e.preventDefault();
                       }
                     }}
