@@ -280,7 +280,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
     if (hasErrors || hasInviteeErrors) {
       // Display an error message or simply return if there are validation errors
-      toast.error("Invalid input");
+
       return; // Do not proceed with the update if there are errors
     }
 
