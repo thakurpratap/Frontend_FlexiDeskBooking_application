@@ -13,16 +13,15 @@ interface PaymentDetails {
   setIsBackTracker: (value: boolean) => void;
   // paymentData: PaymentDataDetails;
   paymentData: PaymentData | null;
-  genrateInvoice : any;
+  genrateInvoice: any;
 }
-
-
 
 interface PaymentDetailsAPI {
   dayPasses: number;
   totalCost: number;
   grandTotal: number;
   paymentMethod: string;
+  discount: number;
 
   // paymentData : any;
 }
@@ -30,9 +29,9 @@ interface PaymentDetailsAPI {
 interface PaymentData {
   paymentId: string;
   status: string;
-  payment : any;
-  booking_id : any;
-  _id : any ;
+  payment: any;
+  booking_id: any;
+  _id: any;
   // paymentData : any;
 }
 
@@ -59,6 +58,7 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
     totalCost,
     grandTotal,
     paymentMethod,
+    discount,
   }: PaymentDetailsAPI) => {
     try {
       const response = await axios.post(
@@ -67,8 +67,8 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
           day_passes: dayPasses,
           sub_total_cost: totalCost,
           grand_total: grandTotal,
-          gst_charges: 1200,
-          discount: 10,
+          gst_charges: 18,
+          discount: discount,
           coupon_code: "DISCOUNT20",
           payment_method: paymentMethod,
           payment_status: "Paid",
@@ -83,10 +83,9 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const grandTotal = totalCost * 1.18;
-  const genrateInvoice = async() => {
-    console.log(bookingData.booking._id,"booking id");
-        const apiUrl =
-      `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${bookingData.booking._id}`;
+  const genrateInvoice = async () => {
+    console.log(bookingData.booking._id, "booking id");
+    const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${bookingData.booking._id}`;
     try {
       const response = await axios.post(apiUrl);
       // const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -101,9 +100,9 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
       console.error("Error downloading the PDF:", error);
       toast.error("Failed to download the PDF. Please try again.");
     }
-  }
+  };
 
-  //const grandTotal = totalCost * 1.18; 
+  //const grandTotal = totalCost * 1.18;
 
   return (
     <PaymentDetailsContext.Provider
