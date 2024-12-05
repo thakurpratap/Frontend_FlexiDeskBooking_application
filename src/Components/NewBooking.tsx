@@ -39,16 +39,15 @@ const NewBooking = ({
   const [isSelected, setIsSelected] = useState(false);
   const [allDates, setAllDates] = useState<Date[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
-
-  const [selectedInvitees, setSelectedInvitees] = useState<
+  const [UnSelectedInvitees, setUnSelectedInvitees] = useState<
     Set<string | undefined>
   >(new Set());
+    
   const [invite, setInvite] = useState<boolean>(false);
   const [invitees, setInvitees] = useState<Invitee[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [guest_email, setGuestEmail] = useState<string>("");
-  const [Inivite_email, setInviteEmail] = useState<string>("");
 
+    
   // for update
 
   useEffect(() => {
@@ -103,7 +102,9 @@ const NewBooking = ({
   const { updateGuestDetails } = useUpdateGuestDetailsContext();
   const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
   const { bookingData } = useNewBookingContext();
-  let dayPasses = allDates ? allDates.length * (invitees.length + 1) : 0;
+
+  const inviteesCount = invitees.length - UnSelectedInvitees.size;
+  let dayPasses = allDates ? allDates.length * (inviteesCount + 1) : 0;
   let totalCost = allDates && invitees ? dayPasses * 1000 : 0;
 
   useEffect(() => {
@@ -119,8 +120,6 @@ const NewBooking = ({
   } = useForm<Invitee>({ mode: "onChange" });
 
   const handleSaveInvitee: SubmitHandler<Invitee> = (data: any) => {
-    console.log("data", data);
-
     if (editingIndex !== null) {
       const updatedInvitees = [...invitees];
       updatedInvitees[editingIndex] = data;
@@ -135,6 +134,7 @@ const NewBooking = ({
       invitee_email: "",
     });
   };
+ 
 
   const handleEditInvitee = (index: number) => {
     setInvite(true);
@@ -142,19 +142,20 @@ const NewBooking = ({
     reset(invitees[index]);
   };
 
-  const handleSelectInvitee = (invitee_email: string) => {
+  const handleUnSelectInvitee = (invitee_email:any) => {
     setIsSelected(true);
-
-    setSelectedInvitees((prevSelectedInvitees) => {
-      const updatedSelectedInvitees = new Set(prevSelectedInvitees);
-      if (updatedSelectedInvitees.has(invitee_email)) {
-        updatedSelectedInvitees.delete(invitee_email);
+    setUnSelectedInvitees((prevUnSelectedInvitees) => {
+      const updatedUnSelectedInvitees = new Set(prevUnSelectedInvitees);
+      if (updatedUnSelectedInvitees.has(invitee_email)) {
+        updatedUnSelectedInvitees.delete(invitee_email);
       } else {
-        updatedSelectedInvitees.add(invitee_email);
+        updatedUnSelectedInvitees.add(invitee_email);
       }
-      return updatedSelectedInvitees;
+      return updatedUnSelectedInvitees;
     });
+
   };
+ 
 
   type Invitee = {
     invitee_name?: string;
@@ -794,20 +795,20 @@ const NewBooking = ({
                     >
                       <Box
                         onClick={() =>
-                          handleSelectInvitee(invitee.invitee_email!)
+                          handleUnSelectInvitee(invitee.invitee_email!)
                         }
                         sx={{
                           width: 16,
                           height: 16,
                           cursor: "pointer",
-                          backgroundColor: selectedInvitees.has(
+                          backgroundColor: UnSelectedInvitees.has(
                             invitee.invitee_email
                           )
                             ? ""
                             : "",
                         }}
                       >
-                        {selectedInvitees.has(invitee.invitee_email) ? (
+                        {UnSelectedInvitees.has(invitee.invitee_email) ? (
                           <CheckBoxOutlineBlankIcon />
                         ) : (
                           <CheckBoxIcon sx={{ color: "black" }} />
