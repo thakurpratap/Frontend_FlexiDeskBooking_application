@@ -517,7 +517,7 @@ const NewBooking = ({
                   {/* Email */}
                   <Typography>Email ID*</Typography>
                   <TextField
-                    type="emai"
+                    type="text"
                     fullWidth
                     placeholder="Enter Email ID"
                     {...register("guest_email", {
@@ -744,7 +744,7 @@ const NewBooking = ({
                         //   value: 3,
                         //   message: "Minimum three characters required",
                         // },
-                        
+
                         maxLength: {
                           value: 20,
                           message: "Name cannot exceed 20 characters",
