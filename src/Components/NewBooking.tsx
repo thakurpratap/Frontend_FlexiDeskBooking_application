@@ -52,6 +52,8 @@ const NewBooking = ({
   const [invite, setInvite] = useState<boolean>(false);
   const [invitees, setInvitees] = useState<Invitee[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [guest_email, setGuestEmail] = useState<string>("");
+  const [Inivite_email, setInviteEmail] = useState<string>("");
 
   // for update
   useEffect(() => {
@@ -95,10 +97,13 @@ const NewBooking = ({
     control,
     setValue,
     getValues,
+    setError,
+    clearErrors,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
   });
+
   const { updateGuestDetails } = useUpdateGuestDetailsContext();
   const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
   const { bookingData } = useNewBookingContext();
@@ -205,9 +210,19 @@ const NewBooking = ({
   };
 
   const onSubmit = async (data: any) => {
-    
     try {
-      const { invitee_name, invitee_email, ...rest } = data;
+      const { guest_email, invitee_name, invitee_email, ...rest } = data;
+
+      // Check if guest_email and invitee_email are the same
+      if (guest_email === invitee_email) {
+        // Set an error for the invitee_email field
+        setError("invitee_email", {
+          type: "manual",
+          message: "Guest email and invitee email cannot be the same.",
+        });
+        return; // Exit if the emails are the same
+      }
+
       const inviteeArray: Invitee[] =
         invitee_name && invitee_email ? [{ invitee_name, invitee_email }] : [];
       const finalData: NewBookingContextData = {
@@ -509,7 +524,7 @@ const NewBooking = ({
                       required: "Email is required",
                       pattern: {
                         value:
-                          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                          /^(?!\s)[a-zA-Z0-9](?!.*\.\.)[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                         message: "Invalid email format",
                       },
                     })}
@@ -729,6 +744,7 @@ const NewBooking = ({
                         //   value: 3,
                         //   message: "Minimum three characters required",
                         // },
+                        
                         maxLength: {
                           value: 20,
                           message: "Name cannot exceed 20 characters",
@@ -738,21 +754,29 @@ const NewBooking = ({
                       helperText={InviteeError.invitee_name?.message as string}
                     />
                     <Typography>Email ID*</Typography>
+
                     <TextField
-                      type="email"
+                      type="text"
                       fullWidth
                       placeholder="Enter Email ID"
                       {...InviteeRegister("invitee_email", {
                         required: "Email is required",
+                        validate: (value: any) => {
+                          // Check if the email matches the guest email
+                          if (value === getValues("guest_email")) {
+                            return "Invitee email cannot be the same as guest email.";
+                          }
+                        },
                         pattern: {
                           value:
-                            /^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,4}$/,
+                            /^(?!\s)[a-zA-Z0-9](?!.*\.\.)[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                           message: "Invalid email format",
                         },
                       })}
-                      error={!!InviteeError.invitee_email}
-                      helperText={InviteeError.invitee_email?.message as string}
+                      error={!!InviteeError.invitee_email} // Display error if the error exists
+                      helperText={InviteeError.invitee_email?.message as string} // Show the error message
                     />
+
                     <Box
                       sx={{
                         display: "flex",
