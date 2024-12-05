@@ -23,6 +23,7 @@ interface PaymentDetailsAPI {
   totalCost: number;
   grandTotal: number;
   paymentMethod: string;
+  discount : number;
 
   // paymentData : any;
 }
@@ -59,6 +60,7 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
     totalCost,
     grandTotal,
     paymentMethod,
+    discount,
   }: PaymentDetailsAPI) => {
     try {
       const response = await axios.post(
@@ -67,8 +69,8 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
           day_passes: dayPasses,
           sub_total_cost: totalCost,
           grand_total: grandTotal,
-          gst_charges: 1200,
-          discount: 10,
+          gst_charges: 18,
+          discount: discount,
           coupon_code: "DISCOUNT20",
           payment_method: paymentMethod,
           payment_status: "Paid",

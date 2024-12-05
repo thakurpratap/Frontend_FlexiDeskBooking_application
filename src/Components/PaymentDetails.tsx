@@ -67,6 +67,7 @@ const PaymentDetails = ({
         totalCost,
         grandTotal,
         paymentMethod,
+        discount
       });
       await genrateInvoice();
       toast.success("Payment successful!");
