@@ -242,7 +242,7 @@ const PaymentDetails = ({
               sx={{
                 width: "100%",
                 backgroundColor: "#FAFBFC",
-                marginBottom: "10px",
+                // marginBottom: "5px",
               }}
               inputProps={{
                 min: 0,
@@ -262,7 +262,7 @@ const PaymentDetails = ({
               sx={{
                 width: "100%",
                 backgroundColor: "#FAFBFC",
-                marginBottom: "10px",
+                // marginBottom: "5px",
               }}
             />
             <Typography variant="subtitle2">Grand Total</Typography>
@@ -324,7 +324,7 @@ const PaymentDetails = ({
             className="Btn"
             sx={{
               position: "absolute",
-              bottom: "85px",
+              bottom: "75px",
               width: "100%",
             }}
           >
