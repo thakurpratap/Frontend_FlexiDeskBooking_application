@@ -45,10 +45,11 @@ const PaymentDetails = ({
     genrateInvoice,
   } = usePaymentDetailsContext();
   const { setIsBackTracker } = usePaymentDetailsContext();
-  const gstCharges = totalCost * 0.18;
   // const grandTotal = totalCost + gstCharges;
   const [discount, setDiscount] = useState(0); 
-  const grandTotal = totalCost - (totalCost*discount/100) + gstCharges;
+  const grandTotalwithDiscount = totalCost - (totalCost*discount/100);
+  const gstCharges = grandTotalwithDiscount * 0.18;
+  const grandTotal =grandTotalwithDiscount+ gstCharges;
   const [couponCode, setCouponCode] = useState("");
 
   const { bookingData } = useNewBookingContext();

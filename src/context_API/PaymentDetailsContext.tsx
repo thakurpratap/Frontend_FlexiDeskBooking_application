@@ -13,10 +13,8 @@ interface PaymentDetails {
   setIsBackTracker: (value: boolean) => void;
   // paymentData: PaymentDataDetails;
   paymentData: PaymentData | null;
-  genrateInvoice : any;
+  genrateInvoice: any;
 }
-
-
 
 interface PaymentDetailsAPI {
   dayPasses: number;
@@ -31,9 +29,9 @@ interface PaymentDetailsAPI {
 interface PaymentData {
   paymentId: string;
   status: string;
-  payment : any;
-  booking_id : any;
-  _id : any ;
+  payment: any;
+  booking_id: any;
+  _id: any;
   // paymentData : any;
 }
 
@@ -85,10 +83,9 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const grandTotal = totalCost * 1.18;
-  const genrateInvoice = async() => {
-    console.log(bookingData.booking._id,"booking id");
-        const apiUrl =
-      `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${bookingData.booking._id}`;
+  const genrateInvoice = async () => {
+    console.log(bookingData.booking._id, "booking id");
+    const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${bookingData.booking._id}`;
     try {
       const response = await axios.post(apiUrl);
       // const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -103,9 +100,9 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
       console.error("Error downloading the PDF:", error);
       toast.error("Failed to download the PDF. Please try again.");
     }
-  }
+  };
 
-  //const grandTotal = totalCost * 1.18; 
+  //const grandTotal = totalCost * 1.18;
 
   return (
     <PaymentDetailsContext.Provider
