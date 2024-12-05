@@ -744,6 +744,7 @@ const NewBooking = ({
                         //   value: 3,
                         //   message: "Minimum three characters required",
                         // },
+                        
                         maxLength: {
                           value: 20,
                           message: "Name cannot exceed 20 characters",
