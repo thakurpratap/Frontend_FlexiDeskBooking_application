@@ -24,16 +24,13 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
 import { useUpdateGuestDetailsContext } from "../context_API/UpdateCreateGuestDetailsContext";
-import { toast } from "react-toastify";
 
 const NewBooking = ({
   handleControlStep,
   setIsOpenNewBooking,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
-  // handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
   handleControlStep: (direction: "next" | "back") => void;
-  // handleControlStep: () => void;
 }) => {
   const [hotDesk, setHotDesk] = useState<string>("");
 
@@ -42,9 +39,6 @@ const NewBooking = ({
   const [isSelected, setIsSelected] = useState(false);
   const [allDates, setAllDates] = useState<Date[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
-
-  // const [selectedType, setSelectedType] = useState<string>("");
-  // console.log(selectedType,"selected vailidation type")
 
   const [selectedInvitees, setSelectedInvitees] = useState<
     Set<string | undefined>
@@ -96,11 +90,11 @@ const NewBooking = ({
     control,
     setValue,
     trigger,
-    getValues,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
   });
+
   const { updateGuestDetails } = useUpdateGuestDetailsContext();
   const { setPaymentDetails, isBackTracker } = usePaymentDetailsContext();
   const { bookingData } = useNewBookingContext();
@@ -176,21 +170,6 @@ const NewBooking = ({
   };
   const { createNewBooking } = useNewBookingContext();
 
-  // const handleDateChange = (dates: DateObject[] | null) => {
-  //   if (!dates) {
-  //     setAllDates([]);
-  //     return;
-  //   }
-  //   const convertedDates = dates.map((dateObject) => dateObject.toDate());
-  //   setAllDates(convertedDates.sort());
-  //   setValue("visit_dates", convertedDates);
-  // };
-
-  // const handleDateChange = (dateObject: any) => {
-  //   const convertedDates = dateObject.map(
-  //     (dateObject: any) => dateObject.toDate().toISOString().split("T")[0]
-  //   );
-
   const [change, setChange] = useState(false);
   const handleDateChange = (dates: DateObject[] | null) => {
     if (!dates) {
@@ -208,7 +187,6 @@ const NewBooking = ({
   };
 
   const onSubmit = async (data: any) => {
-    
     try {
       const { invitee_name, invitee_email, ...rest } = data;
       const inviteeArray: Invitee[] =
@@ -295,11 +273,18 @@ const NewBooking = ({
   });
 
   useEffect(() => {
-    debugger;
-    if (document !== "GST ID") {
-      setValue("company_name", ""); // Clear the field value
+    if (!isBackTracker) {
+      if (document === "GST ID") {
+        setValue("identification_id", "");
+        setValue("company_name", "");
+      } else if (
+        document === "Aadhar Card / Pan No. / Driver’s Licence / Passport ID"
+      ) {
+        setValue("company_name", "");
+        setValue("identification_id", "");
+      }
     }
-  }, [document]);
+  }, [document, setValue, isBackTracker]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -412,7 +397,6 @@ const NewBooking = ({
                               sx={{
                                 display: "flex",
                                 alignItems: "center",
-                                // border: "1px solid #ccc",
                                 borderRadius: "4px",
                                 padding: "4px 8px",
                                 cursor: "pointer",
@@ -473,7 +457,7 @@ const NewBooking = ({
                             "Name cannot start with a space"
                           );
                         },
-                      } ,
+                      },
                       maxLength: {
                         value: 20,
                         message: "Name cannot exceed 20 characters",
@@ -482,9 +466,7 @@ const NewBooking = ({
                         value: 3,
                         message: "minimum three character",
                       },
-                    
                     })}
-                  
                     error={!!errors.guest_name}
                     helperText={
                       errors.guest_name?.message as string | undefined
@@ -609,6 +591,7 @@ const NewBooking = ({
                       Aadhar Card / Pan No. / Driver’s Licence / Passport ID
                     </MenuItem>
                   </Select>
+
                   {errors.identification_info && (
                     <FormHelperText sx={{ color: "#D32F2F" }}>
                       {errors.identification_info.message as string}
@@ -676,24 +659,6 @@ const NewBooking = ({
                             value: /^[A-Za-z0-9]+$/,
                             message: "Document ID must be alphanumeric",
                           },
-                          // validate: (value) => {
-                          //   if (!selectedType) {
-                          //     return "Please select a document type"; // Handle missing type
-                          //   }
-
-                          //   switch (selectedType) {
-                          //     case "Aadhar Card":
-                          //       return /^\d{12}$/.test(value) || "Aadhar Card must be 12 digits";
-                          //     case "Pan No.":
-                          //       return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value) || "PAN No. format is invalid";
-                          //     case "Driver’s Licence":
-                          //       return /^[A-Z0-9]{8,16}$/.test(value) || "Driver's Licence must be 8-16 characters";
-                          //     case "Passport ID":
-                          //       return /^[A-Z][0-9]{7}$/.test(value) || "Passport ID format is invalid";
-                          //     default:
-                          //       return "Invalid type selected."; // Fallback for unexpected values
-                          //   }
-                          // }
                         })}
                         inputProps={{ style: { textTransform: "uppercase" } }}
                         error={!!errors.identification_id}
@@ -701,6 +666,7 @@ const NewBooking = ({
                       />
                     </>
                   )}
+
                   <Divider />
                 </FormControl>
 
@@ -736,9 +702,11 @@ const NewBooking = ({
                         required: "Name is required",
                         validate: {
                           onlyLetters: (value) =>
-                            /^[A-Za-z\s]+$/.test(value as string) || "Name must contain only letters",
+                            /^[A-Za-z\s]+$/.test(value as string) ||
+                            "Name must contain only letters",
                           noSpace: (value) =>
-                            !/^\s/.test(value as string) || "Name cannot start with a space",
+                            !/^\s/.test(value as string) ||
+                            "Name cannot start with a space",
                         },
                         minLength: {
                           value: 3,
@@ -749,7 +717,6 @@ const NewBooking = ({
                           message: "Name cannot exceed 20 characters",
                         },
                       })}
-                      
                       error={!!InviteeError.invitee_name}
                       helperText={InviteeError.invitee_name?.message as string}
                     />
@@ -761,12 +728,6 @@ const NewBooking = ({
                       {...InviteeRegister("invitee_email", {
                         required: "Email is required",
                         validate: {
-                          // noSpace: (value) => {
-                          //   return (
-                          //     !/\s/.test(value || "") ||
-                          //     "Email cannot contain spaces"
-                          //   );
-                          // },
                           InvalidFormat: (value) => {
                             return (
                               /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(

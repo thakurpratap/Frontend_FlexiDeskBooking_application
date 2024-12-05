@@ -118,31 +118,12 @@ const Inventory = () => {
   const [bookingDetailsData, setBookingDetailsData] =
     useState<BookingDetailsDataRow | null>(null);
 
-  console.log("bookingDetailsData", bookingDetailsData);
-
   const handleOpenNewBooking = () => setIsOpenNewBooking(true);
   const handleCloseNewBooking = () => setIsOpenNewBooking(true);
 
   const [bookingStep, setBookingStep] = useState<
     "booking" | "payment" | "payment_success"
   >("booking");
-
-  // const handleControlStep = (
-  //   step: "booking" | "payment" | "payment_success"
-  // ) => {
-  //   setBookingStep(step)
-    // if (bookingStep === "booking") {
-    //   setBookingStep("payment");
-    // } else if (bookingStep === "payment") {
-    //   setBookingStep("payment_success");
-    // }
-  // const handleControlStep = () => {
-  //   if (bookingStep === "booking") {
-  //     setBookingStep("payment");
-  //   } else if (bookingStep === "payment") {
-  //     setBookingStep("payment_success");
-  //   }
-  // };
 
   const handleControlStep = (direction: "next" | "back") => {
     if (direction === "next") {
@@ -177,16 +158,6 @@ const Inventory = () => {
     handleSearch();
   }, [searchQuery]);
 
-    // useEffect(() => {
-    //   const timer = setTimeout(() => {
-    //     if (searchQuery.trim() || dates.length > 0) {
-    //       searchBookings(searchQuery, dates);
-    //     }
-    //   }, 500); // 500ms debounce time
-  
-    //   return () => clearTimeout(timer); // Cleanup the timeout on every re-render
-    // }, [searchQuery]);
-
   const displayedData =
     searchResults && searchResults.length > 0
       ? searchResults
@@ -218,7 +189,6 @@ const Inventory = () => {
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
 
   const handleOpenDialog = (booking: any, bookingdata: any) => {
-    console.log(booking, ">>>>>>>>>>>>>>>>>>>booking 75");
     setBookingType(bookingdata.booking_type);
     setSelectedBooking(booking);
     setOpen(true);
@@ -229,15 +199,6 @@ const Inventory = () => {
     setSelectedBooking(null);
   };
 
-  // const handleConfirmCancel = async () => {
-  //   if (selectedBooking) {
-  //     await handleUpdateBooking(selectedBooking); 
-  //     setOpen(false);
-  //     setSelectedBooking(null);
-  //     toast.success("Booking canceled successfully!");
-  //   }
-  // };
-
   const handleConfirmCancel = async () => {
     if (selectedBooking) {
       try {
@@ -245,7 +206,7 @@ const Inventory = () => {
         await searchBookings(searchQuery, dates); 
         setOpen(false);
         setSelectedBooking(null);
-        toast.success("Booking canceled successfully!");
+        toast.success("Booking cancelled successfully!");
       } catch (error) {
         toast.error("Failed to cancel booking. Please try again.");
       }
@@ -253,14 +214,11 @@ const Inventory = () => {
   };
   const [dates, setDates] = useState<Array<Date>>([]);
 
-  console.log(dates, "selected dates >>>>>>>>>>>>");
-
   const handleDateChange = (selectedDates: any) => {
     const convertedDates = selectedDates.map(
       (date: any) => date.toDate().toISOString().split("T")[0]
     );
     setDates(convertedDates);
-    console.log(convertedDates, "Dates in YYYY-MM-DD format");
   };
 
   const [bookingTypes, setBookingTypes] = useState("Hot Desk");
@@ -290,14 +248,12 @@ const Inventory = () => {
     setBookingDetailsData(row);
     setIsBookingDetailsModalOpen(true);
     setIsEdit(true);
-    // navigate("/booking-details", { state: { row } });
   };
 
   const handleBookingDetails = async (row: any) => {
     setBookingDetailsData(row);
     setIsBookingDetailsModalOpen(true);
     setIsEdit(false);
-    // navigate("/booking-details", { state: { row } });
   };
 
   const handleOpenBookingDetailsModal = () => {
@@ -711,24 +667,6 @@ const Inventory = () => {
                           </span>
                         </MenuItem>
                         <MenuItem
-                        //  <MenuItem
-                        //   onClick={handleMenuClose}
-                        //   sx={{ width: "224px", height: "32px" }}
-                        // >
-                        //   <span>
-                        //     <EditeIcon sx={{ marginRight: "14px" }} />
-                        //   </span>
-                        //   <span
-                        //     style={{
-                        //       fontSize: "14px",
-                        //       padding: "2px 4px",
-                        //       color: "#172B4D",
-                        //     }}
-                        //   >
-                        //     Edit Booking
-                        //   </span>
-                        // </MenuItem> 
-                        // <MenuItem>
                           key={row._id}
                           onClick={() => handleGetBookingDetails(row)}
                           sx={{ width: "224px", height: "32px" }}
