@@ -147,7 +147,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           [name]: "Email is required",
         }));
       } else if (
-        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+        !/^(?!\s)[a-zA-Z0-9](?!.*\.\.)[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+          value
+        )
       ) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -159,23 +161,15 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     }
 
     if (name === "identification_id") {
-      // Regular expression to check for at least one uppercase letter
-      const hasUppercase = /[A-Z]/.test(value);
-
       if (value === "") {
         setErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "Field cannot be empty",
         }));
-      } else if (value.length !== 15) {
+      } else if (value.length > 15) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [name]: "Must be exactly 15 characters long",
-        }));
-      } else if (!hasUppercase) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "Characters Must be capital letters",
+          [name]: "ID must be at most 15 characters long",
         }));
       } else {
         // Clear the error message if all validations pass
