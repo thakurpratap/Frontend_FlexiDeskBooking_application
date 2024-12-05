@@ -46,6 +46,8 @@ const NewBooking = ({
   const [invite, setInvite] = useState<boolean>(false);
   const [invitees, setInvitees] = useState<Invitee[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [guest_email, setGuestEmail] = useState<string>("");
+  const [Inivite_email, setInviteEmail] = useState<string>("");
 
   // for update
 
@@ -90,6 +92,9 @@ const NewBooking = ({
     control,
     setValue,
     trigger,
+    getValues,
+    setError,
+    clearErrors,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
@@ -189,6 +194,7 @@ const NewBooking = ({
   const onSubmit = async (data: any) => {
     try {
       const { invitee_name, invitee_email, ...rest } = data;
+
       const inviteeArray: Invitee[] =
         invitee_name && invitee_email ? [{ invitee_name, invitee_email }] : [];
       const finalData: NewBookingContextData = {
@@ -476,7 +482,7 @@ const NewBooking = ({
                   {/* Email */}
                   <Typography>Email ID*</Typography>
                   <TextField
-                    type="emai"
+                    type="text"
                     fullWidth
                     placeholder="Enter Email ID"
                     {...register("guest_email", {
@@ -489,7 +495,7 @@ const NewBooking = ({
                         },
                         InvalidFormat: (value) => {
                           return (
-                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
+                            /^(?!\s)[a-zA-Z0-9](?!.*\.\.)[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
                               value
                             ) || "Invalid email format"
                           );
@@ -721,24 +727,27 @@ const NewBooking = ({
                       helperText={InviteeError.invitee_name?.message as string}
                     />
                     <Typography>Email ID*</Typography>
+
                     <TextField
-                      type="email"
+                      type="text"
                       fullWidth
                       placeholder="Enter Email ID"
                       {...InviteeRegister("invitee_email", {
                         required: "Email is required",
-                        validate: {
-                          InvalidFormat: (value) => {
-                            return (
-                              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
-                                value || ""
-                              ) || "Invalid email format"
-                            );
-                          },
+                        validate: (value: any) => {
+                          // Check if the email matches the guest email
+                          if (value === getValues("guest_email")) {
+                            return "Invitee email cannot be the same as guest email.";
+                          }
+                        },
+                        pattern: {
+                          value:
+                            /^(?!\s)[a-zA-Z0-9](?!.*\.\.)[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                          message: "Invalid email format",
                         },
                       })}
-                      error={!!InviteeError.invitee_email}
-                      helperText={InviteeError.invitee_email?.message as string}
+                      error={!!InviteeError.invitee_email} 
+                      helperText={InviteeError.invitee_email?.message as string} 
                     />
 
                     <Box
