@@ -147,7 +147,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           [name]: "Email is required",
         }));
       } else if (
-        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+        !/^(?!\s)[a-zA-Z0-9](?!.*\.\.)[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+          value
+        )
       ) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -159,23 +161,15 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     }
 
     if (name === "identification_id") {
-      // Regular expression to check for at least one uppercase letter
-      const hasUppercase = /[A-Z]/.test(value);
-
       if (value === "") {
         setErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "Field cannot be empty",
         }));
-      } else if (value.length !== 15) {
+      } else if (value.length > 15) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [name]: "Must be exactly 15 characters long",
-        }));
-      } else if (!hasUppercase) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "Characters Must be capital letters",
+          [name]: "ID must be at most 15 characters long",
         }));
       } else {
         // Clear the error message if all validations pass
@@ -452,6 +446,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
         await navigator.clipboard.writeText(text);
         toast.success("Copied Successfully!!")
         // console.log("Copied to clipboard:", text);
+        toast.success("Copied");
       }
     } catch (error) {
       console.error("Failed to copy:", error);
@@ -589,17 +584,22 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
                   <Typography variant="subtitle1" sx={{ display: "flex" }}>
                     {!isEdit ? (
-                      <>
-                        <span id="guest_email_display">
-                          {updateData.guest_email}
-                        </span>
-                        <Box
-                          sx={{ marginLeft: "10px" }}
-                          onClick={() => copyContent("guest_email_display")}
-                        >
-                          <CopyIcon />
-                        </Box>
-                      </>
+                      <span
+                        id="guest_email_display"
+                        title={
+                          updateData.guest_email.length > 15
+                            ? updateData.guest_email
+                            : ""
+                        }
+                        style={{
+                          wordBreak: "break-word",
+                          whiteSpace: "normal",
+                          maxWidth: "200px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {updateData.guest_email}
+                      </span>
                     ) : (
                       <TextField
                         id="guest_email_input"
@@ -734,7 +734,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 {!isEdit ? (
                   <>
                     <span id="guest_identification_id">
-                      {bookingDetailsData.identification_id}
+                      {updateData.identification_id}
                     </span>
                     <Box
                       sx={{ marginLeft: "10px", color: "skyblue" }}
