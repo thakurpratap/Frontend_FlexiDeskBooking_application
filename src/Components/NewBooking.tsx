@@ -210,18 +210,10 @@ const NewBooking = ({
   };
 
   const onSubmit = async (data: any) => {
-    try {
-      const { guest_email, invitee_name, invitee_email, ...rest } = data;
+    console.log("data", data);
 
-      // Check if guest_email and invitee_email are the same
-      if (guest_email === invitee_email) {
-        // Set an error for the invitee_email field
-        setError("invitee_email", {
-          type: "manual",
-          message: "Guest email and invitee email cannot be the same.",
-        });
-        return; // Exit if the emails are the same
-      }
+    try {
+      const { invitee_name, invitee_email, ...rest } = data;
 
       const inviteeArray: Invitee[] =
         invitee_name && invitee_email ? [{ invitee_name, invitee_email }] : [];
