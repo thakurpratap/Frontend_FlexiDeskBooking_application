@@ -445,6 +445,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
         // Copy text to clipboard
         await navigator.clipboard.writeText(text);
         // console.log("Copied to clipboard:", text);
+        toast.success("Copied");
       }
     } catch (error) {
       console.error("Failed to copy:", error);
@@ -582,17 +583,22 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
                   <Typography variant="subtitle1" sx={{ display: "flex" }}>
                     {!isEdit ? (
-                      <>
-                        <span id="guest_email_display">
-                          {updateData.guest_email}
-                        </span>
-                        <Box
-                          sx={{ marginLeft: "10px" }}
-                          onClick={() => copyContent("guest_email_display")}
-                        >
-                          <CopyIcon />
-                        </Box>
-                      </>
+                      <span
+                        id="guest_email_display"
+                        title={
+                          updateData.guest_email.length > 15
+                            ? updateData.guest_email
+                            : ""
+                        }
+                        style={{
+                          wordBreak: "break-word",
+                          whiteSpace: "normal",
+                          maxWidth: "200px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {updateData.guest_email}
+                      </span>
                     ) : (
                       <TextField
                         id="guest_email_input"
@@ -727,7 +733,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                 {!isEdit ? (
                   <>
                     <span id="guest_identification_id">
-                      {bookingDetailsData.identification_id}
+                      {updateData.identification_id}
                     </span>
                     <Box
                       sx={{ marginLeft: "10px", color: "skyblue" }}

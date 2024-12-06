@@ -358,8 +358,8 @@ const Inventory = () => {
           <Box
             sx={{
               position: "absolute",
-              right: "72px",
-              top: "7.5%",
+              right: "64px",
+              top: "70px",
             }}
           >
             {bookingStep === "booking" && (
