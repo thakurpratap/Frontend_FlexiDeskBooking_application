@@ -74,11 +74,9 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
           payment_status: "Paid",
         }
       );
-      console.log("Payment API Response:", response.data);
       setPaymentData(response.data);
-    } catch (error) {
-      console.error("Error submitting payment details:", error);
-      throw error;
+    } catch (error:any) {
+        toast.error(error.response.data.message)
     }
   };
 
@@ -97,7 +95,6 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
       // link.remove();
       // window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading the PDF:", error);
       toast.error("Failed to download the PDF. Please try again.");
     }
   };
