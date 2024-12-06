@@ -23,6 +23,7 @@ const PaymentSuccess = ({
         fontWeight: "500",
         fontSize: "16px",
         color: "#717171",
+        marginBottom:"10px"
       },
       subtitle2: {
         color: "#6B778C",

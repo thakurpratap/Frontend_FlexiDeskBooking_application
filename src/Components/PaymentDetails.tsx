@@ -294,10 +294,18 @@ const PaymentDetails = ({
                 onChange={(e) => setPaymentMethod(e.target.value)}
               >
                 <Box sx={{ display: "flex" }}>
-                  <Radio value="Cash" />
+                  <Radio value="Cash"
+                  sx={{
+                    color: "#333", 
+                    '&.Mui-checked': {
+                      color: "#343434", 
+                    },
+                  }}
+                  />
                   <Typography
                     variant="body1"
-                    sx={{ color: "#333", marginTop: "8px" }}
+                    sx={{ color: "#333", marginTop: "8px",
+                     }}
                   >
                     Cash
                   </Typography>

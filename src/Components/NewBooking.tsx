@@ -18,8 +18,8 @@ import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { DateIcon, InfoIcon } from "../assets/AllNewBookingIcon";
-import { EditeIcon } from "../assets/icons/Desk";
+import { DateIcon, InfoIcon, EditIcon } from "../assets/AllNewBookingIcon";
+//import { EditeIcon } from "../assets/icons/Desk";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
@@ -379,9 +379,18 @@ const NewBooking = ({
               <>
                 <FormControl fullWidth>
                   {/* Date */}
-                  <Box sx={{display:"flex",alignItem:"center" ,marginTop:"15px",gap:"3px"}}>
-                  <Typography variant="subtitle2" sx={{marginTop:"0px"}}>Select Date*</Typography>
-                  <InfoIcon />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItem: "center",
+                      marginTop: "15px",
+                      gap: "3px",
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ marginTop: "0px" }}>
+                      Select Date*
+                    </Typography>
+                    <InfoIcon />
                   </Box>
                   <Box>
                     <Controller
@@ -782,7 +791,7 @@ const NewBooking = ({
                 )}
 
                 <Box sx={{ marginTop: "20px" }}>
-                  <Typography variant="h6">Invitee List</Typography>
+                  {/* <Typography variant="h6">Invitee List</Typography> */}
                   {invitees.map((invitee, index) => (
                     <Box
                       key={index}
@@ -814,15 +823,15 @@ const NewBooking = ({
                           <CheckBoxIcon sx={{ color: "black" }} />
                         )}
                       </Box>
-                      <Typography sx={{ mx: "10px" }}>
+                      <Typography sx={{ mx: "8px", fontSize: "14px" }}>
                         {invitee.invitee_name}
                       </Typography>
 
                       <button
                         onClick={() => handleEditInvitee(index)}
-                        style={{ marginTop: "7px" }}
+                        style={{ marginTop: "14px" }}
                       >
-                        <EditeIcon />
+                        <EditIcon />
                       </button>
                     </Box>
                   ))}
@@ -900,8 +909,8 @@ const NewBooking = ({
                   sx={{
                     display: "flex",
                     alignItem: "center",
-                    marginTop:"20px",
-                    marginBottom:"40px",
+                    marginTop: "20px",
+                    marginBottom: "40px",
                     gap: "2%",
                   }}
                 >
@@ -915,7 +924,11 @@ const NewBooking = ({
                   </Button>
                   <Button
                     variant="outlined"
-                    sx={{ backgroundColor: "white", color: "black" }}
+                    sx={{
+                      backgroundColor: "white",
+                      color: "black",
+                      border: "1px solid #BDBDBD",
+                    }}
                     onClick={handleClose}
                   >
                     Cancel

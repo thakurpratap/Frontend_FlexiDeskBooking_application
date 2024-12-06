@@ -180,3 +180,15 @@ export const InfoIcon = () => {
     </>
   );
 };
+
+
+export const EditIcon=()=>{
+  return(
+ 
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.33333 1.33325L12 3.99992L4.66667 11.3333H2V8.66659L9.33333 1.33325Z" stroke="#BDBDBD" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2 14.6667H14" stroke="#BDBDBD" stroke-linejoin="round"/>
+</svg>
+   
+  )
+}
