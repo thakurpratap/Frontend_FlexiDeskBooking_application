@@ -46,10 +46,10 @@ const PaymentDetails = ({
   } = usePaymentDetailsContext();
   const { setIsBackTracker } = usePaymentDetailsContext();
   // const grandTotal = totalCost + gstCharges;
-  const [discount, setDiscount] = useState(0); 
-  const grandTotalwithDiscount = totalCost - (totalCost*discount/100);
+  const [discount, setDiscount] = useState(0);
+  const grandTotalwithDiscount = totalCost - (totalCost * (discount / 100));
   const gstCharges = grandTotalwithDiscount * 0.18;
-  const grandTotal =grandTotalwithDiscount+ gstCharges;
+  const grandTotal = grandTotalwithDiscount + gstCharges;
   const [couponCode, setCouponCode] = useState("");
 
   const { bookingData } = useNewBookingContext();
@@ -163,8 +163,9 @@ const PaymentDetails = ({
             sx={{ cursor: "pointer" }}
             onClick={() => {
               if (setIsOpenNewBooking) {
-                setIsOpenNewBooking(false) 
-                setBookingStep("booking");}
+                setIsOpenNewBooking(false);
+                setBookingStep("booking");
+              }
             }}
           />
         </Box>
@@ -215,11 +216,11 @@ const PaymentDetails = ({
                 </Box>
               </Box>
             </Box>
-            <Box sx={{display:"flex"}}>
-            <Typography variant="subtitle2" >GST Charges</Typography>
-            <Box sx={{marginTop:"10px",marginLeft:"5px"}}>
-            <InfoIcon />
-            </Box>
+            <Box sx={{ display: "flex" }}>
+              <Typography variant="subtitle2">GST Charges</Typography>
+              <Box sx={{ marginTop: "10px", marginLeft: "5px" }}>
+                <InfoIcon />
+              </Box>
             </Box>
             <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>
               18%
@@ -230,13 +231,17 @@ const PaymentDetails = ({
               size="small"
               value={discount}
               onChange={(e) => {
-                let value = e.target.value.replace(/%/g, "").trim(); 
-                if (/^\d{0,4}$/.test(value)) { 
+                let value = e.target.value.replace(/%/g, "").trim();
+                if (/^\d{0,4}$/.test(value)) {
                   const numericValue = parseInt(value, 10);
-                  if (!isNaN(numericValue) && numericValue >= 1 && numericValue <= 100) {
+                  if (
+                    !isNaN(numericValue) &&
+                    numericValue >= 1 &&
+                    numericValue <= 100
+                  ) {
                     setDiscount(numericValue);
                   } else if (value === "") {
-                    setDiscount(0); 
+                    setDiscount(0);
                   }
                 }
               }}
@@ -254,7 +259,7 @@ const PaymentDetails = ({
             {/* <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>
               FREECOFFEE
             </Box> */}
-              <TextField
+            <TextField
               variant="outlined"
               size="small"
               value={couponCode}
