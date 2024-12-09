@@ -12,8 +12,7 @@ import { PaymentDetailsProvider } from "./context_API/PaymentDetailsContext";
 import PaymentDetails from "./Components/PaymentDetails";
 import { HomeIcon } from "./assets/icons/Desk";
 import { UpdateGuestDetailsContextProvider } from "./context_API/UpdateCreateGuestDetailsContext";
-
-
+import { PaymentSuccessContextProvider } from "./context_API/PaymentSuccessContext";
 
 const queryClient = new QueryClient();
 
@@ -25,27 +24,29 @@ function App() {
           <NewBookingContextProvider>
             <PaymentDetailsProvider>
               <UpdateGuestDetailsContextProvider>
-              <DataProvider>
-                <div className="flex h-screen">
-                  <Sidebar />
-                  <div className="flex-1 flex flex-col">
-                    <Navbar />
-                    <div className="flex-1 overflow-auto ">
-                      <Routes>
-                      <Route path="/" element={<Home />} />
-                        <Route path="/inventory" element={<Inventort />} />
-                        {/* <Route
+                <PaymentSuccessContextProvider>
+                  <DataProvider>
+                    <div className="flex h-screen">
+                      <Sidebar />
+                      <div className="flex-1 flex flex-col">
+                        <Navbar />
+                        <div className="flex-1 overflow-auto ">
+                          <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/inventory" element={<Inventort />} />
+                            {/* <Route
                           path="/booking-details"
                           element={<PaymentDetails />}
                         /> */}
-                      </Routes>
+                          </Routes>
+                        </div>
+                      </div>
+                      <div className="h-screen fixed top-0 right-0 z-10 ">
+                        <RightSidebar />
+                      </div>
                     </div>
-                  </div>
-                  <div className="h-screen fixed top-0 right-0 z-10 ">
-                    <RightSidebar />
-                  </div>
-                </div>
-              </DataProvider>
+                  </DataProvider>
+                </PaymentSuccessContextProvider>
               </UpdateGuestDetailsContextProvider>
             </PaymentDetailsProvider>
           </NewBookingContextProvider>
