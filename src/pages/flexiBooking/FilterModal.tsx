@@ -10,7 +10,7 @@ interface FilterModalProps {
 
 const FilterModal: React.FC<FilterModalProps> = ({ open, onClose, onApplyFilter }) => {
   const [filter, setFilter] = React.useState("");
-
+   console.log("filter >>>",filter)
   const handleApply = () => {
     onApplyFilter(filter);
     onClose();

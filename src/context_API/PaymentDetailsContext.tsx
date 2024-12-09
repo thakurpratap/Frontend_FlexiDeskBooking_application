@@ -11,7 +11,6 @@ interface PaymentDetails {
   setPaymentDetails: (dayPasses: number, totalCost: number) => void;
   submitPaymentDetails: (paymentDetails: PaymentDetailsAPI) => Promise<void>;
   setIsBackTracker: (value: boolean) => void;
-  // paymentData: PaymentDataDetails;
   paymentData: PaymentData | null;
   genrateInvoice: any;
 }
@@ -82,7 +81,6 @@ export const PaymentDetailsProvider: React.FC<{ children: ReactNode }> = ({
 
   const grandTotal = totalCost * 1.18;
   const genrateInvoice = async () => {
-    console.log(bookingData.booking._id, "booking id");
     const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${bookingData.booking._id}`;
     try {
       const response = await axios.post(apiUrl);

@@ -19,7 +19,6 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import { useNewBookingContext } from "../context_API/NewBookingContext";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { DateIcon, InfoIcon, EditIcon } from "../assets/AllNewBookingIcon";
-//import { EditeIcon } from "../assets/icons/Desk";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
@@ -296,8 +295,6 @@ const NewBooking = ({
           width: "500px",
           height: "95vh",
           boxShadow: 3,
-          position: "absolute",
-          right: "0",
           background: "#FFFFFF",
         }}
       >

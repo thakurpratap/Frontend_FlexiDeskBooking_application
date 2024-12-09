@@ -14,47 +14,31 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useNewBookingContext } from "../context_API/NewBookingContext";
 import { InfoIcon } from "../assets/AllNewBookingIcon";
-// import { usePaymentDetailsContext } from "../context_API/PaymentDetailsContext";
-
 const PaymentDetails = ({
   handleControlStep,
   setIsOpenNewBooking,
   setBookingStep,
 }: {
   setIsOpenNewBooking: (isOpen: boolean) => void;
-  //  handleControlStep: (step: "booking" | "payment" | "payment_success") => void;
   handleControlStep: (direction: "next" | "back") => void;
   setBookingStep: any;
 }) => {
-  // handleControlStep: (direction: "next" | "back") => void;
-  // handleControlStep: () => void;
-  // }
-  // ) =>
-  //    {
+
   const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState(false);
   const {
     dayPasses,
     totalCost,
-    setPaymentDetails,
     submitPaymentDetails,
     genrateInvoice,
   } = usePaymentDetailsContext();
   const { setIsBackTracker } = usePaymentDetailsContext();
-  // const grandTotal = totalCost + gstCharges;
   const [discount, setDiscount] = useState(0);
   const grandTotalwithDiscount = totalCost - (totalCost * (discount / 100));
   const gstCharges = grandTotalwithDiscount * 0.18;
   const grandTotal = grandTotalwithDiscount + gstCharges;
   const [couponCode, setCouponCode] = useState("");
-
-  const { bookingData } = useNewBookingContext();
-
-  const { paymentData } = usePaymentDetailsContext();
 
   const handleMarkPaid = async () => {
     if (!paymentMethod) {
@@ -72,10 +56,8 @@ const PaymentDetails = ({
       });
       await genrateInvoice();
       toast.success("Payment successful!");
-      //handleControlStep("payment_success");
       handleControlStep("next");
     } catch (error) {
-      console.error("Error submitting payment details:", error);
       toast.error("Payment failed. Please try again.");
     }
   };
@@ -138,11 +120,8 @@ const PaymentDetails = ({
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          width: "500px",
           height: "100vh",
           boxShadow: 3,
-          position: "absolute",
-          right: "10px",
           backgroundColor: "white",
         }}
       >
@@ -249,27 +228,21 @@ const PaymentDetails = ({
               sx={{
                 width: "100%",
                 backgroundColor: "#FAFBFC",
-                // marginBottom: "5px",
               }}
               inputProps={{
                 min: 0,
               }}
             />
             <Typography variant="subtitle2">Coupon Code</Typography>
-            {/* <Box sx={{ marginLeft: "8px", backgroundColor: "#FAFBFC" }}>
-              FREECOFFEE
-            </Box> */}
             <TextField
               variant="outlined"
               size="small"
               value={couponCode}
-              // onChange={(e) => setCouponCode(e.target.value)}
               onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
               placeholder="Enter coupon code"
               sx={{
                 width: "100%",
                 backgroundColor: "#FAFBFC",
-                // marginBottom: "5px",
               }}
             />
             <Typography variant="subtitle2">Grand Total</Typography>
@@ -378,10 +351,6 @@ const PaymentDetails = ({
                   height: "48px",
                   padding: "12px 25px",
                 }}
-                // onClick={() => {
-                //   handleControlStep("booking");
-                //   setIsBackTracker(true);
-                // }}
                 onClick={() => {
                   handleControlStep("back");
                   setIsBackTracker(true);
