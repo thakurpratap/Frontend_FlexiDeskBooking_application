@@ -130,7 +130,7 @@ const Sidebar = () => {
                               className={`flex items-center text-sm font-normal gap-3.5 p-2 rounded-md ${
                                 activeMenu === "Flexi"
                                   ? "bg-[#DEEBFF] text-black"
-                                  : ""
+                                  : "hover:bg-[#DEEBFF] hover:text-black"
                               }`}
                               onClick={() => handleMenuClick("Flexi")}
                                 style={{ width: "100%", }}
@@ -143,7 +143,7 @@ const Sidebar = () => {
                               className={`flex items-center text-sm font-normal gap-3.5 p-2 rounded-md ${
                                 activeMenu === "Dedicated"
                                   ? "bg-[#DEEBFF] text-black"
-                                  : ""
+                                  : "hover:bg-[#DEEBFF] hover:text-black"
                               }`}
                               style={{ width: "100%", }}
                               onClick={() => handleMenuClick("Dedicated")}
@@ -156,7 +156,7 @@ const Sidebar = () => {
                               className={`flex items-center text-sm font-normal gap-3.5 p-2 rounded-md ${
                                 activeMenu === "Meeting Room"
                                   ? "bg-[#DEEBFF] text-black"
-                                  : ""
+                                  : "hover:bg-[#DEEBFF] hover:text-black"
                               }`}
                               style={{ width: "100%", }}
                               onClick={() => handleMenuClick("Meeting Room")}

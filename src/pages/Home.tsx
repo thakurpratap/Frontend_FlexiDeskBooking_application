@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { GuestsIcon, Inventory_Icon, MeetingIcon, RenewalIcon, StaffIcon, TicketIcon } from "../assets/icons/Desk";
 import OccupancyChart from "../charts/OccupancyChart";
 import SpaceGrowthChart from "../charts/SpaceGrowthChart";
 import CompaniesBarChart from "../charts/CompaniesBarChart";
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 interface CardData {
   title: string;
@@ -68,17 +69,30 @@ const cards: CardData[] = [
 ];
 
 const Home = () => {
+  const [showCharts, setShowCharts] = useState(true);
+
+  const toggleChartsVisibility = () => {
+    setShowCharts((prev) => !prev);
+  };
+
   return (
     <>
       <div className="mr-20">
         <div
           style={{
             padding: "20px",
-            background: "#f5f5f5",
+            // paddingLeft:"20px",
+            background: "#dddddd54",
+            // background: "linear-gradient(180deg, rgba(196, 196, 196, 0) 0%, #000000 78.15%)",
             borderRadius: "5px",
           }}
         >
-          <h2>Overview</h2>
+          <div style={{justifyContent:"space-between", display:"flex" }}>
+          <h2 style={{fontWeight:"700px" , fontSize: "16px", lineHeight: "20px", background: ""}} >Overview</h2>
+          <KeyboardArrowUpIcon
+           onClick={toggleChartsVisibility}/>
+          </div>
+          {showCharts && ( 
           <div
             style={{
               display: "flex",
@@ -115,9 +129,11 @@ const Home = () => {
               <CompaniesBarChart />
             </div>
           </div>
+          )}
         </div>
 
-        <Box className="p-4 bg-[#F7F7F7]">
+       <Box className="">
+        <Box className="p-4 ">
           <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-[226px]">
             {cards.map((card, index) => (
               <Box
@@ -150,6 +166,7 @@ const Home = () => {
               </Box>
             ))}
           </Box>
+        </Box>
         </Box>
       </div>
     </>
