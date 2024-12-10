@@ -23,7 +23,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { CopyIcon, InfoIcon } from "../assets/AllNewBookingIcon";
 import formatDatesToOrdinal from "../utils/format";
-
+import { useBookingDetailsContext } from "../context_API/BookingDetailsContext";
 interface BookingDetailsProps {
   setIsEdit: (edit: boolean) => void;
   isEdit: boolean;
@@ -69,8 +69,8 @@ interface Payment {
   payment_method: string;
   payment_status: string;
   booking_id: string;
-  createdAt: string; 
-  updatedAt: string; 
+  createdAt: string;
+  updatedAt: string;
   __v: number;
 }
 interface InviteeError {
@@ -91,6 +91,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   if (!bookingDetailsData) {
     console.log("loading...");
   }
+  const { handleSaveClick, handleDownloadInvoice } = useBookingDetailsContext();
   const [isSaved, setIsSaved] = useState(false);
   const [clearButton, setClearButton] = useState(true);
   const [updateData, setUpdateData] = useState(bookingDetailsData || {});
@@ -98,7 +99,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   const [inviteErrors, setInviteErrors] = useState<Errors>({});
 
   const handleEditClick = () => {
-    setIsEdit(true); 
+    setIsEdit(true);
   };
 
   const handleCloseNewBooking = () => {
@@ -231,7 +232,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       } else {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
-          invitee_name: "", 
+          invitee_name: "",
         };
       }
     }
@@ -253,7 +254,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       } else {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
-          invitee_email: "", 
+          invitee_email: "",
         };
       }
     }
@@ -264,80 +265,6 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     setUpdateData({ ...updateData, invitee: updatedInvitees });
   };
 
-  const handleSaveClick = async (id: any) => {
-    const hasErrors = Object.values(errors).some((error) => error);
-    const hasInviteeErrors = Object.values(inviteErrors).some((error) =>
-      Object.values(error).some((fieldError) => fieldError)
-    ); 
-    if (hasErrors || hasInviteeErrors) {
-      return; 
-    }
-    const inviteeData = Array.isArray(updateData.invitee)
-      ? updateData.invitee.map((invitee) => ({
-          invitee_name: invitee.invitee_name,
-          invitee_email: invitee.invitee_email,
-        }))
-      : [];
-
-    const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/update-booking/${id}`;
-
-    try {
-      const response = await axios.put(
-        apiUrl,
-        {
-          guest_name: updateData.guest_name,
-          guest_email: updateData.guest_email,
-          guest_phone: updateData.guest_phone,
-          identification_id: updateData.identification_id,
-          invitee: inviteeData,
-          special_request: updateData.special_request,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setUpdateData(response.data.booking);
-      setIsEdit(false);
-      setIsSaved(true); 
-      toast.success("Update successfully");
-
-      const apiUrlgenerateInvoice = `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${id}`;
-      const generateResponse = await axios.post(apiUrlgenerateInvoice);
-      console.log("generate invoice response", generateResponse.data);
-    } catch (error) {
-      console.error("Error updating booking:", error);
-    }
-  };
-  const handleDownloadInvoice = async (ID: string) => {
-    const apiUrlgetInvoice = `https://flexi-desk-booking.onrender.com/api/flexibooking/get-invoice-pdf/${ID}`;
-
-    try {
-      const response = await axios.get(apiUrlgetInvoice, {
-        responseType: "blob",
-      });
-      console.log("get Invoice", response);
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      const link = document.createElement("a");
-
-      link.href = url;
-
-      link.setAttribute("download", "invoice.pdf");
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      link.remove();
-
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading the PDF:", error);
-    }
-  };
 
   const theme = createTheme({
     typography: {
@@ -416,9 +343,9 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           textElement instanceof HTMLInputElement ||
           textElement instanceof HTMLTextAreaElement
         ) {
-          text = textElement.value; 
+          text = textElement.value;
         } else {
-          text = textElement.textContent || ""; 
+          text = textElement.textContent || "";
         }
         await navigator.clipboard.writeText(text);
         toast.success("Copied");
@@ -490,6 +417,11 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       }),
     },
   }));
+
+  const BoxStyled = styled("div")(({ theme }) => ({
+    paddingLeft: theme.spacing(3.125),
+    paddingRight: theme.spacing(3.125),
+  }));
   return (
     <ThemeProvider theme={theme}>
       {clearButton ? (
@@ -544,11 +476,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                       backgroundColor: "#f5f5f5",
                     },
                   }}
-                  onClick={
-                    isEdit
-                      ? () => handleSaveClick(bookingDetailsData._id)
-                      : handleEditClick
-                  }
+                  onClick={isEdit ? () => handleSaveClick() : handleEditClick}
                   aria-label={isEdit ? "Save" : "Edit"}
                   disabled={!bookingDetailsData.isActive}
                 >
@@ -562,7 +490,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
               </Box>
             </Box>
 
-            <Box sx={{ px: "25px" }}>
+            <BoxStyled>
               <Box
                 className="Booking Details"
                 sx={{
@@ -964,6 +892,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                   alignItems: "center",
                   padding: "20px",
                 }}
+                onClick={() => handleDownloadInvoice()}
               >
                 <Box>
                   <InsertDriveFileOutlinedIcon />
@@ -990,15 +919,13 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
                     <Box sx={{ color: "#2F80ED", marginLeft: "131px" }}>
                       <FileDownloadOutlinedIcon
-                        onClick={() =>
-                          handleDownloadInvoice(bookingDetailsData._id)
-                        }
+                        onClick={() => handleDownloadInvoice()}
                       />
                     </Box>
                   </Box>
                 </Box>
               </Box>
-            </Box>
+            </BoxStyled>
           </Box>
         </FormControl>
       ) : null}

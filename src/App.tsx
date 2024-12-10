@@ -13,6 +13,7 @@ import PaymentDetails from "./Components/PaymentDetails";
 import { HomeIcon } from "./assets/icons/Desk";
 import { UpdateGuestDetailsContextProvider } from "./context_API/UpdateCreateGuestDetailsContext";
 import { PaymentSuccessContextProvider } from "./context_API/PaymentSuccessContext";
+import { BookingDetailsContextProvider } from "./context_API/BookingDetailsContext";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ function App() {
             <PaymentDetailsProvider>
               <UpdateGuestDetailsContextProvider>
                 <PaymentSuccessContextProvider>
+                <BookingDetailsContextProvider>
                   <DataProvider>
                     <div className="flex h-screen">
                       <Sidebar />
@@ -46,6 +48,7 @@ function App() {
                       </div>
                     </div>
                   </DataProvider>
+                  </BookingDetailsContextProvider>
                 </PaymentSuccessContextProvider>
               </UpdateGuestDetailsContextProvider>
             </PaymentDetailsProvider>

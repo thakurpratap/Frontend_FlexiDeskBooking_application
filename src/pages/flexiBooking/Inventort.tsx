@@ -37,9 +37,8 @@ import {
 import { useDataContext } from "../DataContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Modal from "@mui/material/Modal";
 import NewBooking from "../../Components/NewBooking";
-import DatePicker, { DateObject } from "react-multi-date-picker";
+import DatePicker from "react-multi-date-picker";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CloseIcon from "@mui/icons-material/Close";
 import PaymentSuccess from "../../Components/PaymentSuccess";
@@ -47,7 +46,7 @@ import PaymentDetails from "../../Components/PaymentDetails";
 import BookingDetails from "../../Components/BookingDetails";
 import { useNavigate } from "react-router-dom";
 import CircularLoader from "../../Components/CircularLoader";
-
+import { useBookingDetailsContext } from "../../context_API/BookingDetailsContext";
 interface BookingDetailsDataRow {
   _id: string;
   booking_type: string;
@@ -105,11 +104,12 @@ const Inventory = () => {
     handleUpdateBooking,
     handleResendPaymentEmail,
   } = useDataContext();
+  const {setBookingDetailsRow}=useBookingDetailsContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRow, setSelectedRow] = useState<Object | string | null>(null);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [booking_type, setBookingType] = useState("");
+  const [bookingType, setBookingType] = useState("");
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
   const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
     useState(false);
@@ -152,7 +152,11 @@ const Inventory = () => {
       await searchBookings(searchQuery, dates);
     }
   };
-
+  useEffect(() => {
+    if (bookingDetailsData) {
+      setBookingDetailsRow(bookingDetailsData); 
+    }
+  }, [bookingDetailsData]);
   useEffect(() => {
     handleSearch();
   }, [searchQuery]);
@@ -163,6 +167,16 @@ const Inventory = () => {
       : !searchQuery
       ? bookings
       : [];
+  function formatVisitDates(visitDates: any) {
+    if (Array.isArray(visitDates) && visitDates.length > 1) {
+      const startDate = new Date(visitDates[0]).toISOString().split("T")[0];
+      const endDate = new Date(visitDates[visitDates.length - 1])
+        .toISOString()
+        .split("T")[0];
+      return `${startDate} - ${endDate}`;
+    }
+    return new Date(visitDates[0] || visitDates).toISOString().split("T")[0];
+  }
 
   const toggleFilterModal = () => {
     setFilterModalOpen(!filterModalOpen);
@@ -354,58 +368,58 @@ const Inventory = () => {
           </Button>
         </Box>
         {/* NewBooking */}
-          <Drawer
-            anchor="right"
-            open={isOpenNewBooking}
-            onClose={handleCloseNewBooking}
-            PaperProps={{
-              sx:{
-                top:"70px",
-                right:"64px"
-              }
+        <Drawer
+          anchor="right"
+          open={isOpenNewBooking}
+          onClose={handleCloseNewBooking}
+          PaperProps={{
+            sx: {
+              top: "70px",
+              right: "64px",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              width: 500,
             }}
           >
-            <Box
-              sx={{
-                width: 500,
-              }}
-            >
-              {bookingStep === "booking" && (
-                <NewBooking
-                  setIsOpenNewBooking={setIsOpenNewBooking}
-                  handleControlStep={handleControlStep}
-                />
-              )}
-              {bookingStep === "payment" && (
-                <PaymentDetails
-                  handleControlStep={handleControlStep}
-                  setIsOpenNewBooking={setIsOpenNewBooking}
-                  setBookingStep={setBookingStep}
-                />
-              )}
+            {bookingStep === "booking" && (
+              <NewBooking
+                setIsOpenNewBooking={setIsOpenNewBooking}
+                handleControlStep={handleControlStep}
+              />
+            )}
+            {bookingStep === "payment" && (
+              <PaymentDetails
+                handleControlStep={handleControlStep}
+                setIsOpenNewBooking={setIsOpenNewBooking}
+                setBookingStep={setBookingStep}
+              />
+            )}
 
-              {bookingStep === "payment_success" && (
-                <PaymentSuccess
-                  setIsOpenNewBooking={setIsOpenNewBooking}
-                  setBookingStep={setBookingStep}
-                />
-              )}
-            </Box>
-          </Drawer>
+            {bookingStep === "payment_success" && (
+              <PaymentSuccess
+                setIsOpenNewBooking={setIsOpenNewBooking}
+                setBookingStep={setBookingStep}
+              />
+            )}
+          </Box>
+        </Drawer>
 
-    {/* BookingDetails */}
+        {/* BookingDetails */}
         <Drawer
-           anchor="right"
+          anchor="right"
           open={isBookingDetailsModalOpen}
           onClose={handleCloseBookingDetailsModal}
           PaperProps={{
-            sx:{
-              top:"70px",
-              right:"64px"
-            }
+            sx: {
+              top: "70px",
+              right: "64px",
+            },
           }}
         >
-          <Box >
+          <Box>
             {bookingDetailsData && (
               <BookingDetails
                 bookingDetailsData={bookingDetailsData}
@@ -590,22 +604,7 @@ const Inventory = () => {
                         color: "#222222",
                       }}
                     >
-                      {Array.isArray(row.visit_dates) &&
-                      row.visit_dates.length > 1
-                        ? `${
-                            new Date(row.visit_dates[0])
-                              .toISOString()
-                              .split("T")[0]
-                          } - ${
-                            new Date(
-                              row.visit_dates[row.visit_dates.length - 1]
-                            )
-                              .toISOString()
-                              .split("T")[0]
-                          }`
-                        : new Date(row.visit_dates[0] || row.visit_dates)
-                            .toISOString()
-                            .split("T")[0]}
+                      {formatVisitDates(row.visit_dates)}
                     </TableCell>
                     <TableCell
                       style={{
@@ -778,7 +777,7 @@ const Inventory = () => {
         <DialogContent>
           <DialogContentText id="confirm-cancel-description">
             Are you sure you want to cancel{" "}
-            <span className="font-bold">{booking_type} ?</span>
+            <span className="font-bold">{bookingType} ?</span>
           </DialogContentText>
         </DialogContent>
         <DialogActions
