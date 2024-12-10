@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -15,7 +15,6 @@ import {
   SwitchProps,
   styled,
 } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ClearIcon from "@mui/icons-material/Clear";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -24,7 +23,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { CopyIcon, InfoIcon } from "../assets/AllNewBookingIcon";
 import formatDatesToOrdinal from "../utils/format";
-
+import { useBookingDetailsContext } from "../context_API/BookingDetailsContext";
 interface BookingDetailsProps {
   setIsEdit: (edit: boolean) => void;
   isEdit: boolean;
@@ -70,8 +69,8 @@ interface Payment {
   payment_method: string;
   payment_status: string;
   booking_id: string;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  createdAt: string;
+  updatedAt: string;
   __v: number;
 }
 interface InviteeError {
@@ -92,8 +91,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   if (!bookingDetailsData) {
     console.log("loading...");
   }
-
-  // const [isEdit, setIsEdit] = useState(false);
+  const { handleSaveClick, handleDownloadInvoice } = useBookingDetailsContext();
   const [isSaved, setIsSaved] = useState(false);
   const [clearButton, setClearButton] = useState(true);
   const [updateData, setUpdateData] = useState(bookingDetailsData || {});
@@ -101,7 +99,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   const [inviteErrors, setInviteErrors] = useState<Errors>({});
 
   const handleEditClick = () => {
-    setIsEdit(true); // Switch to edit mode
+    setIsEdit(true);
   };
 
   const handleCloseNewBooking = () => {
@@ -175,7 +173,6 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           [name]: "ID must be at most 15 characters long",
         }));
       } else {
-        // Clear the error message if all validations pass
         setErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "",
@@ -208,7 +205,6 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   ) => {
     const { name, value } = e.target;
 
-    // Copy current errors state
     let updatedErrors = { ...inviteErrors };
 
     // Validate name field
@@ -236,7 +232,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       } else {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
-          invitee_name: "", // Clear the error
+          invitee_name: "",
         };
       }
     }
@@ -258,110 +254,17 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       } else {
         updatedErrors[inviteeId] = {
           ...updatedErrors[inviteeId],
-          invitee_email: "", // Clear the error
+          invitee_email: "",
         };
       }
     }
-
-    // Update the inviteErrors state with the new error messages
     setInviteErrors(updatedErrors);
-
-    // Update the invitee data
     const updatedInvitees = updateData.invitee.map((invitee) =>
       invitee._id === inviteeId ? { ...invitee, [name]: value } : invitee
     );
     setUpdateData({ ...updateData, invitee: updatedInvitees });
   };
 
-  const handleSaveClick = async (id: any) => {
-    console.log("updateData", updateData);
-
-    const hasErrors = Object.values(errors).some((error) => error); // Check if there are any global errors
-    const hasInviteeErrors = Object.values(inviteErrors).some((error) =>
-      Object.values(error).some((fieldError) => fieldError)
-    ); // Check if there are any invitee errors
-
-    if (hasErrors || hasInviteeErrors) {
-      // Display an error message or simply return if there are validation errors
-
-      return; // Do not proceed with the update if there are errors
-    }
-
-    // Ensure invitee is defined and is an array before using map
-    const inviteeData = Array.isArray(updateData.invitee)
-      ? updateData.invitee.map((invitee) => ({
-          invitee_name: invitee.invitee_name,
-          invitee_email: invitee.invitee_email,
-        }))
-      : []; // Use an empty array if invitee is not available
-
-    const apiUrl = `https://flexi-desk-booking.onrender.com/api/flexibooking/update-booking/${id}`;
-
-    try {
-      const response = await axios.put(
-        apiUrl,
-        {
-          guest_name: updateData.guest_name,
-          guest_email: updateData.guest_email,
-          guest_phone: updateData.guest_phone,
-          identification_id: updateData.identification_id,
-          invitee: inviteeData,
-          special_request: updateData.special_request,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("Update successful:", response.data);
-
-      setUpdateData(response.data.booking);
-      setIsEdit(false); // Switch to view mode after saving
-      setIsSaved(true); // Mark as saved
-      toast.success("Update successfully");
-
-      // Trigger the toast notification for success
-
-      const apiUrlgenerateInvoice = `https://flexi-desk-booking.onrender.com/api/flexibooking/generate-invoice-pdf/${id}`;
-      const generateResponse = await axios.post(apiUrlgenerateInvoice);
-      console.log("generate invoice response", generateResponse.data);
-    } catch (error) {
-      console.error("Error updating booking:", error);
-    }
-  };
-
-  console.log(bookingDetailsData, "bookingDetailsData");
-
-  const handleDownloadInvoice = async (ID: string) => {
-    const apiUrlgetInvoice = `https://flexi-desk-booking.onrender.com/api/flexibooking/get-invoice-pdf/${ID}`;
-
-    try {
-      const response = await axios.get(apiUrlgetInvoice, {
-        responseType: "blob",
-      });
-      console.log("get Invoice", response);
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      const link = document.createElement("a");
-
-      link.href = url;
-
-      link.setAttribute("download", "invoice.pdf");
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      link.remove();
-
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading the PDF:", error);
-    }
-  };
 
   const theme = createTheme({
     typography: {
@@ -440,14 +343,11 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           textElement instanceof HTMLInputElement ||
           textElement instanceof HTMLTextAreaElement
         ) {
-          text = textElement.value; // Use value for input/textarea
+          text = textElement.value;
         } else {
-          text = textElement.textContent || ""; // Use textContent for other elements
+          text = textElement.textContent || "";
         }
-
-        // Copy text to clipboard
         await navigator.clipboard.writeText(text);
-        // console.log("Copied to clipboard:", text);
         toast.success("Copied");
       }
     } catch (error) {
@@ -517,6 +417,11 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
       }),
     },
   }));
+
+  const BoxStyled = styled("div")(({ theme }) => ({
+    paddingLeft: theme.spacing(3.125),
+    paddingRight: theme.spacing(3.125),
+  }));
   return (
     <ThemeProvider theme={theme}>
       {clearButton ? (
@@ -524,16 +429,10 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
           <Box
             className="Booking Details"
             sx={{
-              position: "absolute",
-              right: "70px",
               width: "500px",
-              my: "10px",
               backgroundColor: "white",
-              overflowY: "auto",
               height: "900px",
               maxHeight: "1000px",
-              paddingBottom: "50px",
-              padding: "12px",
             }}
           >
             <Box
@@ -577,12 +476,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                       backgroundColor: "#f5f5f5",
                     },
                   }}
-                  // Pass handleUpdate function as callback, not the result of calling it.
-                  onClick={
-                    isEdit
-                      ? () => handleSaveClick(bookingDetailsData._id)
-                      : handleEditClick
-                  }
+                  onClick={isEdit ? () => handleSaveClick() : handleEditClick}
                   aria-label={isEdit ? "Save" : "Edit"}
                   disabled={!bookingDetailsData.isActive}
                 >
@@ -596,7 +490,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
               </Box>
             </Box>
 
-            <Box sx={{ padding: "10px" }}>
+            <BoxStyled>
               <Box
                 className="Booking Details"
                 sx={{
@@ -694,7 +588,6 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                         </Box>
                       </>
                     ) : (
-                      // updateData.guest_phone
                       <TextField
                         id="guest_phone_input"
                         name="guest_phone"
@@ -999,6 +892,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                   alignItems: "center",
                   padding: "20px",
                 }}
+                onClick={() => handleDownloadInvoice()}
               >
                 <Box>
                   <InsertDriveFileOutlinedIcon />
@@ -1025,15 +919,13 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
 
                     <Box sx={{ color: "#2F80ED", marginLeft: "131px" }}>
                       <FileDownloadOutlinedIcon
-                        onClick={() =>
-                          handleDownloadInvoice(bookingDetailsData._id)
-                        }
+                        onClick={() => handleDownloadInvoice()}
                       />
                     </Box>
                   </Box>
                 </Box>
               </Box>
-            </Box>
+            </BoxStyled>
           </Box>
         </FormControl>
       ) : null}

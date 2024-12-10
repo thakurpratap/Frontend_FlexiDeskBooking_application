@@ -42,9 +42,6 @@ export const NewBookingContextProvider = ({
       if(data.company_name === "" || data.identification_info==="Aadhar Card / Pan No. / Driver’s Licence / Passport ID"){
         delete data.company_name;  
       }
- 
-      
- 
       const res = await axios.post(
         `https://flexi-desk-booking.onrender.com/api/flexibooking/add-booking`,
         data
@@ -53,9 +50,6 @@ export const NewBookingContextProvider = ({
       return res.data;
     },
     onSuccess: (data) => {
-      // toast.success(data.message || "Booking created successfully!", {
-      //   position: "top-right",
-      // });
       console.log("Booking created successfully:", data);
     },
     onError: (error: any) => {

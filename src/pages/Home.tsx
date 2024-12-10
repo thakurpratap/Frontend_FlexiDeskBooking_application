@@ -1,6 +1,13 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { GuestsIcon, Inventory_Icon, MeetingIcon, RenewalIcon, StaffIcon, TicketIcon } from "../assets/icons/Desk";
+import {
+  GuestsIcon,
+  Inventory_Icon,
+  MeetingIcon,
+  RenewalIcon,
+  StaffIcon,
+  TicketIcon,
+} from "../assets/icons/Desk";
 import OccupancyChart from "../charts/OccupancyChart";
 import SpaceGrowthChart from "../charts/SpaceGrowthChart";
 import CompaniesBarChart from "../charts/CompaniesBarChart";
@@ -58,7 +65,7 @@ const cards: CardData[] = [
   },
   {
     title: "Renewal",
-    icon: <RenewalIcon/>,
+    icon: <RenewalIcon />,
     stats: [
       { label: "10 Days", value: 0 },
       { label: "20 days", value: 4 },
@@ -70,27 +77,34 @@ const cards: CardData[] = [
 const Home = () => {
   return (
     <>
-      <div className="mr-20">
+      <div  style={{marginRight:"3.2rem"}}>
         <div
           style={{
             padding: "20px",
-            background: "#f5f5f5",
+            backgroundColor: "#DEDEDE",
             borderRadius: "5px",
           }}
         >
-          <h2>Overview</h2>
+          <h2
+            style={{
+              fontSize: "16px",
+              fontWeight: "700",
+            }}
+          >
+            Overview
+          </h2>
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              gap: "24px",
-              flexWrap: "wrap", 
+              //justifyContent: "space-between",
+              gap: "10px",
+              flexWrap: "wrap",
             }}
           >
             <div
               style={{
-                flex: "1 1 300px", 
-                maxWidth: "33%", 
+                flex: "1 1 300px",
+               maxWidth: "33%",
                 height: "auto",
               }}
             >
@@ -98,8 +112,8 @@ const Home = () => {
             </div>
             <div
               style={{
-                flex: "1 1 300px",
-                maxWidth: "33%",
+               flex: "1 1 300px",
+               maxWidth: "33%",
                 height: "auto",
               }}
             >
@@ -158,7 +172,6 @@ const Home = () => {
 
 export default Home;
 
-
 // const Home = () => {
 //   return (
 //     <>
@@ -167,7 +180,7 @@ export default Home;
 //       <h2>Overview</h2>
 //       <div style={{ display: "flex", justifyContent: "space-between", gap: "24px" }}>
 //         <OccupancyChart />
-//         <SpaceGrowthChart />  
+//         <SpaceGrowthChart />
 //         <CompaniesBarChart />
 //       </div>
 //     </div>
@@ -176,7 +189,7 @@ export default Home;
 //         {cards.map((card, index) => (
 //           <Box
 //             key={index}
-//             className="rounded-lg p-4 border border-solid border-[#B7B7B7] bg-[#FFFEFE] " sx={{padding:"32px", gap:"10px"}} 
+//             className="rounded-lg p-4 border border-solid border-[#B7B7B7] bg-[#FFFEFE] " sx={{padding:"32px", gap:"10px"}}
 //           >
 //             <Box className="flex flex-col items-start mb-4">
 //               {card.icon}
@@ -206,15 +219,6 @@ export default Home;
 // };
 
 // export default Home;
-
-
-
-
-
-
-
-
-
 
 // import React from "react";
 // import { Box, Typography } from "@mui/material";
@@ -288,14 +292,6 @@ export default Home;
 // };
 
 // export default Dashboard;
-
-
-
-
-
-
-
-
 
 // import React from "react";
 // import { Box, Grid, Paper, Typography } from "@mui/material";

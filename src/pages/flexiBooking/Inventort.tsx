@@ -23,6 +23,8 @@ import {
   TableRow,
   TextField,
   Typography,
+  Drawer,
+  Chip,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
@@ -35,9 +37,8 @@ import {
 import { useDataContext } from "../DataContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Modal from "@mui/material/Modal";
 import NewBooking from "../../Components/NewBooking";
-import DatePicker, { DateObject } from "react-multi-date-picker";
+import DatePicker from "react-multi-date-picker";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CloseIcon from "@mui/icons-material/Close";
 import PaymentSuccess from "../../Components/PaymentSuccess";
@@ -45,31 +46,27 @@ import PaymentDetails from "../../Components/PaymentDetails";
 import BookingDetails from "../../Components/BookingDetails";
 import { useNavigate } from "react-router-dom";
 import CircularLoader from "../../Components/CircularLoader";
-
-
-
+import { useBookingDetailsContext } from "../../context_API/BookingDetailsContext";
 interface BookingDetailsDataRow {
-
-    _id: string;
-    booking_type: string;
-    visit_dates: string[]; 
-    guest_name: string;
-    guest_email: string;
-    guest_phone: number;
-    guest_checkin_status: boolean;
-    guest_assign_desk: string;
-    identification_info: string;
-    identification_id: string;
-    company_name: string;
-    invitee: Invitee[];
-    special_request: string;
-    isActive: boolean;
-    createdAt: string; 
-    updatedAt: string; 
-    bookingId: number;
-    __v: number;
-    payment_id: Payment;
-
+  _id: string;
+  booking_type: string;
+  visit_dates: string[];
+  guest_name: string;
+  guest_email: string;
+  guest_phone: number;
+  guest_checkin_status: boolean;
+  guest_assign_desk: string;
+  identification_info: string;
+  identification_id: string;
+  company_name: string;
+  invitee: Invitee[];
+  special_request: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  bookingId: number;
+  __v: number;
+  payment_id: Payment;
 }
 
 interface Invitee {
@@ -107,14 +104,16 @@ const Inventory = () => {
     handleUpdateBooking,
     handleResendPaymentEmail,
   } = useDataContext();
+  const {setBookingDetailsRow}=useBookingDetailsContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRow, setSelectedRow] = useState<Object | string | null>(null);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [booking_type, setBookingType] = useState("");
+  const [bookingType, setBookingType] = useState("");
   const [isOpenNewBooking, setIsOpenNewBooking] = useState(false);
-  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] = useState(false);
-  const [isEdit,setIsEdit] = useState(false);
+  const [isBookingDetailsModalOpen, setIsBookingDetailsModalOpen] =
+    useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [bookingDetailsData, setBookingDetailsData] =
     useState<BookingDetailsDataRow | null>(null);
 
@@ -145,15 +144,19 @@ const Inventory = () => {
     if (searchQuery.trim() && dates.length > 0) {
       await searchBookings(searchQuery, dates);
       setFilterModalOpen(false);
-    } else if (searchQuery.trim() && dates.length == 0) {
+    } else if (searchQuery.trim() && dates.length === 0) {
       await searchBookings(searchQuery, dates);
     } else if (dates.length > 0) {
       setFilterModalOpen(false);
+      setDates([]);
       await searchBookings(searchQuery, dates);
     }
   };
-  
-
+  useEffect(() => {
+    if (bookingDetailsData) {
+      setBookingDetailsRow(bookingDetailsData); 
+    }
+  }, [bookingDetailsData]);
   useEffect(() => {
     handleSearch();
   }, [searchQuery]);
@@ -164,6 +167,16 @@ const Inventory = () => {
       : !searchQuery
       ? bookings
       : [];
+  function formatVisitDates(visitDates: any) {
+    if (Array.isArray(visitDates) && visitDates.length > 1) {
+      const startDate = new Date(visitDates[0]).toISOString().split("T")[0];
+      const endDate = new Date(visitDates[visitDates.length - 1])
+        .toISOString()
+        .split("T")[0];
+      return `${startDate} - ${endDate}`;
+    }
+    return new Date(visitDates[0] || visitDates).toISOString().split("T")[0];
+  }
 
   const toggleFilterModal = () => {
     setFilterModalOpen(!filterModalOpen);
@@ -202,8 +215,8 @@ const Inventory = () => {
   const handleConfirmCancel = async () => {
     if (selectedBooking) {
       try {
-        await handleUpdateBooking(selectedBooking); 
-        await searchBookings(searchQuery, dates); 
+        await handleUpdateBooking(selectedBooking);
+        await searchBookings(searchQuery, dates);
         setOpen(false);
         setSelectedBooking(null);
         toast.success("Booking cancelled successfully!");
@@ -354,12 +367,21 @@ const Inventory = () => {
             + New Booking
           </Button>
         </Box>
-        <Modal open={isOpenNewBooking} onClose={handleCloseNewBooking}>
+        {/* NewBooking */}
+        <Drawer
+          anchor="right"
+          open={isOpenNewBooking}
+          onClose={handleCloseNewBooking}
+          PaperProps={{
+            sx: {
+              top: "70px",
+              right: "64px",
+            },
+          }}
+        >
           <Box
             sx={{
-              position: "absolute",
-              right: "64px",
-              top: "70px",
+              width: 500,
             }}
           >
             {bookingStep === "booking" && (
@@ -372,44 +394,60 @@ const Inventory = () => {
               <PaymentDetails
                 handleControlStep={handleControlStep}
                 setIsOpenNewBooking={setIsOpenNewBooking}
-                setBookingStep = {setBookingStep}
+                setBookingStep={setBookingStep}
               />
             )}
 
             {bookingStep === "payment_success" && (
-              <PaymentSuccess 
-              setIsOpenNewBooking={setIsOpenNewBooking} 
-              setBookingStep = {setBookingStep} 
+              <PaymentSuccess
+                setIsOpenNewBooking={setIsOpenNewBooking}
+                setBookingStep={setBookingStep}
               />
             )}
           </Box>
-        </Modal>
+        </Drawer>
 
-     
-        <Modal
+        {/* BookingDetails */}
+        <Drawer
+          anchor="right"
           open={isBookingDetailsModalOpen}
           onClose={handleCloseBookingDetailsModal}
+          PaperProps={{
+            sx: {
+              top: "70px",
+              right: "64px",
+            },
+          }}
         >
-          <Box
-            sx={{
-              position: "absolute",
-              top: "5%",
-              right: "0%",
-            }}
-          >
+          <Box>
             {bookingDetailsData && (
-              <BookingDetails bookingDetailsData={bookingDetailsData} setIsEdit = {setIsEdit} isEdit = {isEdit} />
+              <BookingDetails
+                bookingDetailsData={bookingDetailsData}
+                setIsEdit={setIsEdit}
+                isEdit={isEdit}
+              />
             )}
           </Box>
-        </Modal>
-          <TableContainer sx={{ maxHeight: "calc(100vh - 290px)" }}>
+        </Drawer>
+        <TableContainer sx={{ maxHeight: "calc(100vh - 290px)" }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow style={{ position: "sticky" }}>
                 <TableCell>
-                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left",color: "#717171",  whiteSpace: "nowrap", // Prevents text wrapping
-      overflow: "hidden", // Ensures the text stays within bounds
-      textOverflow: "ellipsis",}}>BOOKING ID</Typography> 
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      fontWeight: 400,
+                      lineHeight: "16px",
+                      textAlign: "left",
+                      color: "#717171",
+                      whiteSpace: "nowrap", // Prevents text wrapping
+                      overflow: "hidden", // Ensures the text stays within bounds
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    BOOKING ID
+                  </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography
@@ -566,9 +604,7 @@ const Inventory = () => {
                         color: "#222222",
                       }}
                     >
-                     {Array.isArray(row.visit_dates) && row.visit_dates.length > 1
-    ? `${new Date(row.visit_dates[0]).toISOString().split('T')[0]} - ${new Date(row.visit_dates[row.visit_dates.length - 1]).toISOString().split('T')[0]}`
-    : new Date(row.visit_dates[0] || row.visit_dates).toISOString().split('T')[0]}
+                      {formatVisitDates(row.visit_dates)}
                     </TableCell>
                     <TableCell
                       style={{
@@ -713,16 +749,15 @@ const Inventory = () => {
               ) : searchQuery.trim() ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
-                  <CircularLoader />
-                   
+                    <CircularLoader />
                   </TableCell>
                 </TableRow>
               ) : (
                 <TableRow>
-                <TableCell colSpan={8} align="center">
-                  <CircularLoader />
-                </TableCell>
-              </TableRow>
+                  <TableCell colSpan={8} align="center">
+                    <CircularLoader />
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
@@ -742,7 +777,7 @@ const Inventory = () => {
         <DialogContent>
           <DialogContentText id="confirm-cancel-description">
             Are you sure you want to cancel{" "}
-            <span className="font-bold">{booking_type} ?</span>
+            <span className="font-bold">{bookingType} ?</span>
           </DialogContentText>
         </DialogContent>
         <DialogActions
