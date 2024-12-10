@@ -45,8 +45,7 @@ import PaymentDetails from "../../Components/PaymentDetails";
 import BookingDetails from "../../Components/BookingDetails";
 import { useNavigate } from "react-router-dom";
 import CircularLoader from "../../Components/CircularLoader";
-
-
+import { useTheme } from '@mui/material/styles';
 
 interface BookingDetailsDataRow {
 
@@ -124,6 +123,8 @@ const Inventory = () => {
   const [bookingStep, setBookingStep] = useState<
     "booking" | "payment" | "payment_success"
   >("booking");
+
+  const theme = useTheme();
 
   const handleControlStep = (direction: "next" | "back") => {
     if (direction === "next") {
@@ -273,8 +274,9 @@ const Inventory = () => {
         <ToastContainer position="top-right" autoClose={2000} />
         <Typography
           variant="h5"
-          className="text-[#222222] flex "
+          // className="flex "
           sx={{
+            display:"flex",
             height: "23px",
             gap: "0px",
             fontSize: "18px",
@@ -285,6 +287,7 @@ const Inventory = () => {
             textDecorationSkipInk: "none",
             paddingTop: "28px",
             marginLeft: "32px",
+            color:theme.background.primarycolor,
           }}
         >
           Flexi Booking
@@ -311,11 +314,12 @@ const Inventory = () => {
                 width: "640px",
                 height: "40px",
                 padding: "0 8px",
-                border: "1px solid #BDBDBD",
+                border: theme.borderstyle.border,
                 boxShadow: "none",
                 borderRadius: "4px",
                 marginBottom: "16px",
-                background: "#F7F7F7",
+                backgroundColor: theme.background.secondary, 
+                // backgroundColor: theme.background.defaultcolor,
                 marginLeft: "13px",
               }}
             >
@@ -338,8 +342,11 @@ const Inventory = () => {
           </Box>
           <Button
             variant="contained"
-            className="font-normal text-base leading-6"
+            // className="font-normal text-base leading-6"
             sx={{
+              fontWeight: 400,
+              // fontSize: "16px",
+              lineHeight: "1.5",
               width: "168px",
               height: "40px",
               textTransform: "none",
@@ -407,7 +414,7 @@ const Inventory = () => {
             <TableHead>
               <TableRow style={{ position: "sticky" }}>
                 <TableCell>
-                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left",color: "#717171",  whiteSpace: "nowrap", // Prevents text wrapping
+                  <Typography   sx={{fontSize: "12px",fontWeight: 400,lineHeight: "16px",textAlign: "left", color:theme.textcolor.tabletext,  whiteSpace: "nowrap", // Prevents text wrapping
       overflow: "hidden", // Ensures the text stays within bounds
       textOverflow: "ellipsis",}}>BOOKING ID</Typography> 
                 </TableCell>
@@ -417,7 +424,9 @@ const Inventory = () => {
                       fontSize: "12px",
                       fontWeight: 400,
                       lineHeight: "16px",
-                      color: "#717171",
+                      // color: theme.palette.text.secondary,
+                      color:theme.textcolor.tabletext,
+                      // color: "#717171",
                     }}
                   >
                     USER NAME
@@ -429,7 +438,8 @@ const Inventory = () => {
                       fontSize: "12px",
                       fontWeight: 400,
                       lineHeight: "16px",
-                      color: "#717171",
+                      // color: "#717171",
+                      color:theme.textcolor.tabletext,
                     }}
                   >
                     EMAIL ID
@@ -441,7 +451,8 @@ const Inventory = () => {
                       fontSize: "12px",
                       fontWeight: 400,
                       lineHeight: "16px",
-                      color: "#717171",
+                      color:theme.textcolor.tabletext,
+                      // color: "#717171",
                     }}
                   >
                     BOOKING TYPE
@@ -453,7 +464,8 @@ const Inventory = () => {
                       fontSize: "12px",
                       fontWeight: 400,
                       lineHeight: "16px",
-                      color: "#717171",
+                      color:theme.textcolor.tabletext,
+                      // color: "#717171",
                     }}
                   >
                     INVITEES
@@ -465,7 +477,8 @@ const Inventory = () => {
                       fontSize: "12px",
                       fontWeight: 400,
                       lineHeight: "16px",
-                      color: "#717171",
+                      // color: "#717171",
+                      color:theme.textcolor.tabletext,
                     }}
                   >
                     BOOKING DATE
@@ -477,7 +490,8 @@ const Inventory = () => {
                       fontSize: "12px",
                       fontWeight: 400,
                       lineHeight: "16px",
-                      color: "#717171",
+                      // color: "#717171",
+                      color:theme.textcolor.tabletext,
                     }}
                   >
                     BOOKING STATUS
@@ -489,7 +503,8 @@ const Inventory = () => {
                       fontSize: "12px",
                       fontWeight: 400,
                       lineHeight: "16px",
-                      color: "#717171",
+                      // color: "#717171",
+                      color:theme.textcolor.tabletext,
                     }}
                   >
                     PAYMENT STATUS
@@ -506,7 +521,7 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                       onClick={() => handleBookingDetails(row)}
                     >
@@ -517,7 +532,7 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                     >
                       {row.guest_name}
@@ -527,7 +542,7 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                     >
                       {row.guest_email}
@@ -537,7 +552,7 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                     >
                       {row.booking_type}
@@ -547,7 +562,7 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                     >
                       {row.invitee.length > 0
@@ -563,7 +578,7 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                     >
                      {Array.isArray(row.visit_dates) && row.visit_dates.length > 1
@@ -575,14 +590,16 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                     >
                       <Typography
                         sx={{
                           display: "inline-block",
-                          backgroundColor: row.isActive ? "#79F2C0" : "#FFBDAD",
-                          color: "#42526E",
+                          backgroundColor: row.isActive ? theme.active.activecolor : theme.active.Diactive,
+                          // backgroundColor: row.isActive ? "#79F2C0" : "#FFBDAD",
+                          // color: "#42526E",
+                          color:theme.textcolor.text,
                           fontWeight: "bold",
                           padding: "4px 8px",
                           borderRadius: "4px",
@@ -599,16 +616,16 @@ const Inventory = () => {
                         fontSize: "14px",
                         fontWeight: 400,
                         lineHeight: "20.3px",
-                        color: "#222222",
+                        color:theme.background.primarycolor,
                       }}
                     >
                       <Typography
                         sx={{
                           display: "inline-block",
                           backgroundColor: row.payment_id?.payment_status
-                            ? "#79F2C0"
-                            : "#FFBDAD",
-                          color: "#42526E",
+                            ? theme.active.activecolor : theme.active.Diactive,
+                          // color: "#42526E",
+                          color:theme.textcolor.text,
                           fontWeight: "bold",
                           padding: "4px 8px",
                           borderRadius: "4px",
@@ -772,15 +789,15 @@ const Inventory = () => {
           </Button>
           <Button
             onClick={handleCloseDialog}
-            className="bg-[#F7F7F7] rounded-md px-4 py-2"
+            // className="rounded-md px-4 py-2"
             sx={{
-              background: "#F7F7F7",
+              background: theme.background.secondary,
               color: "#565E6F",
               width: "90px",
               textTransform: "none",
               height: "40px",
               padding: "8px 25px",
-              border: "1px solid #BDBDBD",
+              border: theme.borderstyle.border,
               gap: "8px",
               borderRadius: "5px 0px 0px 0px",
             }}
@@ -841,7 +858,7 @@ const Inventory = () => {
 
           <FormControl fullWidth sx={{ marginTop: "50px" }}>
             <Typography
-              className="text-sm font-medium"
+              // className="text-sm font-medium"
               sx={{ fontWeight: "400", color: "#717171", marginBottom: "10px" }}
             >
               Visit Date *
@@ -893,7 +910,7 @@ const Inventory = () => {
           <FormControl fullWidth sx={{ marginTop: "20px" }}>
             <Typography
               sx={{ fontWeight: "400", color: "#717171", marginBottom: "10px" }}
-              className="text-sm font-medium "
+              // className="text-sm font-medium "
             >
               Booking Date
             </Typography>
@@ -970,15 +987,15 @@ const Inventory = () => {
           </Button>
           <Button
             onClick={handleClearFilters}
-            className="bg-[#F7F7F7] rounded-md px-4 py-2"
+            // className="bg-[#F7F7F7] rounded-md px-4 py-2"
             sx={{
-              background: "#F7F7F7",
+              background: theme.background.secondary,
               color: "#565E6F",
               width: "90px",
               textTransform: "none",
               height: "40px",
               padding: "8px 25px",
-              border: "1px solid #BDBDBD",
+              border: theme.borderstyle.border,
               gap: "8px",
               borderRadius: "5px 0px 0px 0px",
             }}

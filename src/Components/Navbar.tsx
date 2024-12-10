@@ -3,13 +3,15 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { useTheme } from '@mui/material/styles';
 
 const Navbar = () => {
+  const theme = useTheme();
   return (
     <div style={{left: "204px" , position :"sticky"}}>
       <AppBar
         position="static"
-        className="bg-white"
+        // className="bg-white"
         style={{
           backgroundColor: "#FFFFFF",
           height: "70px",
@@ -17,19 +19,24 @@ const Navbar = () => {
         }}
       >
         <Toolbar
-          className="flex justify-between"
+          // className="flex justify-between"
           style={{
             height: "100%",
+            display:"flex",
+            justifyContent:"space-between"
           }}
         >
-          <Typography variant="h6" className="text-black font-semibold" style={{marginLeft:"7px"}}>
+          <Typography variant="h6" style={{marginLeft:"7px", color:"black",fontWeight:"600px"}}>
             67 Kumar Enclave, Thane
           </Typography>
-          <div className="flex items-center gap-6" style={{height:"40px", width:"530px", top:"15px" }}>
+          <div style={{height:"40px", width:"530px", top:"15px" ,display:"flex",justifyContent:"center",gap:"24px"}}>
             <div
-              className="px-4 py-2 bg-[#FAFBFC] rounded-full text-[#222222]"
               style={{
-                border: "1px solid #BDBDBD",
+                padding: '0.5rem 1rem',
+                backgroundColor: '#FAFBFC',
+                borderRadius: '9999px',
+                border: theme.borderstyle.border,
+                color: theme.background.primarycolor,
               }}
             >
               <Typography
@@ -56,9 +63,12 @@ const Navbar = () => {
             </div>
 
             <div
-              className="px-4 py-2 bg-[#FAFBFC] rounded-full text-[#222222]"
               style={{
-                border: "1px solid #BDBDBD",
+                padding: '0.5rem 1rem',
+                backgroundColor: '#FAFBFC',
+                borderRadius: '9999px',
+                border: theme.borderstyle.border,
+                color: theme.background.primarycolor,
               }}
             >
               <Typography
@@ -73,12 +83,13 @@ const Navbar = () => {
                 Today's bill amount:{" "}
               </Typography>
               <span
-                className="text-[#000000]"
+                // className="text-[#000000]"
                 style={{
                   fontFamily: "Roboto",
                   fontSize: "14px",
                   fontWeight: 700,
                   lineHeight: "16px",
+                  color:"#000000"
                 }}
               >
                 Rs 00.0
@@ -86,12 +97,14 @@ const Navbar = () => {
             </div>
             <IconButton
               edge="end"
-              className="text-[#111111]"
+              // className="text-[#111111]"
               aria-label="settings"
               style={{
                 width:"40px",
                 height:"40px",
-                border: "1px solid #BDBDBD",
+                color:"#111111",
+                // border: "1px solid #BDBDBD",
+                border: theme.borderstyle.border,
               }}
             >
               <SettingsIcon   style={{

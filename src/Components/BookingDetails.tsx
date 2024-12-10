@@ -24,6 +24,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { CopyIcon, InfoIcon } from "../assets/AllNewBookingIcon";
 import formatDatesToOrdinal from "../utils/format";
+import { useTheme } from '@mui/material/styles';
 
 interface BookingDetailsProps {
   setIsEdit: (edit: boolean) => void;
@@ -99,6 +100,8 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   const [updateData, setUpdateData] = useState(bookingDetailsData || {});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [inviteErrors, setInviteErrors] = useState<Errors>({});
+
+  const theme = useTheme();
 
   const handleEditClick = () => {
     setIsEdit(true); // Switch to edit mode
@@ -363,7 +366,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     }
   };
 
-  const theme = createTheme({
+  const themes = createTheme({
     typography: {
       fontFamily: "Roboto",
 
@@ -518,7 +521,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
     },
   }));
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={themes}>
       {clearButton ? (
         <FormControl>
           <Box
@@ -565,8 +568,10 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                   variant="outlined"
                   sx={{
                     backgroundColor: "white",
-                    color: "#222222",
-                    border: "1px solid #BDBDBD",
+                    // color: "#222222",
+                    // border: "1px solid #BDBDBD",
+                    color: theme.background.primarycolor,
+                    border: theme.borderstyle.border,
                     textTransform: "none",
                     width: "54px",
                     height: "32px",
@@ -616,8 +621,10 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
                     px: "4px",
                     borderRadius: "3px",
                     backgroundColor: bookingDetailsData.isActive
-                      ? "#79F2C0"
-                      : "#FFBDAD",
+                    ? theme.active.activecolor : theme.active.Diactive,
+                    // backgroundColor: bookingDetailsData.isActive
+                      // ? "#79F2C0"
+                      // : "#FFBDAD",
                     display: "flex",
                     alignItems: "center",
                   }}

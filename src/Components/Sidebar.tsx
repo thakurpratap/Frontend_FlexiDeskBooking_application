@@ -18,11 +18,12 @@ import {
 } from "../assets/icons/Desk";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import { useTheme } from '@mui/material/styles';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const [inventoryOpen, setInventoryOpen] = useState(false);
-
+  const theme = useTheme();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const menus = [
@@ -54,48 +55,44 @@ const Sidebar = () => {
 
   return (
     <>
-      <section className="flex gap-0">
+      <section style={{display:"flex"}}>
         <div
-          className={`bg-[#222222] min-h-screen ${
-            open ? "w-[204px]" : "w-16"
-          } duration-500 text-[#FFFFFF] px-4 flex flex-col justify-between `}
-          style={{
-            fontFamily: "Roboto",
-            fontSize: "14px",
-            fontWeight: 400,
-            lineHeight: "17.5px",
-          }}
-        >
+          // className={`bg-[#222222] min-h-screen ${
+          //   open ? "w-[204px]" : "w-16"
+          // } duration-500 text-[#FFFFFF] px-4 flex flex-col justify-between `}
+          style={{backgroundColor: "#222222",minHeight: "100vh",width: open ? "204px" : "64px",transition: "width 0.5s",color: "#FFFFFF",padding: "0 1rem",display: "flex",
+            flexDirection: "column",justifyContent: "space-between",fontFamily: "Roboto",fontSize: "14px",fontWeight: 400,lineHeight: "17.5px",}}>
           <div style={{ margin: "20px 76px 10px 10px" }}>
             {open ? (
               <WybridIcon />
             ) : (
-              <div className="flex justify-center ml-2">
-                <MoreVertIcon fontSize="large" className="cursor-pointer" />
+              <div style={{display:"flex", justifyContent:"center", marginLeft:"8px"}}>
+                <MoreVertIcon fontSize="large" style={{cursor:"pointer"}} />
               </div>
             )}
           </div>
 
-          <div className="mt-4 flex flex-col gap-2 flex-grow">
+          <div style={{marginTop:"16px", display:"flex", flexDirection: "column",gap: "0.5rem",flexGrow: 1,}}>
             {menus.map((menu, i) => {
               if (menu.name === "Inventory") {
                 return (
                   <div key={i}>
                     <div
-                      className="group flex items-center text-sm font-normal gap-7 p-2 hover:bg-gray-800 rounded-md cursor-pointer"
+                      // className=" hover:bg-gray-800 "
+                      style={{display: "flex",alignItems: "center",fontSize: "0.875rem",fontWeight: 400,gap: "1.75rem",padding: "0.5rem",borderRadius: "0.375rem",cursor: "pointer",}}
                       onClick={() => {
                         handleMenuClick(menu.name);
                         toggleInventoryDropdown();
                       }}
                     >
-                      {/* mr-5 */}
                       <div
-                        className={`p-1 rounded-md ${
-                          activeMenu === menu.name
-                            ? "bg-[#2F80ED] border border-gray-300"
-                            : ""
-                        }`}
-                      >
+                        // className={`p-1 rounded-md ${
+                        //   activeMenu === menu.name
+                        //     ? "bg-[#2F80ED] border border-gray-300"
+                        //     : ""
+                        // }`}
+                        style={{padding: "0.25rem",  borderRadius: "0.375rem", backgroundColor: activeMenu === menu.name ? "#2F80ED" : "transparent", 
+                        border: activeMenu === menu.name ? "1px solid #D1D5DB" : "none", }}>
                         {React.createElement(menu.icon)}
                       </div>
                       <h2
@@ -106,62 +103,68 @@ const Sidebar = () => {
                         {menu?.name}
                       </h2>
                       {inventoryOpen ? (
-                        <ArrowDropDownIcon className="ml-auto" />
+                        <ArrowDropDownIcon/>
                       ) : (
-                        <ArrowRightIcon className="ml-auto" />
+                        <ArrowRightIcon/>
                       )}
                     </div>
 
                     {inventoryOpen && (
                       <>
                         <div
-                          className={`absolute bg-[#000000] text-white p-4 rounded-md shadow-lg mr-10`}
-                          style={{
-                            width:"150px",
-                            // height:"104px",
-                            left: open ? "210px" : "64px",
-                            top: "127px",
-                            zIndex: 1000,
-                          }}
-                        >
+                          style={{ width:"150px",position:"absolute",color:"white",padding:"16px",marginRight:"40px",borderRadius:"6px", top: "127px",zIndex: 1000,
+                            left: open ? "210px" : "64px", backgroundColor: theme.background.defaultcolor,  }}>
                             <Link
                               to="/inventory"
-                              // className="flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-[#DEEBFF] rounded-md"
-                              className={`flex items-center text-sm font-normal gap-3.5 p-2 rounded-md ${
+                              // className={`hover:bg-[#DEEBFF] hover:text-black`}
+                              onClick={() => handleMenuClick("Flexi")}
+                                style={{ width: "100%", display:"flex",alignItems:"center",fontSize: "0.875rem",fontWeight: 400,gap: "0.875rem",padding: "0.5rem",borderRadius: "0.375rem", 
+                                 }}
+                                 onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = "#DEEBFF"; 
+                                  e.currentTarget.style.color = "black";           
+                                }} onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = "transparent";
+                                  e.currentTarget.style.color = "inherit";             
+                                }}>
+                                {/* ${
                                 activeMenu === "Flexi"
                                   ? "bg-[#DEEBFF] text-black"
-                                  : "hover:bg-[#DEEBFF] hover:text-black"
-                              }`}
-                              onClick={() => handleMenuClick("Flexi")}
-                                style={{ width: "100%", }}
-                            >
-                              <h2 className="whitespace-pre w-full">Flexi</h2>
+                                  : ""
+                              } */}
+                              <h2>Flexi</h2>
                             </Link>
                             <Link
                               to="/inventory/dedicated"
-                              // className="flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-[#DEEBFF] rounded-md"
-                              className={`flex items-center text-sm font-normal gap-3.5 p-2 rounded-md ${
-                                activeMenu === "Dedicated"
-                                  ? "bg-[#DEEBFF] text-black"
-                                  : "hover:bg-[#DEEBFF] hover:text-black"
-                              }`}
-                              style={{ width: "100%", }}
+                              // className={`hover:bg-[#DEEBFF] hover:text-black`}
+                              style={{ width: "100%", display:"flex",alignItems:"center",fontSize: "0.875rem",fontWeight: 400,gap: "0.875rem",padding: "0.5rem",borderRadius: "0.375rem", }}
                               onClick={() => handleMenuClick("Dedicated")}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = "#DEEBFF";
+                                e.currentTarget.style.color = "black";            
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = "transparent"; 
+                                e.currentTarget.style.color = "inherit";          
+                              }}
                             >
-                              <h2 className="whitespace-pre">Dedicated</h2>
+                              <h2 >Dedicated</h2>
                             </Link>
                             <Link
                               to="/inventory/meeting-room"
-                              // className="flex items-center text-sm font-normal gap-3.5 p-2 hover:bg-[#DEEBFF] rounded-md"
-                              className={`flex items-center text-sm font-normal gap-3.5 p-2 rounded-md ${
-                                activeMenu === "Meeting Room"
-                                  ? "bg-[#DEEBFF] text-black"
-                                  : "hover:bg-[#DEEBFF] hover:text-black"
-                              }`}
-                              style={{ width: "100%", }}
+                              // className={` hover:bg-[#DEEBFF] hover:text-black`}
+                              style={{ width: "100%", display:"flex",alignItems:"center",fontSize: "0.875rem",fontWeight: 400,gap: "0.875rem",padding: "0.5rem",borderRadius: "0.375rem",  }}
                               onClick={() => handleMenuClick("Meeting Room")}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = "#DEEBFF"; 
+                                e.currentTarget.style.color = "black";           
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = "transparent";
+                                e.currentTarget.style.color = "inherit";   
+                              }}
                             >
-                              <h2 className="whitespace-pre">Meeting Room</h2>
+                              <h2 >Meeting Room</h2>
                             </Link>
                         </div>
                       </>
@@ -173,18 +176,21 @@ const Sidebar = () => {
                 <Link
                   to={menu?.link}
                   key={i}
-                  className="group flex items-center text-sm font-normal gap-5 p-2 hover:bg-gray-800 rounded-md"
+                  // className="group hover:bg-gray-800 "
+                  style={{display: "flex",alignItems: "center",fontSize: "0.875rem",fontWeight: 400,gap: "1.25rem",padding: "0.5rem",borderRadius: "0.375rem",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2A2A2A")} 
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                   onClick={() => handleMenuClick(menu.name)}
                 >
-                  {/* className="mr-3" */}
                   <div
-                    // className="mr-3"
-                    className={`p-1 mr-3 rounded-md ${
-                      activeMenu === menu.name
-                        ? "bg-[#2F80ED] border border-gray-300"
-                        : ""
-                    }`}
-                  >
+                    // className={`p-1 mr-3 rounded-md ${
+                    //   activeMenu === menu.name
+                    //     ? "bg-[#2F80ED] border border-gray-300"
+                    //     : ""
+                    // }`}
+                    style={{padding: "0.25rem",marginRight: "0.75rem",borderRadius: "0.375rem",border: activeMenu === menu.name ? "1px solid #D1D5DB" : "none",    
+                      backgroundColor:activeMenu === menu.name ? "#2F80ED" : "transparent",  }}>
                     {React.createElement(menu?.icon)}
                   </div>
                   <h2
@@ -194,7 +200,6 @@ const Sidebar = () => {
                   >
                     {menu?.name}
                   </h2>
-
                   <h2
                     className={`${
                       open && "hidden"
@@ -212,19 +217,16 @@ const Sidebar = () => {
               className={`flex items-center ${!open ? "justify-center" : ""}`}
             >
               <ProfileIcon />
-              {open && <span className="ml-6"> User</span>}
+              {open && <span style={{marginLeft:"24px"}}> User</span>}
             </div>
-            <div className="py-3 flex justify-end ml-2">
+            <div style={{display:"flex", justifyContent:"end",marginLeft:"8px",paddingTop: "0.75rem",paddingBottom: "0.75rem",}}>
               {open ? (
-                <CloseIcon
-                  className="cursor-pointer"
+                <CloseIcon style={{cursor:"pointer"}}
                   onClick={() => setOpen(!open)}
                 />
               ) : (
-                <OpenIcon
-                  className="cursor-pointer"
+                <OpenIcon style={{marginRight:"35%",cursor:"pointer"}}
                   onClick={() => setOpen(!open)}
-                  style={{marginRight:"35%"}}
                 />
               )}
             </div>
