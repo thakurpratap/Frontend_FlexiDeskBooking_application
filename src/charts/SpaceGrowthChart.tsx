@@ -1,6 +1,7 @@
 import React from "react";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Typography, Box } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 const data = [
   { month: "J", user: 20, capacity: 30 },
@@ -16,10 +17,12 @@ const data = [
 ];
 
 const CustomChart = () => {
+  const theme = useTheme();
   return (
     <Box
       sx={{
-        backgroundColor: "#000000",
+        // backgroundColor: "#000000",
+        backgroundColor: theme.background.defaultcolor,
         borderRadius: "5px", 
         padding: "16px",
         color: "#FFFFFF", 
